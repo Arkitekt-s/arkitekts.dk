@@ -46,3 +46,20 @@ Updated: 2026-10-10
 - [WordPress live site](https://arkitekts.dk/)
 
 > WordPress site remains live and DNS is unchanged. Category guide rows are visual placeholders, not migrated posts. No user testimonials or fictional client work has been inserted.
+
+
+## Milestone 1b — Design selection (2026-10-10)
+
+- [x] Published [comparison gallery](https://arkitekt-s.github.io/arkitekts.dk/concepts/)
+- [x] Published [Atlas / Precision](https://arkitekt-s.github.io/arkitekts.dk/concepts/atlas/)
+- [x] Published [Nordic / Executive](https://arkitekt-s.github.io/arkitekts.dk/concepts/nordic/)
+- [x] Published [Signal / Mission Control](https://arkitekt-s.github.io/arkitekts.dk/concepts/signal/)
+- [x] Automated 16 real-browser checks across 320px, 390px, 768px and 1440px viewports
+- [x] Confirmed responsive layout, navigation toggles, Escape behavior and JavaScript console errors
+- [x] Captured 16 screenshots in the [GitHub Actions visual-review run](https://github.com/Arkitekt-s/arkitekts.dk/actions/runs/38036599455)
+- [ ] Owner selects design and approves copy
+- [ ] Replace generic case summaries with approved, non-confidential work examples
+- [ ] Migrate original WordPress pages, posts and media
+
+**All browser review checks passed.** Screenshot artifacts remain downloadable from Actions for 14 days. This does not establish WCAG compliance or production-readiness.
+
