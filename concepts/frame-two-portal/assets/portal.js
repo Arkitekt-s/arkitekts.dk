@@ -98,7 +98,7 @@
     // The next episode is a genuine full-screen movie with staggered new copy.
     const textOpacity=smooth(normalize(p,.78,.99));
     chapter.style.opacity=String(textOpacity);
-    const shouldShow=target>.78||p>.83;
+    const shouldShow=p>.81;
     if(shouldShow!==lastVisible){
       chapter.classList.toggle("is-visible",shouldShow);
       chapter.inert=!shouldShow;
@@ -125,7 +125,7 @@
   function frameStep(){
     frame=0;
     if(reduced.matches)position=target;
-    else position+= (target-position)*.16;
+    else position+= (target-position)*.28;
     if(Math.abs(target-position)<.0006)position=target;
     paint();
     if(position!==target)frame=requestAnimationFrame(frameStep);
