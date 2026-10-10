@@ -1,0 +1,17 @@
+name: Approved four-frame baseline lock
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preserve-approved-scenes:
+    name: Keep approved Frames 01–04 unchanged
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare exact approved source and media files
+        run: python3 scripts/verify_four_frame_baseline.py
