@@ -186,7 +186,7 @@ def merge_published(current,posts):
 
 def header(depth=1,active="GUIDES"):
     root="../"*depth
-    routes=[("PORTFOLIO","portfolio/"),("PROFILE","profile/"),("SKILLS","software-skills/"),("GUIDES","technical-guides/")]
+    routes=[("PROFILE","profile/"),("PORTFOLIO","portfolio/"),("SKILLS","software-skills/"),("GUIDES","technical-guides/")]
     nav="\n".join(
       f'<a href="{root+path}"'+(' aria-current="page"' if label==active else "")+f'>{label}</a>'
       for label,path in routes
@@ -248,7 +248,7 @@ def index_html(articles):
     return shell+f"""
 <section class="guides-hero">
   <div class="guides-hero-copy">
-   <p class="guides-kicker"><i></i> 05 / TECHNICAL GUIDES <span>—</span> AI-POWERED KNOWLEDGE</p>
+   <p class="guides-kicker"><i></i> 04 / TECHNICAL GUIDES <span>—</span> AI-POWERED KNOWLEDGE</p>
    <p class="guides-overline">The knowledge library</p>
    <h1>Learn. Build. <em>Improve.</em></h1>
    <p class="guides-lead">Technical knowledge, made practical.</p>
@@ -267,7 +267,7 @@ def index_html(articles):
   <div><span>03</span><b>YOU LEARN</b><p>Practical references</p></div>
 </section>
 <section id="guide-library" class="guides-library" aria-labelledby="guides-title">
- <div class="guides-section-heading"><div><p>DOCUMENTATION LIBRARY <span>05—01</span></p><h2 id="guides-title">All <em>guides.</em></h2></div><span>{len(articles):02d} / PUBLISHED</span></div>
+ <div class="guides-section-heading"><div><p>DOCUMENTATION LIBRARY <span>04—01</span></p><h2 id="guides-title">All <em>guides.</em></h2></div><span>{len(articles):02d} / PUBLISHED</span></div>
  <div class="guides-toolbar">
     <div class="guides-search-head"><label for="guides-search">FIND A TOPIC</label><span id="guides-count" aria-live="polite">{len(articles)} GUIDES</span></div>
     <div class="guides-search-row"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
