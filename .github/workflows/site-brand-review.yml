@@ -1,0 +1,56 @@
+name: Shared brand and page order
+
+on:
+  pull_request:
+    paths:
+      - "assets/shared-brand.css"
+      - "assets/soheil-logo*.svg"
+      - "assets/favicon.svg"
+      - "contact/**"
+      - "concepts/frame-five-contact/index.html"
+      - "profile/index.html"
+      - "software-skills/index.html"
+      - "portfolio/**"
+      - "technical-guides/**"
+      - "scripts/sync_technical_guides.py"
+      - "scripts/site_brand_review.py"
+      - ".github/workflows/site-brand-review.yml"
+  push:
+    paths:
+      - "assets/shared-brand.css"
+      - "assets/soheil-logo*.svg"
+      - "assets/favicon.svg"
+      - "contact/**"
+      - "profile/index.html"
+      - "portfolio/**"
+      - "technical-guides/**"
+      - "scripts/site_brand_review.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  brand-review:
+    name: Exact S. mark, 01–05 navigation, all responsive pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser testing tools
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Test site-wide logo and numbered sections
+        run: python scripts/site_brand_review.py
+      - name: Save browser screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uniform-site-brand-and-nav
+          path: screenshots/brand-and-sequence/
+          retention-days: 14
+          if-no-files-found: ignore

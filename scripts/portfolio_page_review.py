@@ -19,8 +19,8 @@ TITLES=[
  "Full-Stack Application","Basecamp Response Monitor",
  "ShopFlow Mobile","CAMP Booking System"
 ]
-PATHS=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
-MENU=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
+PATHS=["/profile/","/portfolio/","/software-skills/","/technical-guides/","/contact/"]
+MENU=["PROFILE","PORTFOLIO","SKILLS","GUIDES","Let's talk"]
 failures=[]
 results=[]
 
@@ -65,7 +65,7 @@ with sync_playwright() as p:
         for i,expected in enumerate(PATHS):
             path=page.locator(".navigation a").nth(i).evaluate("el=>new URL(el.href).pathname")
             if path!=expected:failures.append(f"{name}: header link {i} is {path}, not {expected}")
-        if page.locator(".navigation a").first.get_attribute("aria-current")!="page":
+        if page.locator(".navigation a").nth(1).get_attribute("aria-current")!="page":
             failures.append(f"{name}: Portfolio should be active in header")
         head=page.locator(".site-header")
         foot=page.locator(".site-footer")

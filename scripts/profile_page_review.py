@@ -16,7 +16,7 @@ BASE=f"http://127.0.0.1:{server.server_port}"
 SIZES={"small-phone":(320,720),"phone":(390,844),"tablet":(768,1024),"desktop":(1440,900)}
 failures=[]
 records=[]
-EXPECTED_MENU=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
+EXPECTED_MENU=["PROFILE","PORTFOLIO","SKILLS","GUIDES","Let's talk"]
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
     for name,(w,h) in SIZES.items():
@@ -85,7 +85,7 @@ with sync_playwright() as p:
             failures.append(f"{name}: nav wording differs from approved homepage")
         # Every header shares four internal destinations; S. returns home.
         nav_links=page.locator(".navigation a")
-        expected_paths=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
+        expected_paths=["/profile/","/portfolio/","/software-skills/","/technical-guides/","/contact/"]
         for index,dest in enumerate(expected_paths):
             # Contact's own CTA may use an anchor to its contact methods.
             href=nav_links.nth(index).evaluate("el=>new URL(el.href).pathname")
@@ -151,7 +151,7 @@ with sync_playwright() as p:
                 failures.append(f"{name}: shared chrome differs: {selector}")
         if not original.locator('a[href="../../profile/"]').count():
             failures.append(f"{name}: homepage PROFILE does not open local Profile")
-        for index,dest in enumerate(["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]):
+        for index,dest in enumerate(["/profile/","/portfolio/","/software-skills/","/technical-guides/","/contact/"]):
             path=original.locator(".navigation a").nth(index).evaluate("el=>new URL(el.href).pathname")
             if path!=dest:
                 failures.append(f"{name}: homepage nav {index} points to {path}, not {dest}")
@@ -162,7 +162,7 @@ with sync_playwright() as p:
             sub.goto(BASE+f"/{route}/",wait_until="domcontentloaded")
             if not sub.locator('a[href="../profile/"]').count():
                 failures.append(f"{name}: {route} PROFILE is not linked to Profile")
-            expected_sub=["/portfolio/","/profile/","/software-skills/","/technical-guides/"]
+            expected_sub=["/profile/","/portfolio/","/software-skills/","/technical-guides/"]
             for index,dest in enumerate(expected_sub):
                 path=sub.locator(".navigation a").nth(index).evaluate("el=>new URL(el.href).pathname")
                 if path!=dest:

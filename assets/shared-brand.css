@@ -1,0 +1,45 @@
+/* One reference-derived Soheil mark. Shared by all site pages.
+   The source silhouette is traced from the approved S. reference image.
+   CSS image swaps ONLY adjust contrast on the cinematic dark homepage. */
+body .site-header a.brand-icon,
+body .site-footer .footer-mark {
+  font-size:0;
+  line-height:0;
+  letter-spacing:0;
+  text-indent:-9999px;
+  overflow:hidden;
+  display:block;
+  flex:none;
+  width:54px;
+  height:57px;
+  min-width:54px;
+  background-image:url("./soheil-logo.svg");
+  background-repeat:no-repeat;
+  background-size:contain;
+  background-position:center;
+  transform:none;
+  color:transparent;
+  text-decoration:none;
+}
+body .site-header a.brand-icon span { display:none; }
+body.frame-one .site-header a.brand-icon,
+body.frame-one .site-footer .footer-mark {
+  background-image:url("./soheil-logo-inverse.svg");
+}
+body .site-footer .footer-mark{
+  width:34px;
+  min-width:34px;
+  height:36px;
+}
+@media(max-width:760px){
+  body .site-header a.brand-icon{
+    width:43px;
+    min-width:43px;
+    height:45px;
+  }
+  body .site-footer .footer-mark{
+    width:29px;
+    min-width:29px;
+    height:31px;
+  }
+}

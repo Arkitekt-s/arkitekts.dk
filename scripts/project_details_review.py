@@ -22,8 +22,8 @@ CASES=[
  ("shopflow-mobile","ShopFlow Mobile"),
  ("camp-booking","CAMP Booking System")
 ]
-MENU=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
-LINKS=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
+MENU=["PROFILE","PORTFOLIO","SKILLS","GUIDES","Let's talk"]
+LINKS=["/profile/","/portfolio/","/software-skills/","/technical-guides/","/contact/"]
 errors=[]
 report=[]
 # Extra media appears only when the original WordPress import has completed.
