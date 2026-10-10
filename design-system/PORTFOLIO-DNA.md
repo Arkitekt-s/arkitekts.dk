@@ -19,7 +19,7 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - Color: near-black `#17111e`, deep violet `#773c9d`, lilac accent `#a54bd0`.
 - Page atmosphere: thin technical gridlines, layered violet light, minimal translucent surfaces.
 - Interaction: gentle ease-out motion, hover-driven arrows, progressive reveals, pointer parallax.
-- Navigation: shared four-link header (**PORTFOLIO**, **PROFILE**, **SKILLS**, **Let's talk**), home-linking S. brand, keyboard access, clear mobile menu, and reduced-motion support.
+- Navigation: shared five-link header (**PORTFOLIO**, **PROFILE**, **SKILLS**, **GUIDES**, **Let's talk**), home-linking S. brand, keyboard access, clear mobile menu, and reduced-motion support.
 - Layout: generous whitespace, large headings, quiet fixed-feeling header/footer.
 
 ## Route map
@@ -28,11 +28,27 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - **Bright contact:** `/contact/` — opens from both **Let's talk** links on the five-frame homepage.
 - **Skills:** `/software-skills/` — new bright skills page with category filters and live search.
 - **Profile:** `/profile/` — bright biography and education page, with section navigation.
-- **Portfolio:** `/portfolio/` — six original projects, locally hosted screenshots, searchable filters and detailed case summaries. All four header links stay inside the GitHub preview.
+- **Portfolio:** `/portfolio/` — six original projects, locally hosted screenshots, searchable filters and detailed case summaries. All five header links stay inside the GitHub preview.
 - **Six project pages:** `/portfolio/{project-slug}/` — standalone original-source case studies, shared header/footer, project images, previous/next project navigation, and real copy-link controls.
 
 GitHub Pages base path in preview: `https://arkitekt-s.github.io/arkitekts.dk/`.
 All new internal URLs are relative, so moving the site to a custom domain is straightforward.
+
+- **AI-Powered Technical Guides:** `/technical-guides/` — searchable catalog of published WordPress-MCP articles, with full individual article routes `/technical-guides/{post-slug}/`.
+
+## AI Technical Guides publishing workflow
+
+The `Arkitekt-s/wordpress-mcp` project generates **WordPress drafts** using its locked HTML/CSS templates. This project does not modify those templates or publish drafts. After a guide is reviewed and published on WordPress:
+
+1. The hourly `.github/workflows/sync-technical-guides.yml` checks the **public published** posts REST API (fallback to RSS).
+2. `scripts/sync_technical_guides.py` updates the GitHub catalog and creates/updates a static page for each guide.
+3. The sync commits only changed guide data/pages and triggers the existing Pages deployment workflow.
+4. Existing guides survive WordPress outages, and drafts are never mirrored.
+5. `workflow_dispatch` allows an immediate sync from GitHub Actions without waiting for the hourly check.
+
+The eleven already-published guides are seeded in `technical-guides/guides.json`.
+WordPress remains the source of truth. No WordPress credentials or publication permissions are needed.
+Each page links back to its original WordPress article. The preview remains `noindex,nofollow` until migration.
 
 ## Portfolio page content
 
