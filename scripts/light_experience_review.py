@@ -70,7 +70,15 @@ with sync_playwright() as playwright:
                 if page.locator(".chapter[data-stage]").count() != 4:
                     failures.append(f"{kind}/{device}: expected four chapters")
                 if device in ("phone", "desktop"):
-                    page.locator("#stage-3").evaluate("(el) => el.scrollIntoView({block: 'center', behavior: 'instant'})")
+                    if width <= 600:
+                        # The compact 3D panel is sticky on phones. Bring the chapter
+                        # into the *readable area below* it, not behind the panel.
+                        page.locator("#stage-3").evaluate("""el => {
+                            const bottom = document.querySelector('.scene-sticky').getBoundingClientRect().bottom;
+                            window.scrollBy({top: el.getBoundingClientRect().top - bottom - 18, behavior: 'instant'});
+                        }""")
+                    else:
+                        page.locator("#stage-3").evaluate("(el) => el.scrollIntoView({block: 'center', behavior: 'instant'})")
                     page.wait_for_timeout(700)
                     current = page.locator("[data-stage-index]").inner_text()
                     # WebGL loads only as the scene approaches the viewport.
