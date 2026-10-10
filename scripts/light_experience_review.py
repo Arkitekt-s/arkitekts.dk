@@ -71,6 +71,10 @@ with sync_playwright() as playwright:
                     failures.append(f"{kind}/{device}: expected four chapters")
                 if device in ("phone", "desktop"):
                     if width <= 600:
+                        # First scroll to the actual story chapter. Only then can
+                        # we measure the sticky panel at its pinned viewport position.
+                        page.locator("#stage-3").evaluate("(el) => el.scrollIntoView({block: 'center', behavior: 'instant'})")
+                        page.wait_for_timeout(200)
                         # The compact 3D panel is sticky on phones. Bring the chapter
                         # into the *readable area below* it, not behind the panel.
                         page.locator("#stage-3").evaluate("""el => {
