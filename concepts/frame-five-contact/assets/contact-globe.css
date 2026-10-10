@@ -227,3 +227,8 @@ html body.frame-one.frame-five-active .site-footer {
   border-color: transparent !important;
 }
 
+
+/* First scene: display the role directly beneath the name. */
+.frame-stage .scene-eyebrow{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.frame-stage .scene-eyebrow .eyebrow-name,.frame-stage .scene-eyebrow .eyebrow-role{display:block;margin:0;color:inherit}
+.frame-stage .scene-eyebrow .eyebrow-role{font-size:9px;letter-spacing:.15em;opacity:.83}
