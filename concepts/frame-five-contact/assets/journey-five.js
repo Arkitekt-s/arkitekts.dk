@@ -17,6 +17,8 @@
   const chapterDescription=chapter?.querySelector(".chapter-description");
   const chapterLink=chapter?.querySelector(".chapter-link");
   const third=document.querySelector("#chapter-three");
+  const thirdKicker=third?.querySelector(".chapter-three-kicker");
+  const thirdStatements=[...third.querySelectorAll(".side-statement span")];
   const fourth=document.getElementById("frame-four-gallery");
   const fifth=document.getElementById("frame-five-contact");
   const fifthBackdrop=document.querySelector(".frame-five-backdrop");
@@ -186,9 +188,13 @@
     // Crossfade the incoming line-by-line story into the outgoing sentence.
     // Text drifts upward and becomes sharp; scrolling back reverses it.
     const textOpacity=smooth(normalize(p,.55,.95));
-    const leaveTwo=smooth(normalize(journey,1.31,1.72));
+    // Frame 02 is fully readable before leaving; then words float upward
+    // and blur out, just like the opening headline. The 02→03 entrance
+    // is a matched slow crossfade controlled by the same scroll progress.
+    const leaveTwo=smooth(normalize(journey,1.37,1.88));
     chapter.style.opacity=String(textOpacity*(1-leaveTwo));
-    chapter.style.translate="0 "+(22*(1-textOpacity)).toFixed(2)+"px";
+    chapter.style.translate="0 "+(22*(1-textOpacity)-24*leaveTwo).toFixed(2)+"px";
+    chapter.style.filter=reduced.matches?"none":"blur("+(5.5*leaveTwo).toFixed(2)+"px)";
     chapterTitleLines.forEach((line,index)=>{
       const wordEnter=smooth(normalize(p,.54+index*.055,.84+index*.045));
       line.style.opacity=String(wordEnter);
@@ -205,8 +211,8 @@
       chapterLink.style.opacity=String(linkEnter);
       chapterLink.style.transform="translate3d(0,"+(13*(1-linkEnter)).toFixed(2)+"px,0)";
     }
-    const shouldShow=journey>.54 && journey<1.74;
-    chapter.style.pointerEvents=journey>.88&&journey<1.65?"auto":"none";
+    const shouldShow=journey>.54 && journey<1.90;
+    chapter.style.pointerEvents=journey>.88&&journey<1.56?"auto":"none";
     if(shouldShow!==lastVisible){
       chapter.classList.toggle("is-visible",shouldShow);
       chapter.inert=!shouldShow;
@@ -216,9 +222,24 @@
     // Frame 03 changes only the editorial composition. The seamless movie,
     // original grid, header and footer remain in place.
     const leaveThree=smooth(normalize(journey,2.22,2.64));
-    const thirdOpacity=smooth(normalize(journey,1.28,1.72))*(1-leaveThree);
+    const enterThree=smooth(normalize(journey,1.41,1.89));
+    const thirdOpacity=enterThree*(1-leaveThree);
     third.style.opacity=String(thirdOpacity);
-    const showThird=journey>1.26 && journey<2.60;
+    third.style.translate="0 "+(24*(1-enterThree)).toFixed(2)+"px";
+    // Each word follows the same scroll gesture, rather than CSS timers.
+    // The number 10 keeps its original untouched hover interaction.
+    const kickerEnter=smooth(normalize(journey,1.47,1.79));
+    if(thirdKicker){
+      thirdKicker.style.opacity=String(.9*kickerEnter);
+      thirdKicker.style.transform="translateX(-50%) translateY("+(-3+16*(1-kickerEnter)).toFixed(2)+"px)";
+    }
+    thirdStatements.forEach((word,index)=>{
+      const wordEnter=smooth(normalize(journey,1.43+index*.075,1.75+index*.055));
+      word.style.opacity=String(wordEnter);
+      word.style.transform="translateY("+(30*(1-wordEnter)).toFixed(2)+"px)";
+      word.style.filter=reduced.matches?"none":"blur("+(7*(1-wordEnter)).toFixed(2)+"px)";
+    });
+    const showThird=journey>1.40 && journey<2.60;
     if(thirdVisible!==showThird){
       third.classList.toggle("is-visible",showThird);
       third.inert=!showThird;
@@ -365,8 +386,11 @@
     schedule();
   }
 
+  // More reading time in the first three scenes (about 30% slower).
+  // These remain continuous, not locked to a timer or forced pause.
+  // Frames 04 and 05 retain their approved scroll pace.
+  const editorialWheelDistance=1030;
   // Continual native wheel motion, not binary next/previous slides.
-  // Roughly 700px of cumulative wheel delta expands all the way through.
   addEventListener("wheel",event=>{
     if(event.ctrlKey)return; // browser pinch-to-zoom must remain available
     if(event.target instanceof Element && event.target.closest(".navigation,.site-header a,.site-header button,.site-footer a,.chapter-link"))return;
@@ -389,7 +413,11 @@
     }else if(target>3.003 || position>3.20){
       // Scroll back from Frame 05 to the gallery's last photograph.
       setTarget(Math.max(3,target+delta/790));
-    }else setTarget(target+delta/790);
+    }else{
+      // Matching scroll length for both 01→02 and 02→03 transitions.
+      const distance=target<2.28?editorialWheelDistance:790;
+      setTarget(target+delta/distance);
+    }
   },{passive:false});
 
   // Touch drag scrolls through the very same continuous expansion.
@@ -408,7 +436,8 @@
     }else if(delta>0 && target>=2.94 && target<3.20 && position>=2.70 && position<3.20){
       beginGalleryExit();
     }else{
-      setTarget(target+delta/Math.max(300,innerHeight*.72));
+      const distance=target<2.28?Math.max(390,innerHeight*.95):Math.max(300,innerHeight*.72);
+      setTarget(target+delta/distance);
     }
   },{passive:false});
   stage.addEventListener("touchend",()=>{touchY=null},{passive:true});

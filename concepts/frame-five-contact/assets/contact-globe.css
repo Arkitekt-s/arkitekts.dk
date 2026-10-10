@@ -178,3 +178,29 @@ body.frame-five-active .site-footer{
     filter:none!important;
   }
 }
+
+
+/* Frame 02 → Frame 03: the very same scroll-controlled cinematic grammar.
+   Remove legacy timed fades only inside this current five-frame experience.
+   Frame 03's nine-piece interactive number keeps its original transitions. */
+.frame-stage #chapter-two{
+  transition:none!important;
+  will-change:opacity,translate,filter;
+}
+.frame-stage #chapter-three{
+  will-change:opacity,translate;
+}
+.frame-stage #chapter-three .chapter-three-kicker,
+.frame-stage #chapter-three .side-statement span{
+  transition:none!important;
+  will-change:opacity,transform,filter;
+}
+@media(prefers-reduced-motion:reduce){
+  .frame-stage #chapter-two,
+  .frame-stage #chapter-three,
+  .frame-stage #chapter-three .chapter-three-kicker,
+  .frame-stage #chapter-three .side-statement span{
+    will-change:auto;
+    filter:none!important;
+  }
+}
