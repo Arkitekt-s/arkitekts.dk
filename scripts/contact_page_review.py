@@ -26,7 +26,7 @@ with sync_playwright() as p:
         page.on("pageerror",lambda e:errors.append(str(e)))
         response=page.goto(BASE+"/contact/",wait_until="domcontentloaded",timeout=30000)
         if response.status!=200:failures.append(f"{name}: contact HTTP {response.status}")
-        page.wait_for_function("document.body.classList.contains('has-js')",timeout=5000)
+        page.wait_for_function("document.body.dataset.contactReady==='true'",timeout=5000)
         page.wait_for_timeout(650)
 
         for text in ["Let’s", "connect.", "Call", "Write", "Strandlodsvej"]:
