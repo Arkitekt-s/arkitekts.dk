@@ -42,10 +42,11 @@ with sync_playwright() as p:
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
         page.mouse.move(w*.58,h*.49)
-        wheel(page,5);wait(page,.995)
+        # 01–03 now have deliberately longer scroll travel.
+        wheel(page,7);wait(page,.995)
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 02 copy not visible")
-        wheel(page,5);wait(page,1.995)
+        wheel(page,7);wait(page,1.995)
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         if page.locator(".twenty-piece").first.evaluate("e=>getComputedStyle(e).animationName")!="none":
