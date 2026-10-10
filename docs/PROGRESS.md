@@ -244,3 +244,19 @@ Note: the reference snapshot and checks preserve/flag Frame 01 changes, but are 
 [Updated preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/) · [Clean chrome rules](../design-system/CLEAN-CHROME-V2.md)
 
 The saved approved Frame 01 snapshot is unchanged; these adjustments belong to the combined two-frame working preview. No DNS or WordPress changes.
+
+## Milestone 1m — User-approved clean two-frame baseline (2026-10-10)
+
+- [x] User approved the minimal, seamless Frame 01 → 02 journey as the foundation
+- [x] Saved exact clean design snapshot in [baseline/two-frames-clean-approved-v1](https://github.com/Arkitekt-s/arkitekts.dk/tree/baseline/two-frames-clean-approved-v1)
+- [x] Recorded all 11 approved HTML, CSS, JavaScript, video and shared source assets using exact Git SHA hashes
+- [x] Published [approved two-frame design contract](../design-system/APPROVED-TWO-FRAME-V1.md)
+- [x] Added [automated two-frame baseline lock](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/two-frame-baseline-lock.yml)
+- [x] Verified old Frame 01 lock, new two-frame lock and website integrity checks all passed
+- [x] Merged [PR #9](https://github.com/Arkitekt-s/arkitekts.dk/pull/9) into main without changing the actual approved website assets
+- [ ] Server-enforced GitHub branch protection/ruleset must be enabled by the repository administrator
+- [ ] Next episode or future design revision only when the user requests it
+
+**Current approved experience:** https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/
+
+Do not modify either approved concept folder, shared frame styles, or video assets until the user explicitly asks. The public WordPress website and DNS remain unchanged.
