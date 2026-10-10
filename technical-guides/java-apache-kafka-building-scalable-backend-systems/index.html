@@ -32,14 +32,180 @@
  </div><div class="guide-article-number" aria-hidden="true">02</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#java">Java <span aria-hidden="true">↗</span></a><a href="#apache-kafka">Apache Kafka <span aria-hidden="true">↗</span></a><a href="#production-use">Production Use <span aria-hidden="true">↗</span></a><a href="#java-vs-kafka">Java vs Kafka <span aria-hidden="true">↗</span></a><a href="#architecture-example">Architecture Example <span aria-hidden="true">↗</span></a><a href="#takeaways">Key Takeaways <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Build scalable backends using Java services and event-driven messaging with Apache Kafka.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/java-apache-kafka-building-scalable-backend-systems/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section>
+<div>
+<div>☕</div>
+<div>
+<h2 id="java">Java</h2>
+<div>Enterprise Backend</div>
+</div>
+</div>
+<p>
+            Java is widely used for robust backend systems, REST APIs, microservices,
+            security, transactions, and enterprise-grade business logic.
+          </p>
+<div></div>
+<b>Best for</b>
+<ul>
+<li>Spring Boot applications</li>
+<li>REST APIs</li>
+<li>Business logic</li>
+<li>Microservices</li>
+<li>Secure enterprise systems</li>
+</ul>
+<div>
+<span>Spring Boot</span>
+<span>REST</span>
+<span>Security</span>
+<span>JPA</span>
+</div>
+<div>
+<div>⚡</div>
+<div>
+<h2 id="apache-kafka">Apache Kafka</h2>
+<div>Event Streaming</div>
+</div>
+</div>
+<p>
+            Kafka is a distributed event-streaming platform used for high-throughput
+            messaging, log pipelines, event-driven systems, and real-time integrations.
+          </p>
+<div></div>
+<b>Best for</b>
+<ul>
+<li>Event streaming</li>
+<li>Log pipelines</li>
+<li>Topic-based messaging</li>
+<li>Consumer groups</li>
+<li>Real-time data movement</li>
+</ul>
+<div>
+<span>Topics</span>
+<span>Producers</span>
+<span>Consumers</span>
+<span>Offsets</span>
+</div>
+<div>
+<div>🚀</div>
+<div>
+<h2 id="production-use">Production Use</h2>
+<div>Reliable Architecture</div>
+</div>
+</div>
+<p>
+            Java services can publish and consume Kafka events to build scalable,
+            loosely coupled systems with better reliability and observability.
+          </p>
+<div></div>
+<b>Important topics</b>
+<ul>
+<li>Retries and error handling</li>
+<li>Idempotent producers</li>
+<li>Consumer group design</li>
+<li>Schema Registry</li>
+<li>Monitoring and metrics</li>
+</ul>
+<div>
+<span>Avro</span>
+<span>JSON</span>
+<span>Docker</span>
+<span>Kubernetes</span>
+</div>
+</section>
+<section>
+<h2 id="java-vs-kafka">Java vs Kafka</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Java</th>
+<th>Kafka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main role</td>
+<td>Business logic</td>
+<td>Event streaming</td>
+</tr>
+<tr>
+<td>Common framework</td>
+<td>Spring Boot</td>
+<td>Spring Kafka / Kafka Client</td>
+</tr>
+<tr>
+<td>Communication</td>
+<td>REST / service calls</td>
+<td>Topics / events</td>
+</tr>
+<tr>
+<td>Reliability</td>
+<td>Transactions / validation</td>
+<td>Retries / offsets / delivery guarantees</td>
+</tr>
+<tr>
+<td>Best use case</td>
+<td>Backend APIs</td>
+<td>Async distributed systems</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-example">Architecture Example</h2>
+<div>
+<div><span>💻</span>Client</div>
+<div>→</div>
+<div><span>☕</span>Spring Boot API</div>
+<div>→</div>
+<div><span>⚡</span>Kafka Topic</div>
+<div><span>📥</span>Consumer</div>
+<div>→</div>
+<div><span>🗄️</span>Database</div>
+<div>→</div>
+<div><span>🔎</span>Elasticsearch</div>
+</div>
+<div>
+            A production system can use Java and Spring Boot for APIs,
+            Kafka for asynchronous event flow, a database for storage,
+            and Elasticsearch/Kibana for search and observability.
+          </div>
+</section>
+<section>
+<h2 id="takeaways">Key Takeaways</h2>
+<div>
+<div>
+<strong>Java</strong>
+            Strong platform for backend services, APIs, and enterprise logic.
+          </div>
+<div>
+<strong>Kafka</strong>
+            Best for high-throughput event streaming and async communication.
+          </div>
+<div>
+<strong>Spring Kafka</strong>
+            Simplifies producers, consumers, listeners, and configuration.
+          </div>
+<div>
+<strong>Schema Registry</strong>
+            Helps keep message formats consistent as systems evolve.
+          </div>
+<div>
+<strong>Production design</strong>
+            Use retries, monitoring, idempotency, and clear topic ownership.
+          </div>
+</div>
+<div>
+<span>Java</span>
+<span>Spring Boot</span>
+<span>Apache Kafka</span>
+<span>Microservices</span>
+<span>Event Streaming</span>
+<span>Schema Registry</span>
+<span>Elasticsearch</span>
+<span>Kibana</span>
+</div>
+</section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

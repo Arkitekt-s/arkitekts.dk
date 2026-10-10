@@ -32,14 +32,480 @@
  </div><div class="guide-article-number" aria-hidden="true">06</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Kubernetes Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Kubernetes Architecture <span aria-hidden="true">↗</span></a><a href="#cluster-setup">Cluster Setup Options <span aria-hidden="true">↗</span></a><a href="#namespaces">Namespaces <span aria-hidden="true">↗</span></a><a href="#pods">Pods <span aria-hidden="true">↗</span></a><a href="#deployments">Deployments <span aria-hidden="true">↗</span></a><a href="#services">Services <span aria-hidden="true">↗</span></a><a href="#ingress">Ingress <span aria-hidden="true">↗</span></a><a href="#configmaps">ConfigMaps <span aria-hidden="true">↗</span></a><a href="#secrets">Secrets <span aria-hidden="true">↗</span></a><a href="#storage">Storage <span aria-hidden="true">↗</span></a><a href="#statefulsets">StatefulSets <span aria-hidden="true">↗</span></a><a href="#daemonsets">DaemonSets <span aria-hidden="true">↗</span></a><a href="#jobs">Jobs and CronJobs <span aria-hidden="true">↗</span></a><a href="#scheduling">Scheduling <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Work with Kubernetes clusters, deployments, services, networking, storage and RBAC.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/kubernetes-enterprise-guide-pods-services-networking-and-production-architecture/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><p>Container Orchestration</p><h2 id="overview">Kubernetes Overview</h2><p>Kubernetes is a platform for running containerized applications across a cluster of machines. It automates deployment, scheduling, scaling, service discovery, configuration, storage attachment, rollout, rollback, and self-healing.</p><p>The core idea is declarative state. You describe the desired state in YAML. Kubernetes stores that desired state in the API and continuously tries to make the real cluster match it. This reconciliation model is what makes Kubernetes powerful for production.</p><div><div><strong>Pod</strong><span>Smallest deployable unit</span></div><div><strong>Deployment</strong><span>Stateless rollout controller</span></div><div><strong>Service</strong><span>Stable network endpoint</span></div><div><strong>Ingress</strong><span>HTTP entry point</span></div></div><div>Container Image → Pod → Deployment → Service → Ingress → Users</div></section><section><p>Cluster Design</p><h2 id="architecture">Kubernetes Architecture</h2><p>A Kubernetes cluster has a control plane and worker nodes. The control plane manages cluster state. Worker nodes run application workloads.</p><p>The API Server is the front door. All tools, controllers, and users talk to the Kubernetes API. etcd stores cluster data. The Scheduler decides where Pods should run. Controllers watch the desired state and create, update, or delete objects to match it.</p><pre><code>User / CI/CD / GitOps
+        │
+        ▼
+kubectl / Helm / Argo CD
+        │
+        ▼
+Kubernetes API Server
+        │
+        ├── etcd
+        ├── Scheduler
+        └── Controllers
+              │
+              ▼
+Worker Nodes → kubelet → container runtime → Pods</code></pre><p>Worker nodes run kubelet, a container runtime, and networking components. kubelet talks to the API Server and makes sure the containers assigned to the node are running.</p><div><div><strong>API Server</strong><span>Main API entry point</span></div><div><strong>etcd</strong><span>Cluster state database</span></div><div><strong>Scheduler</strong><span>Places Pods on nodes</span></div><div><strong>kubelet</strong><span>Runs Pods on nodes</span></div></div></section><section><p>Setup Models</p><h2 id="cluster-setup">Cluster Setup Options</h2><p>Kubernetes can run as a managed service, a self-managed cluster, or a local learning cluster. Production teams often use managed Kubernetes such as AKS, EKS, or GKE to reduce control plane maintenance. Self-managed clusters give more control but require more operational responsibility.</p><ul><li><strong>Local:</strong> minikube, kind, k3d, Docker Desktop.</li><li><strong>Managed:</strong> AKS, EKS, GKE, OpenShift managed services.</li><li><strong>Self-managed:</strong> kubeadm, RKE2, k3s, OpenShift, custom platform.</li></ul><pre><code># Check cluster access
+kubectl cluster-info
+kubectl get nodes
+kubectl version
+kubectl config get-contexts
+kubectl config use-context prod-cluster</code></pre><p>Production clusters need HA control plane, tested backups, certificate management, network plugin, storage class, ingress controller, metrics, logs, admission control, and upgrade strategy.</p></section><section><p>Isolation</p><h2 id="namespaces">Namespaces</h2><p>Namespaces split a cluster into logical areas. They are useful for teams, applications, environments, or platform components. Namespaces are not a full security boundary by themselves, but they help organize policies, quotas, RBAC, and resources.</p><pre><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted</code></pre><pre><code>kubectl create namespace production
+kubectl get namespaces
+kubectl config set-context --current --namespace=production</code></pre><p>Good production clusters normally define ResourceQuotas, LimitRanges, RBAC, and NetworkPolicies per namespace.</p></section><section><p>Workload Unit</p><h2 id="pods">Pods</h2><p>A Pod is the smallest deployable unit in Kubernetes. A Pod can contain one or more containers that share the same network namespace and can share storage volumes. Most applications use one main container per Pod. Sidecars are used for supporting behavior such as proxies, log shippers, or helpers.</p><pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+    - name: nginx
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 20
+        periodSeconds: 20</code></pre><pre><code>kubectl apply -f pod.yml
+kubectl get pods
+kubectl describe pod nginx-pod
+kubectl logs nginx-pod
+kubectl exec -it nginx-pod -- sh</code></pre><p>Do not usually deploy standalone Pods in production. Use Deployments, StatefulSets, DaemonSets, Jobs, or CronJobs so Kubernetes can manage lifecycle correctly.</p></section><section><p>Stateless Apps</p><h2 id="deployments">Deployments</h2><p>A Deployment manages ReplicaSets and Pods. It is the normal object for stateless applications. It supports rolling updates, rollbacks, scaling, and declarative rollout control.</p><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi</code></pre><pre><code>kubectl apply -f deployment.yml
+kubectl get deploy
+kubectl rollout status deployment/web
+kubectl rollout history deployment/web
+kubectl rollout undo deployment/web
+kubectl scale deployment web --replicas=5</code></pre><p>Production Deployments should include resources, probes, labels, annotations, controlled rollout strategy, and image tags that are traceable to build artifacts.</p></section><section><p>Stable Networking</p><h2 id="services">Services</h2><p>Pods are temporary. Their IP addresses can change. A Service provides a stable virtual IP and DNS name in front of a group of Pods selected by labels.</p><pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80</code></pre><p>Service types:</p><div><div><strong>ClusterIP</strong><span>Internal cluster access</span></div><div><strong>NodePort</strong><span>Port on every node</span></div><div><strong>LoadBalancer</strong><span>External cloud load balancer</span></div><div><strong>ExternalName</strong><span>DNS alias</span></div></div><pre><code>kubectl get svc
+kubectl describe svc web-service
+kubectl get endpointslices</code></pre><p>Use ClusterIP for internal services. Use Ingress or Gateway API for HTTP routing. Use LoadBalancer when a service needs direct external exposure.</p></section><section><p>External HTTP</p><h2 id="ingress">Ingress</h2><p>Ingress routes external HTTP and HTTPS traffic to Services. It requires an Ingress Controller such as NGINX Ingress Controller, Traefik, HAProxy, cloud provider ingress, or another implementation.</p><pre><code>apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 80</code></pre><p>For production, enable TLS, restrict exposed routes, apply rate limits where needed, and monitor ingress error rates and latency.</p></section><section><p>Configuration</p><h2 id="configmaps">ConfigMaps</h2><p>ConfigMaps store non-sensitive configuration. They can be mounted as files or exposed as environment variables.</p><pre><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_ENV: production
+  LOG_LEVEL: INFO
+  app.properties: |
+    feature.enabled=true
+    timeout.seconds=30</code></pre><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: myregistry/app:1.0.0
+          envFrom:
+            - configMapRef:
+                name: app-config</code></pre><p>Do not put passwords, tokens, private keys, or API secrets in ConfigMaps.</p></section><section><p>Sensitive Data</p><h2 id="secrets">Secrets</h2><p>Secrets store sensitive values such as tokens and passwords. Kubernetes Secrets are base64 encoded by default, not automatically strong encryption for every threat model. Production clusters should use encryption at rest, RBAC restrictions, external secret managers, and careful logging controls.</p><pre><code>kubectl create secret generic db-secret \
+  --from-literal=username=appuser \
+  --from-literal=password='change-me'</code></pre><pre><code>apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+stringData:
+  username: appuser
+  password: change-me</code></pre><pre><code>env:
+  - name: DB_USER
+    valueFrom:
+      secretKeyRef:
+        name: db-secret
+        key: username
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: db-secret
+        key: password</code></pre><p>Do not commit real secrets to Git. Use sealed secrets, external-secrets, HashiCorp Vault, cloud secret managers, or platform-approved secret workflows.</p></section><section><p>Persistent Data</p><h2 id="storage">Storage</h2><p>Containers are ephemeral, but many applications need persistent data. Kubernetes uses PersistentVolumes, PersistentVolumeClaims, StorageClasses, and CSI drivers to connect workloads to storage.</p><pre><code>apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: fast-storage
+  resources:
+    requests:
+      storage: 10Gi</code></pre><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-storage
+  template:
+    metadata:
+      labels:
+        app: app-storage
+    spec:
+      containers:
+        - name: app
+          image: nginx:1.27-alpine
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: app-data</code></pre><p>Production storage needs backup, restore testing, performance monitoring, reclaim policy awareness, access mode design, and disaster recovery planning.</p></section><section><p>Stateful Apps</p><h2 id="statefulsets">StatefulSets</h2><p>StatefulSets are used for workloads that need stable network identity, stable storage, and ordered deployment. They are common for databases, queues, and clustered systems, but they require careful operational design.</p><pre><code>apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi</code></pre><p>Use StatefulSets only when the application is designed for stateful clustering. For simple stateless web applications, use Deployments.</p></section><section><p>Node Agents</p><h2 id="daemonsets">DaemonSets</h2><p>A DaemonSet runs one Pod on each selected node. It is commonly used for log agents, monitoring agents, security agents, CNI components, and storage plugins.</p><pre><code>apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-agent
+spec:
+  selector:
+    matchLabels:
+      app: node-agent
+  template:
+    metadata:
+      labels:
+        app: node-agent
+    spec:
+      containers:
+        - name: agent
+          image: busybox:1.36
+          command: ["sh", "-c", "while true; do echo node agent; sleep 60; done"]</code></pre><p>DaemonSets need strong security review because they often run with node-level permissions.</p></section><section><p>Batch Work</p><h2 id="jobs">Jobs and CronJobs</h2><p>Jobs run tasks to completion. CronJobs run Jobs on a schedule. Use them for backups, reports, cleanup, migrations, and batch processing.</p><pre><code>apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: cleanup
+              image: busybox:1.36
+              command: ["sh", "-c", "echo cleanup started &amp;&amp; date"]</code></pre><pre><code>kubectl get jobs
+kubectl get cronjobs
+kubectl logs job/cleanup-123456</code></pre><p>Set concurrencyPolicy, history limits, and resource limits for production CronJobs.</p></section><section><p>Placement</p><h2 id="scheduling">Scheduling</h2><p>The Scheduler places Pods on nodes based on resources, constraints, labels, taints, tolerations, affinity, anti-affinity, and topology rules.</p><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zone-aware-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zone-aware
+  template:
+    metadata:
+      labels:
+        app: zone-aware
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: zone-aware
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: app
+          image: nginx:1.27-alpine</code></pre><p>Use node selectors and taints carefully. Too many hard constraints can make Pods unschedulable.</p></section><section id="autoscaling"><p>Capacity</p><h2>Autoscaling</h2><p>Kubernetes can scale workloads and nodes. Horizontal Pod Autoscaler changes replica count based on metrics. Cluster Autoscaler or cloud-native autoscaling can add or remove nodes. Vertical scaling can adjust resource recommendations, depending on setup.</p><pre><code>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70</code></pre><pre><code>kubectl autoscale deployment web --cpu-percent=70 --min=3 --max=10
+kubectl get hpa</code></pre><p>Autoscaling requires correct resource requests. Without requests, the scheduler and HPA cannot make good decisions.</p></section><section id="rbac"><p>Access Control</p><h2>RBAC</h2><p>RBAC controls who can do what in the Kubernetes API. Use least privilege. Avoid giving cluster-admin broadly. Separate human access, application service accounts, CI/CD access, and platform operator access.</p><pre><code>apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-reader
+  namespace: production
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: production
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-reader-binding
+  namespace: production
+subjects:
+  - kind: ServiceAccount
+    name: app-reader
+    namespace: production
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io</code></pre><pre><code>kubectl auth can-i get pods --namespace production
+kubectl auth can-i delete secrets --as system:serviceaccount:production:app-reader</code></pre><p>Review RBAC regularly. Old service accounts and broad permissions are common production risks.</p></section><section id="network-policies"><p>Traffic Control</p><h2>Network Policies</h2><p>NetworkPolicies control Pod-to-Pod and Pod-to-external traffic. They only work when the cluster network plugin supports them. Without policies, many clusters allow broad internal communication by default.</p><pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-to-api
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: web
+      ports:
+        - protocol: TCP
+          port: 8080</code></pre><p>A strong production model starts with default deny, then allows only required traffic.</p><pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: production
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress</code></pre></section><section id="security"><p>Hardening</p><h2>Security Best Practices</h2><p>Kubernetes security is layered. You need secure images, restricted Pods, RBAC, network policy, secret protection, admission control, audit logs, node hardening, patching, and supply chain controls.</p><ul><li>Use least privilege RBAC.</li><li>Use namespaces with Pod Security Admission labels.</li><li>Run containers as non-root where possible.</li><li>Drop Linux capabilities unless required.</li><li>Use read-only root file systems where possible.</li><li>Set resource requests and limits.</li><li>Scan container images.</li><li>Do not use latest tags in production.</li><li>Use NetworkPolicies.</li><li>Encrypt secrets at rest.</li><li>Rotate credentials and certificates.</li><li>Enable audit logging where supported.</li></ul><pre><code>securityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  seccompProfile:
+    type: RuntimeDefault
+containers:
+  - name: app
+    image: myregistry/app:1.0.0
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL</code></pre><p>Security is not one setting. It is the combined result of cluster configuration, workload configuration, image quality, access control, and operational discipline.</p></section><section id="observability"><p>Operations</p><h2>Monitoring, Logging and Observability</h2><p>Production Kubernetes needs metrics, logs, events, traces, and alerts. At minimum, monitor node health, Pod restarts, CPU, memory, disk, network, API Server health, etcd health, scheduler, controller manager, ingress latency, and application errors.</p><pre><code>kubectl top nodes
+kubectl top pods -A
+kubectl get events -A --sort-by=.lastTimestamp
+kubectl logs deployment/web
+kubectl logs -f deployment/web
+kubectl describe node worker01</code></pre><p>Common tools include Prometheus, Grafana, Alertmanager, Loki, Elasticsearch/OpenSearch, Fluent Bit, OpenTelemetry, Jaeger, and cloud-native monitoring services.</p><div><div><strong>Metrics</strong><span>Prometheus and Grafana</span></div><div><strong>Logs</strong><span>Fluent Bit and Loki/Elastic</span></div><div><strong>Events</strong><span>Kubernetes event stream</span></div><div><strong>Traces</strong><span>OpenTelemetry</span></div></div></section><section id="troubleshooting"><p>Debugging</p><h2>Troubleshooting</h2><p>Most Kubernetes issues fall into a few categories: image pull failure, crash loop, failed scheduling, readiness failure, service routing failure, DNS failure, volume mount failure, RBAC denial, resource pressure, or network policy blocking traffic.</p><pre><code># Basic inspection
+kubectl get pods -A
+kubectl describe pod mypod -n production
+kubectl logs mypod -n production
+kubectl logs mypod -c app -n production
+kubectl get events -n production --sort-by=.lastTimestamp
+
+# Deployment rollout
+kubectl rollout status deployment/web -n production
+kubectl rollout history deployment/web -n production
+kubectl rollout undo deployment/web -n production
+
+# Service debugging
+kubectl get svc,endpoints,endpointslices -n production
+kubectl run debug --rm -it --image=busybox:1.36 -- sh
+nslookup web-service.production.svc.cluster.local
+wget -S -O- http://web-service.production.svc.cluster.local
+
+# Node and scheduling
+kubectl describe node worker01
+kubectl get pods -A -o wide
+kubectl top nodes
+kubectl top pods -A</code></pre><div><div><strong>ImagePullBackOff</strong><span>Check image name, tag, registry secret</span></div><div><strong>CrashLoopBackOff</strong><span>Check logs, command, config, probes</span></div><div><strong>Pending</strong><span>Check resources, taints, PVC, scheduler</span></div><div><strong>403 Forbidden</strong><span>Check RBAC and service account</span></div></div><p>Debug with one namespace and one workload first. Do not change multiple production components at the same time.</p></section><section id="commands"><p>Cheat Sheet</p><h2>Useful kubectl Commands</h2><pre><code># Context and config
+kubectl config get-contexts
+kubectl config use-context prod
+kubectl config current-context
+kubectl cluster-info
+
+# Nodes and namespaces
+kubectl get nodes
+kubectl describe node worker01
+kubectl get ns
+kubectl create ns production
+kubectl config set-context --current --namespace=production
+
+# Workloads
+kubectl get pods
+kubectl get pods -A
+kubectl get deploy
+kubectl get rs
+kubectl get sts
+kubectl get ds
+kubectl get jobs
+kubectl get cronjobs
+kubectl describe pod mypod
+kubectl logs mypod
+kubectl logs -f deployment/web
+kubectl exec -it mypod -- sh
+
+# Apply and delete
+kubectl apply -f app.yml
+kubectl diff -f app.yml
+kubectl delete -f app.yml
+kubectl delete pod mypod
+
+# Rollouts
+kubectl rollout status deployment/web
+kubectl rollout history deployment/web
+kubectl rollout undo deployment/web
+kubectl scale deployment web --replicas=5
+kubectl set image deployment/web web=myregistry/web:1.2.0
+
+# Services and ingress
+kubectl get svc
+kubectl get ingress
+kubectl describe ingress web-ingress
+kubectl port-forward svc/web-service 8080:80
+
+# Config and secrets
+kubectl get cm
+kubectl get secret
+kubectl create secret generic db-secret --from-literal=password='change-me'
+
+# RBAC
+kubectl auth can-i get pods
+kubectl auth can-i create deployments --namespace production
+kubectl auth can-i delete secrets --as system:serviceaccount:production:app-reader
+
+# Troubleshooting
+kubectl get events -A --sort-by=.lastTimestamp
+kubectl top nodes
+kubectl top pods -A
+kubectl describe pvc app-data
+kubectl get endpointslices</code></pre></section><section id="takeaways"><p>Summary</p><h2>Key Takeaways</h2><p>Kubernetes is not just a container runner. It is a control plane for desired state, scheduling, networking, storage, access control, and production operations. Pods run containers. Deployments manage stateless apps. Services provide stable networking. Ingress exposes HTTP. PersistentVolumeClaims attach durable storage. RBAC controls API permissions. NetworkPolicies reduce internal exposure.</p><p>A strong production cluster needs resource limits, health probes, secure images, least privilege, secrets management, monitoring, logging, backups, upgrade planning, and tested disaster recovery.</p><div>Define desired state → Apply YAML → Observe rollout → Monitor health → Improve safely</div></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

@@ -32,14 +32,70 @@
  </div><div class="guide-article-number" aria-hidden="true">10</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Helm Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Helm Architecture <span aria-hidden="true">↗</span></a><a href="#chart-structure">Chart Structure <span aria-hidden="true">↗</span></a><a href="#chart-yaml">Chart.yaml <span aria-hidden="true">↗</span></a><a href="#values">Values Files <span aria-hidden="true">↗</span></a><a href="#templates">Templates <span aria-hidden="true">↗</span></a><a href="#functions">Template Functions <span aria-hidden="true">↗</span></a><a href="#helpers">Helpers <span aria-hidden="true">↗</span></a><a href="#dependencies">Dependencies <span aria-hidden="true">↗</span></a><a href="#repositories">Repositories &amp; OCI <span aria-hidden="true">↗</span></a><a href="#releases">Releases <span aria-hidden="true">↗</span></a><a href="#upgrades">Upgrades &amp; Rollbacks <span aria-hidden="true">↗</span></a><a href="#gitops">GitOps <span aria-hidden="true">↗</span></a><a href="#security">Security Best Practices <span aria-hidden="true">↗</span></a><a href="#troubleshooting">Troubleshooting <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Package Kubernetes applications using Helm charts, values, releases, GitOps and rollbacks.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/helm-enterprise-guide-kubernetes-package-management-charts-and-production-architecture/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><h2 id="overview">Helm Overview</h2><p>Helm is the package manager for Kubernetes. It packages Kubernetes resources into reusable charts, supports parameterized deployments through values files, and simplifies upgrades, rollbacks and multi-environment deployments.</p><div>Chart → Values → helm install → Release → Kubernetes Resources</div><table><thead><tr><th>Component</th><th>Purpose</th><th>Enterprise Recommendation</th></tr></thead><tbody><tr><td>Chart</td><td>Application package</td><td>One chart per service</td></tr><tr><td>Values</td><td>Configuration</td><td>Separate per environment</td></tr><tr><td>Release</td><td>Installed chart</td><td>Track versions</td></tr></tbody></table></section><section><h2 id="architecture">Helm Architecture</h2><pre><code>Git → CI/CD → Helm Chart → Values → Kubernetes API → Cluster</code></pre></section><section>
+<h2 id="chart-structure">Chart Structure</h2><pre><code>mychart/
+├── Chart.yaml
+├── values.yaml
+├── charts/
+├── templates/
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── ingress.yaml
+│   ├── _helpers.tpl
+│   └── NOTES.txt
+└── .helmignore</code></pre></section><section>
+<h2 id="chart-yaml">Chart.yaml</h2><pre><code>apiVersion: v2
+name: myapp
+version: 1.0.0
+appVersion: "1.0.0"
+type: application</code></pre></section><section><h2 id="values">Values Files</h2><pre><code>image:
+  repository: ghcr.io/company/app
+  tag: 1.0.0
+replicaCount: 3
+service:
+  type: ClusterIP</code></pre><table><thead><tr><th>File</th><th>Use</th></tr></thead><tbody><tr><td>values.yaml</td><td>Default values</td></tr><tr><td>values-dev.yaml</td><td>Development</td></tr><tr><td>values-prod.yaml</td><td>Production</td></tr></tbody></table></section><section>
+<h2 id="templates">Templates</h2><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}</code></pre></section><section><h2 id="functions">Template Functions</h2><pre><code>{{ default "nginx" .Values.image.repository }}
+{{ upper .Values.environment }}
+{{ quote .Values.tag }}</code></pre></section><section>
+<h2 id="helpers">Helpers</h2><pre><code>{{- define "myapp.fullname" -}}
+{{ .Release.Name }}-{{ .Chart.Name }}
+{{- end -}}</code></pre></section><section>
+<h2 id="dependencies">Dependencies</h2><pre><code>dependencies:
+- name: redis
+  version: 20.x.x
+  repository: https://charts.bitnami.com/bitnami</code></pre></section><section><h2 id="repositories">Repositories &amp; OCI</h2><pre><code>helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm pull oci://registry.example.com/charts/myapp</code></pre></section><section>
+<h2 id="releases">Releases</h2><pre><code>helm install app ./chart
+helm list
+helm status app</code></pre></section><section><h2 id="upgrades">Upgrades &amp; Rollbacks</h2><pre><code>helm upgrade app ./chart -f values-prod.yaml
+helm history app
+helm rollback app 2</code></pre><table><thead><tr><th>Strategy</th><th>Benefit</th></tr></thead><tbody><tr><td>helm upgrade</td><td>Controlled release</td></tr><tr><td>helm rollback</td><td>Fast recovery</td></tr></tbody></table></section><section>
+<h2 id="gitops">GitOps</h2><p>Helm integrates with Argo CD and Flux. Store charts and values in Git and let GitOps controllers synchronize cluster state automatically.</p></section><section><h2 id="security">Security Best Practices</h2><ul><li>Do not store secrets in values files.</li><li>Use external secret managers.</li><li>Lint charts before release.</li><li>Pin chart versions.</li><li>Review templates.</li></ul></section><section>
+<h2 id="troubleshooting">Troubleshooting</h2><table><thead><tr><th>Problem</th><th>Check</th></tr></thead><tbody><tr><td>Template error</td><td>helm template</td></tr><tr><td>Failed upgrade</td><td>helm history</td></tr><tr><td>Bad values</td><td>helm lint</td></tr></tbody></table><pre><code>helm lint ./chart
+helm template ./chart
+helm get values app
+helm history app</code></pre></section><section id="commands"><h2>Useful Commands</h2><pre><code>helm create app
+helm lint
+helm template
+helm install
+helm upgrade
+helm rollback
+helm uninstall
+helm list
+helm status
+helm history
+helm dependency update
+helm package
+helm repo add
+helm search repo</code></pre></section><section id="takeaways"><h2>Key Takeaways</h2><p>Helm standardizes Kubernetes application packaging and deployment. Combined with GitOps, version-controlled values and CI/CD, it enables repeatable, auditable and production-ready releases.</p></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

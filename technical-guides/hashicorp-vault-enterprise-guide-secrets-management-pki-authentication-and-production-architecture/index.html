@@ -32,14 +32,36 @@
  </div><div class="guide-article-number" aria-hidden="true">11</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Vault Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Architecture <span aria-hidden="true">↗</span></a><a href="#installation">Getting Started <span aria-hidden="true">↗</span></a><a href="#auth">Authentication <span aria-hidden="true">↗</span></a><a href="#kv-v2">KV v2 <span aria-hidden="true">↗</span></a><a href="#pki">PKI <span aria-hidden="true">↗</span></a><a href="#k8s">Kubernetes Integration <span aria-hidden="true">↗</span></a><a href="#terraform">Terraform Integration <span aria-hidden="true">↗</span></a><a href="#ansible">Ansible Integration <span aria-hidden="true">↗</span></a><a href="#security">Security Best Practices <span aria-hidden="true">↗</span></a><a href="#commands">Useful Commands <span aria-hidden="true">↗</span></a><a href="#takeaways">Key Takeaways <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Secrets, identity, dynamic credentials, PKI certificates and Vault security practices.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><h2 id="overview">Vault Overview</h2><p>HashiCorp Vault centralizes secrets management, encryption and identity. Rather than storing passwords, API keys or certificates in configuration files, applications request short-lived credentials from Vault. This reduces secret sprawl and improves auditing and rotation.</p><table><thead><tr><th>Feature</th><th>Purpose</th><th>Production Recommendation</th></tr></thead><tbody><tr><td>KV v2</td><td>Static secrets</td><td>Enable versioning</td></tr><tr><td>Dynamic Secrets</td><td>Temporary credentials</td><td>Prefer over static passwords</td></tr><tr><td>PKI</td><td>Certificate management</td><td>Use for internal TLS</td></tr><tr><td>Transit</td><td>Encryption as a service</td><td>Avoid exposing keys</td></tr></tbody></table><div>Application → Vault Auth → Policy Check → Secret Engine → Temporary Secret</div></section><section>
+<h2 id="architecture">Architecture</h2><pre><code>Client → Auth Method → Token → Policy → Secret Engine → Audit Log
+                     │
+                Integrated Storage (Raft)</code></pre></section><section><h2 id="installation">Getting Started</h2><pre><code>vault server -config=vault.hcl
+vault status
+vault operator init
+vault operator unseal</code></pre></section><section><h2 id="auth">Authentication</h2><pre><code>vault auth enable approle
+vault auth enable kubernetes
+vault auth enable ldap</code></pre></section><section>
+<h2 id="kv-v2">KV v2</h2><pre><code>vault secrets enable -path=secret kv-v2
+vault kv put secret/app username=admin password=s3cr3t
+vault kv get secret/app</code></pre></section><section>
+<h2 id="pki">PKI</h2><pre><code>vault secrets enable pki
+vault write pki/root/generate/internal common_name=company.local ttl=87600h</code></pre></section><section><h2 id="k8s">Kubernetes Integration</h2><pre><code>vault write auth/kubernetes/config ...
+vault write auth/kubernetes/role/web \
+ bound_service_account_names=web \
+ policies=web</code></pre></section><section><h2 id="terraform">Terraform Integration</h2><pre><code>provider "vault" {}
+data "vault_kv_secret_v2" "db" {
+ mount="secret"
+ name="database"
+}</code></pre></section><section><h2 id="ansible">Ansible Integration</h2><pre><code>- name: Read secret
+  community.hashi_vault.vault_kv2_get:
+    url: https://vault.example.com</code></pre></section><section><h2 id="security">Security Best Practices</h2><ul><li>Use AppRole or Kubernetes auth instead of long-lived tokens.</li><li>Enable audit devices.</li><li>Rotate root tokens.</li><li>Use Integrated Storage (Raft) with snapshots.</li><li>Enable auto-unseal where appropriate.</li></ul></section><section><h2 id="commands">Useful Commands</h2><pre><code>vault status
+vault operator raft snapshot save backup.snap
+vault token lookup
+vault policy list
+vault kv get secret/app
+vault lease revoke</code></pre></section><section><h2 id="takeaways">Key Takeaways</h2><p>Vault provides centralized, audited and policy-driven secrets management. In production, combine short-lived credentials, strong authentication, audit logging, Raft storage and automated rotation for a secure platform.</p></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

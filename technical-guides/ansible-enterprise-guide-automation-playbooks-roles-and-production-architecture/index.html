@@ -32,14 +32,387 @@
  </div><div class="guide-article-number" aria-hidden="true">05</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Ansible Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Ansible Architecture <span aria-hidden="true">↗</span></a><a href="#installation">Installation and Basic Configuration <span aria-hidden="true">↗</span></a><a href="#project-layout">Recommended Project Layout <span aria-hidden="true">↗</span></a><a href="#inventory">Inventory <span aria-hidden="true">↗</span></a><a href="#variables">Variables and Precedence <span aria-hidden="true">↗</span></a><a href="#playbooks">Playbooks <span aria-hidden="true">↗</span></a><a href="#modules">Modules <span aria-hidden="true">↗</span></a><a href="#handlers">Handlers <span aria-hidden="true">↗</span></a><a href="#templates">Templates <span aria-hidden="true">↗</span></a><a href="#roles">Roles <span aria-hidden="true">↗</span></a><a href="#vault">Ansible Vault <span aria-hidden="true">↗</span></a><a href="#facts">Facts <span aria-hidden="true">↗</span></a><a href="#conditions">Conditionals <span aria-hidden="true">↗</span></a><a href="#loops">Loops <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Enterprise automation using playbooks, inventories, roles, templates and repeatable operations.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/ansible-enterprise-guide-automation-playbooks-roles-and-production-architecture/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><p>Enterprise Automation</p><h2 id="overview">Ansible Overview</h2><p>Ansible is an automation tool used for configuration management, application deployment, orchestration, provisioning, patching, security hardening, and repeatable operations. It is popular because it is agentless for Linux over SSH, readable because it uses YAML, and practical because the same playbook can be stored in Git, reviewed, tested, and executed again.</p><p>The most important idea in Ansible is desired state. You describe what the system should look like. Ansible checks the remote system and changes only what is needed. Good playbooks are idempotent, meaning they can run many times without creating unnecessary changes.</p><div><div><strong>Control node</strong><span>Where Ansible runs</span></div><div><strong>Inventory</strong><span>List of managed hosts</span></div><div><strong>Playbook</strong><span>YAML automation workflow</span></div><div><strong>Module</strong><span>Reusable task unit</span></div></div><div>Git → Review → Ansible Controller → Inventory → Managed Nodes → Logs</div></section><section><p>Core Design</p><h2 id="architecture">Ansible Architecture</h2><p>A normal Ansible environment has three main parts: the control node, the inventory, and managed nodes. The control node runs Ansible commands. The inventory defines target hosts and groups. Managed nodes are the servers, network devices, or systems being automated.</p><p>Ansible normally connects to Linux and Unix hosts over SSH. For Windows hosts, it commonly uses WinRM. In enterprise environments, Ansible may be executed from AWX, Red Hat Ansible Automation Platform, a CI/CD runner, or a locked automation server.</p><pre><code>Developer laptop / AWX / AAP
+        │
+        ├── Git repository
+        ├── ansible.cfg
+        ├── inventories/
+        ├── playbooks/
+        └── roles/
+             │
+             └── SSH / WinRM
+                    │
+                    ├── web01
+                    ├── app01
+                    └── db01</code></pre><p>Production automation should not depend on manual commands from random laptops. Use a controlled runner, Git-based change process, RBAC, secrets management, logs, and repeatable execution environments.</p></section><section><p>Setup</p><h2 id="installation">Installation and Basic Configuration</h2><p>On a Linux control node, install Ansible from your approved package source. In enterprises, avoid installing random packages directly from the internet on production automation servers. Use approved repositories, mirrors, or execution environments.</p><pre><code># RHEL / CentOS / Fedora style
+sudo dnf install ansible-core
+
+# Debian / Ubuntu style
+sudo apt update
+sudo apt install ansible
+
+# Python virtual environment style
+python3 -m venv .venv
+source .venv/bin/activate
+pip install ansible-core ansible-lint</code></pre><p>A simple ansible.cfg keeps behavior predictable.</p><pre><code>[defaults]
+inventory = inventories/dev/hosts.yml
+roles_path = roles
+collections_path = collections
+host_key_checking = True
+retry_files_enabled = False
+stdout_callback = yaml
+forks = 20
+interpreter_python = auto_silent
+
+[privilege_escalation]
+become = True
+become_method = sudo
+become_ask_pass = False</code></pre><p>Keep ansible.cfg in the repository root so every user and pipeline gets the same behavior.</p></section><section><p>Repository Design</p><h2 id="project-layout">Recommended Project Layout</h2><p>A clean folder structure is critical. Without structure, Ansible becomes hard to review, test, and operate. Separate inventories by environment. Put reusable logic in roles. Keep secrets encrypted. Keep templates version-controlled.</p><pre><code>ansible-platform/
+├── ansible.cfg
+├── requirements.yml
+├── inventories/
+│   ├── dev/
+│   │   ├── hosts.yml
+│   │   ├── group_vars/
+│   │   └── host_vars/
+│   ├── test/
+│   └── prod/
+├── playbooks/
+│   ├── site.yml
+│   ├── patching.yml
+│   ├── deploy_app.yml
+│   └── hardening.yml
+├── roles/
+│   ├── common/
+│   ├── nginx/
+│   ├── users/
+│   └── monitoring/
+├── templates/
+├── files/
+└── README.md</code></pre><p>This structure supports Git review, CI tests, environment separation, and safer production releases.</p></section><section><p>Targets</p><h2 id="inventory">Inventory</h2><p>The inventory tells Ansible which systems exist and how they are grouped. Groups should reflect business or technical purpose: webservers, databases, kafka, elasticsearch, linux, windows, production, test, and so on.</p><pre><code>all:
+  children:
+    prod:
+      children:
+        webservers:
+          hosts:
+            web01.example.com:
+            web02.example.com:
+        databases:
+          hosts:
+            db01.example.com:
+    test:
+      hosts:
+        test01.example.com:</code></pre><p>Inventory can also define connection settings.</p><pre><code>all:
+  vars:
+    ansible_user: automation
+    ansible_port: 22
+    ansible_ssh_private_key_file: ~/.ssh/ansible_id_rsa
+
+linux:
+  hosts:
+    app01.example.com:
+      ansible_host: 10.10.10.21</code></pre><p>For large environments, use dynamic inventory from cloud, CMDB, VMware, NetBox, or another source of truth. Static files are fine for small and controlled environments, but they become risky when they drift from reality.</p></section><section><p>Configuration Data</p><h2 id="variables">Variables and Precedence</h2><p>Variables make playbooks reusable. Instead of hardcoding ports, package names, paths, or users, define variables in group_vars, host_vars, role defaults, role vars, or extra vars.</p><pre><code># inventories/prod/group_vars/webservers.yml
+nginx_port: 443
+nginx_worker_processes: auto
+app_environment: production
+allowed_admin_groups:
+  - linux-admins
+  - platform-ops</code></pre><p>Host-specific variables belong in host_vars.</p><pre><code># inventories/prod/host_vars/web01.example.com.yml
+backup_enabled: true
+maintenance_window: sunday_02_00</code></pre><p>Be careful with variable precedence. Extra vars passed with -e are very strong and can override many other values. In production, uncontrolled extra vars can create surprising changes.</p><pre><code>ansible-playbook playbooks/deploy_app.yml -e "app_version=1.4.2"</code></pre></section><section><p>Workflow</p><h2 id="playbooks">Playbooks</h2><p>A playbook is a YAML file containing one or more plays. Each play targets hosts and runs tasks. Each task calls a module. Playbooks should be readable, small enough to review, and safe to run repeatedly.</p><pre><code>---
+- name: Configure web servers
+  hosts: webservers
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: Deploy nginx config
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart nginx
+
+    - name: Ensure nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted</code></pre><p>Use check mode before production runs where possible.</p><pre><code>ansible-playbook playbooks/site.yml --check --diff
+ansible-playbook playbooks/site.yml --syntax-check
+ansible-playbook playbooks/site.yml --list-hosts
+ansible-playbook playbooks/site.yml --list-tasks</code></pre></section><section><p>Task Units</p><h2 id="modules">Modules</h2><p>Modules do the actual work. Use modules instead of shell commands whenever possible. Modules understand state and are usually safer and more idempotent.</p><div><div><strong>package</strong><span>Install packages</span></div><div><strong>service</strong><span>Manage services</span></div><div><strong>copy</strong><span>Copy files</span></div><div><strong>template</strong><span>Render Jinja2</span></div><div><strong>user</strong><span>Manage users</span></div><div><strong>file</strong><span>Paths and permissions</span></div></div><pre><code>- name: Create application user
+  ansible.builtin.user:
+    name: appuser
+    shell: /sbin/nologin
+    system: true
+
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/myapp
+    state: directory
+    owner: appuser
+    group: appuser
+    mode: '0750'</code></pre><p>Use fully qualified collection names like ansible.builtin.package. This avoids ambiguity when different collections have modules with similar names.</p></section><section><p>Controlled Restarts</p><h2 id="handlers">Handlers</h2><p>Handlers run only when notified by a changed task. They are useful for restarting services only when configuration changes. This avoids unnecessary restarts and reduces production noise.</p><pre><code>tasks:
+  - name: Update sshd configuration
+    ansible.builtin.template:
+      src: sshd_config.j2
+      dest: /etc/ssh/sshd_config
+      validate: /usr/sbin/sshd -t -f %s
+    notify: Restart sshd
+
+handlers:
+  - name: Restart sshd
+    ansible.builtin.service:
+      name: sshd
+      state: restarted</code></pre><p>The validate option is powerful. It checks the generated file before replacing the real configuration. Use it for SSH, Nginx, Apache, sudoers, and other critical files.</p></section><section><p>Jinja2</p><h2 id="templates">Templates</h2><p>Templates generate configuration files from variables. They are useful when every environment needs similar files with different values.</p><pre><code># templates/app.conf.j2
+[server]
+port = {{ app_port }}
+environment = {{ app_environment }}
+
+[logging]
+level = {{ log_level | default('INFO') }}
+
+{% for backend in backend_servers %}
+backend = {{ backend }}
+{% endfor %}</code></pre><pre><code>- name: Deploy application configuration
+  ansible.builtin.template:
+    src: app.conf.j2
+    dest: /etc/myapp/app.conf
+    owner: root
+    group: myapp
+    mode: '0640'
+  notify: Restart myapp</code></pre><p>Do not put secrets directly in templates unless the variable source is encrypted and access-controlled.</p></section><section><p>Reusable Automation</p><h2 id="roles">Roles</h2><p>Roles are reusable automation units. They organize tasks, handlers, templates, files, variables, defaults, and metadata into a standard structure.</p><pre><code>roles/nginx/
+├── defaults/main.yml
+├── vars/main.yml
+├── tasks/main.yml
+├── handlers/main.yml
+├── templates/nginx.conf.j2
+├── files/
+└── meta/main.yml</code></pre><p>Example role task:</p><pre><code># roles/nginx/tasks/main.yml
+---
+- name: Install nginx
+  ansible.builtin.package:
+    name: nginx
+    state: present
+
+- name: Configure nginx
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Start nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true</code></pre><p>Use defaults for values that users may override. Use vars only for values that should be difficult to override.</p></section><section><p>Secrets</p><h2 id="vault">Ansible Vault</h2><p>Ansible Vault encrypts sensitive files and variables. Use it for passwords, API tokens, private values, database credentials, and service secrets. Do not store cleartext secrets in Git.</p><pre><code>ansible-vault create inventories/prod/group_vars/all/vault.yml
+ansible-vault edit inventories/prod/group_vars/all/vault.yml
+ansible-vault encrypt secrets.yml
+ansible-vault decrypt secrets.yml
+ansible-vault view secrets.yml</code></pre><p>Example encrypted variable pattern:</p><pre><code># group_vars/all/vars.yml
+db_user: appuser
+db_password: "{{ vault_db_password }}"
+
+# group_vars/all/vault.yml
+vault_db_password: "super-secret-password"</code></pre><p>Run with a vault password file only when the file itself is protected by your enterprise secrets process.</p><pre><code>ansible-playbook playbooks/site.yml --ask-vault-pass
+ansible-playbook playbooks/site.yml --vault-password-file ~/.vault_pass</code></pre><p>In production, integrate Vault usage with CyberArk, HashiCorp Vault, AAP credentials, or another approved secrets manager where possible.</p></section><section><p>System Data</p><h2 id="facts">Facts</h2><p>Facts are system details gathered from managed nodes. They include OS family, distribution, IP addresses, memory, CPU, mount points, and more.</p><pre><code>ansible webservers -m ansible.builtin.setup
+ansible webservers -m ansible.builtin.setup -a 'filter=ansible_distribution*'</code></pre><p>Example usage:</p><pre><code>- name: Install package on Red Hat family
+  ansible.builtin.package:
+    name: httpd
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'</code></pre><p>Fact gathering is useful but adds runtime. For simple tasks that do not need facts, set gather_facts: false.</p></section><section><p>Logic</p><h2 id="conditions">Conditionals</h2><p>Conditionals decide whether a task should run. They are useful for OS-specific logic, environment-specific behavior, and optional features.</p><pre><code>- name: Install Apache on Red Hat
+  ansible.builtin.package:
+    name: httpd
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Install Apache on Debian
+  ansible.builtin.package:
+    name: apache2
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'</code></pre><p>Keep conditionals readable. If logic becomes complex, split it into roles or separate task files.</p></section><section><p>Repeat Tasks</p><h2 id="loops">Loops</h2><p>Loops repeat a task for multiple items. They are useful for packages, users, directories, firewall rules, and configuration entries.</p><pre><code>- name: Install common packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - vim
+    - curl
+    - git
+    - unzip</code></pre><pre><code>- name: Create Linux admin users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    shell: /bin/bash
+    state: present
+  loop:
+    - { name: 'alice', groups: 'wheel' }
+    - { name: 'bob', groups: 'wheel' }</code></pre></section><section id="tags"><p>Selective Runs</p><h2>Tags</h2><p>Tags let you run part of a playbook. This is useful in large repositories, but overusing tags can make behavior confusing.</p><pre><code>- name: Configure monitoring agent
+  hosts: linux
+  become: true
+  roles:
+    - role: monitoring
+      tags: monitoring
+    - role: hardening
+      tags: security</code></pre><pre><code>ansible-playbook playbooks/site.yml --tags monitoring
+ansible-playbook playbooks/site.yml --skip-tags security</code></pre><p>Use tags for clear operational boundaries, not as a replacement for good playbook design.</p></section><section id="error-handling"><p>Safe Failure</p><h2>Error Handling</h2><p>Production playbooks need safe failure behavior. Use blocks, rescue, always, failed_when, changed_when, serial, and max_fail_percentage carefully.</p><pre><code>- name: Safe application deployment
+  hosts: appservers
+  become: true
+  serial: 2
+
+  tasks:
+    - block:
+        - name: Stop application
+          ansible.builtin.service:
+            name: myapp
+            state: stopped
+
+        - name: Deploy package
+          ansible.builtin.copy:
+            src: files/myapp.rpm
+            dest: /tmp/myapp.rpm
+
+        - name: Install package
+          ansible.builtin.dnf:
+            name: /tmp/myapp.rpm
+            state: present
+
+      rescue:
+        - name: Start application after failed deploy
+          ansible.builtin.service:
+            name: myapp
+            state: started
+
+      always:
+        - name: Remove temporary package
+          ansible.builtin.file:
+            path: /tmp/myapp.rpm
+            state: absent</code></pre><p>For production, use serial rolling deployments. Do not update every critical server at once unless the system is designed for it.</p></section><section id="dynamic-inventory"><p>Source of Truth</p><h2>Dynamic Inventory</h2><p>Dynamic inventory reads hosts from an external system such as AWS, Azure, GCP, VMware, NetBox, ServiceNow, or an internal CMDB. This reduces manual inventory drift.</p><pre><code>ansible-inventory -i inventories/prod/hosts.yml --list
+ansible-inventory -i inventory.aws_ec2.yml --graph</code></pre><p>Use dynamic inventory when infrastructure changes often. Use static inventory when the environment is small, stable, and controlled.</p></section><section id="collections"><p>Reusable Content</p><h2>Collections</h2><p>Collections package modules, plugins, roles, and documentation. They allow teams to use vendor-supported automation content.</p><pre><code># requirements.yml
+collections:
+  - name: ansible.posix
+  - name: community.general
+  - name: community.crypto
+  - name: kubernetes.core</code></pre><pre><code>ansible-galaxy collection install -r requirements.yml</code></pre><p>Pin versions in enterprise environments so playbooks do not change unexpectedly.</p><pre><code>collections:
+  - name: community.general
+    version: '&gt;=9.0.0,&lt;10.0.0'</code></pre></section><section id="awx-aap"><p>Enterprise Platform</p><h2>AWX and Red Hat Ansible Automation Platform</h2><p>AWX is the upstream project. Red Hat Ansible Automation Platform is the supported enterprise product. They provide web-based job execution, RBAC, inventories, credentials, schedules, workflow templates, notifications, surveys, and audit logs.</p><div><div><strong>Projects</strong><span>Git repositories</span></div><div><strong>Inventories</strong><span>Hosts and groups</span></div><div><strong>Credentials</strong><span>SSH, Vault, cloud secrets</span></div><div><strong>Templates</strong><span>Reusable job definitions</span></div></div><p>A normal enterprise workflow looks like this:</p><pre><code>Developer opens PR
+        ↓
+Code review and lint
+        ↓
+Merge to main
+        ↓
+AWX/AAP syncs project
+        ↓
+Operator launches approved job template
+        ↓
+Logs and result are stored</code></pre><p>Use AWX/AAP when you need controlled access, auditability, scheduled jobs, workflows, and team execution. Use command line Ansible for development, testing, and small controlled operations.</p></section><section id="ci-cd"><p>GitOps</p><h2>CI/CD Integration</h2><p>Ansible works well with Git-based pipelines. A safe pipeline checks syntax, runs lint, validates YAML, runs molecule tests where possible, and only then allows deployment.</p><pre><code># Example GitHub Actions structure
+name: ansible-checks
+on: [pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: pip install ansible-core ansible-lint yamllint
+      - name: Syntax check
+        run: ansible-playbook playbooks/site.yml --syntax-check
+      - name: Ansible lint
+        run: ansible-lint
+      - name: YAML lint
+        run: yamllint .</code></pre><p>For production, the CI/CD system should not expose secrets in logs. Use protected variables, approved credentials, and environment approvals.</p></section><section id="security"><p>Hardening</p><h2>Security Best Practices</h2><ul><li>Use dedicated automation accounts.</li><li>Use SSH keys or approved credential systems.</li><li>Do not store cleartext passwords in Git.</li><li>Encrypt sensitive variables with Vault or external secret managers.</li><li>Use least privilege for sudo.</li><li>Separate dev, test, and production inventories.</li><li>Review all production changes through pull requests.</li><li>Use check mode and diff mode before risky changes.</li><li>Log production automation runs.</li><li>Pin collection versions.</li><li>Validate critical config files before replacing them.</li></ul><pre><code>- name: Deploy sudoers file safely
+  ansible.builtin.template:
+    src: sudoers_app.j2
+    dest: /etc/sudoers.d/app
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s</code></pre><p>Never give broad root automation access without audit, approval, and change control.</p></section><section id="performance"><p>Speed</p><h2>Performance Tuning</h2><p>Ansible performance depends on SSH connection setup, facts, forks, task count, module behavior, and target system speed. Tune carefully instead of blindly increasing forks.</p><pre><code>[defaults]
+forks = 30
+gathering = smart
+fact_caching = jsonfile
+fact_caching_connection = .ansible_facts
+fact_caching_timeout = 86400
+
+[ssh_connection]
+pipelining = True
+ssh_args = -o ControlMaster=auto -o ControlPersist=60s</code></pre><p>Performance tips:</p><ul><li>Disable gather_facts when not needed.</li><li>Use package modules with lists instead of loops where possible.</li><li>Use serial for safe rolling production changes.</li><li>Use async for long-running independent jobs.</li><li>Cache facts for large inventories.</li><li>Avoid unnecessary shell commands.</li></ul><pre><code>- name: Install packages efficiently
+  ansible.builtin.package:
+    name:
+      - nginx
+      - curl
+      - unzip
+    state: present</code></pre></section><section id="troubleshooting"><p>Operations</p><h2>Troubleshooting</h2><p>Most Ansible failures are caused by SSH access, sudo permissions, wrong inventory variables, missing Python, YAML syntax, wrong module arguments, package repository problems, or secrets access.</p><pre><code># Test connectivity
+ansible all -m ping -i inventories/prod/hosts.yml
+
+# Show inventory as Ansible sees it
+ansible-inventory -i inventories/prod/hosts.yml --graph
+ansible-inventory -i inventories/prod/hosts.yml --host web01.example.com
+
+# Run with more detail
+ansible-playbook playbooks/site.yml -vvv
+
+# Check without changing systems
+ansible-playbook playbooks/site.yml --check --diff
+
+# Limit to one host
+ansible-playbook playbooks/site.yml --limit web01.example.com</code></pre><p>Common errors and fixes:</p><div><div><strong>UNREACHABLE</strong><span>Check SSH, DNS, firewall, user, key</span></div><div><strong>Permission denied</strong><span>Check sudo and become settings</span></div><div><strong>YAML error</strong><span>Check indentation and quotes</span></div><div><strong>Undefined variable</strong><span>Check group_vars and host_vars</span></div></div><p>For production debugging, avoid changing many hosts at once. Use --limit and one test host first.</p></section><section id="commands"><p>Cheat Sheet</p><h2>Useful Commands</h2><pre><code># Version and config
+ansible --version
+ansible-config dump --only-changed
+
+# Inventory
+ansible-inventory -i inventories/prod/hosts.yml --list
+ansible-inventory -i inventories/prod/hosts.yml --graph
+
+# Ad-hoc commands
+ansible all -m ping
+ansible webservers -m ansible.builtin.command -a 'uptime'
+ansible linux -m ansible.builtin.setup
+
+# Playbooks
+ansible-playbook playbooks/site.yml
+ansible-playbook playbooks/site.yml --check
+ansible-playbook playbooks/site.yml --check --diff
+ansible-playbook playbooks/site.yml --syntax-check
+ansible-playbook playbooks/site.yml --list-hosts
+ansible-playbook playbooks/site.yml --list-tasks
+ansible-playbook playbooks/site.yml --limit web01.example.com
+ansible-playbook playbooks/site.yml --tags security
+ansible-playbook playbooks/site.yml --skip-tags monitoring
+ansible-playbook playbooks/site.yml -e 'app_version=1.4.2'
+
+# Vault
+ansible-vault create vault.yml
+ansible-vault edit vault.yml
+ansible-vault view vault.yml
+ansible-vault encrypt vars.yml
+ansible-vault decrypt vars.yml
+ansible-vault rekey vault.yml
+
+# Galaxy and collections
+ansible-galaxy collection install -r requirements.yml
+ansible-galaxy role init roles/myrole
+ansible-galaxy collection list
+
+# Validation
+ansible-lint
+yamllint .</code></pre></section><section id="takeaways"><p>Summary</p><h2>Key Takeaways</h2><p>Ansible is strongest when it is treated as production code. Store it in Git. Review changes. Use inventories correctly. Use roles for reuse. Use Vault or a secret manager for sensitive data. Test with syntax-check, lint, check mode, and limited hosts before production. Use AWX or Ansible Automation Platform when you need RBAC, audit logs, scheduled jobs, workflows, and controlled enterprise execution.</p><div>Write clearly → Test safely → Review in Git → Run through controller → Audit results</div></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

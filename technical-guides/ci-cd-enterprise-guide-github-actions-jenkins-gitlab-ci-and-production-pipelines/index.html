@@ -32,14 +32,278 @@
  </div><div class="guide-article-number" aria-hidden="true">09</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">CI/CD Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Enterprise CI/CD Architecture <span aria-hidden="true">↗</span></a><a href="#pipeline-stages">Pipeline Stages <span aria-hidden="true">↗</span></a><a href="#github-actions">GitHub Actions Pipeline <span aria-hidden="true">↗</span></a><a href="#jenkins">Jenkins Declarative Pipeline <span aria-hidden="true">↗</span></a><a href="#gitlab-ci">GitLab CI Pipeline <span aria-hidden="true">↗</span></a><a href="#docker-pipeline">Docker Image Pipeline <span aria-hidden="true">↗</span></a><a href="#terraform-pipeline">Terraform Pipeline <span aria-hidden="true">↗</span></a><a href="#ansible-pipeline">Ansible Pipeline <span aria-hidden="true">↗</span></a><a href="#kubernetes-deploy">Kubernetes Deployment Pipeline <span aria-hidden="true">↗</span></a><a href="#strategies">Deployment Strategies <span aria-hidden="true">↗</span></a><a href="#security">CI/CD Security <span aria-hidden="true">↗</span></a><a href="#artifacts">Artifacts and Promotion <span aria-hidden="true">↗</span></a><a href="#observability">Pipeline Observability <span aria-hidden="true">↗</span></a><a href="#troubleshooting">Troubleshooting <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Build reliable deployment pipelines using GitHub Actions, Jenkins and GitLab CI.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/ci-cd-enterprise-guide-github-actions-jenkins-gitlab-ci-and-production-pipelines/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><p>Enterprise DevOps</p><h2 id="overview">CI/CD Overview</h2><p>CI/CD is the automation layer between code and production. Continuous Integration validates every change with build, test, lint and security checks. Continuous Delivery prepares a release so it can be deployed safely. Continuous Deployment goes one step further and deploys automatically when all checks pass.</p><p>In enterprise DevOps, CI/CD connects Git, Docker, Terraform, Ansible, Kubernetes, security scanning, artifact registries and monitoring into one repeatable workflow.</p><div>Developer → Git Pull Request → CI Checks → Artifact → Security Gates → Deployment → Monitoring</div><table><thead><tr><th>Concept</th><th>Meaning</th><th>Production Rule</th></tr></thead><tbody><tr><td>CI</td><td>Build and test every change</td><td>Run on every pull request</td></tr><tr><td>CD</td><td>Prepare and deploy releases</td><td>Use approvals for production</td></tr><tr><td>Artifact</td><td>Immutable build output</td><td>Build once, promote many times</td></tr><tr><td>Runner/Agent</td><td>Machine executing pipeline jobs</td><td>Harden and isolate runners</td></tr></tbody></table></section><section><p>Pipeline Design</p><h2 id="architecture">Enterprise CI/CD Architecture</h2><p>A good pipeline is split into clear stages. Each stage has one responsibility. The pipeline should fail early, keep logs, protect secrets and create traceable artifacts.</p><pre><code>Git Repository
+     │
+     ▼
+Pull Request
+     │
+     ├── Lint
+     ├── Unit Tests
+     ├── Build
+     ├── SAST / Dependency Scan
+     └── Docker Image Build
+              │
+              ▼
+        Container Registry
+              │
+              ▼
+      Deployment Pipeline
+              │
+     ├── Terraform Plan / Apply
+     ├── Ansible Configuration
+     ├── Kubernetes Rollout
+     └── Smoke Test + Monitoring</code></pre><table><thead><tr><th>Layer</th><th>Tool Examples</th><th>Risk if Missing</th></tr></thead><tbody><tr><td>Source Control</td><td>GitHub, GitLab</td><td>No audit trail</td></tr><tr><td>CI Engine</td><td>GitHub Actions, Jenkins, GitLab CI</td><td>Manual validation</td></tr><tr><td>Artifact Store</td><td>Harbor, Nexus, GitHub Packages</td><td>Untrusted releases</td></tr><tr><td>Deployment</td><td>Helm, kubectl, Ansible</td><td>Manual production changes</td></tr><tr><td>Observability</td><td>Prometheus, Grafana, logs</td><td>No feedback after deploy</td></tr></tbody></table></section><section><p>Workflow</p><h2 id="pipeline-stages">Pipeline Stages</h2><p>Do not make one huge script. Use clear stages. This makes failures easier to understand and makes the pipeline easier to maintain.</p><table><thead><tr><th>Stage</th><th>Purpose</th><th>Example Command</th></tr></thead><tbody><tr><td>Format</td><td>Consistent style</td><td><code>terraform fmt -check</code></td></tr><tr><td>Lint</td><td>Static quality check</td><td><code>ansible-lint</code></td></tr><tr><td>Test</td><td>Validate logic</td><td><code>npm test</code></td></tr><tr><td>Build</td><td>Create package/image</td><td><code>docker build</code></td></tr><tr><td>Scan</td><td>Security validation</td><td><code>trivy image</code></td></tr><tr><td>Deploy</td><td>Release to environment</td><td><code>kubectl apply</code></td></tr></tbody></table></section><section><p>GitHub</p><h2 id="github-actions">GitHub Actions Pipeline</h2><p>GitHub Actions workflows are YAML files stored in <code>.github/workflows/</code>. A workflow contains jobs. Jobs run on runners. Jobs contain steps. Use permissions, environments and secrets carefully.</p><pre><code># .github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  docker:
+    name: Build Docker image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t ghcr.io/my-org/my-app:${{ github.sha }} .
+
+      - name: Login to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: docker push ghcr.io/my-org/my-app:${{ github.sha }}</code></pre><p>Production advice: never give broad workflow permissions by default. Start with read-only permissions and add only what each job needs.</p></section><section><p>Jenkins</p><h2 id="jenkins">Jenkins Declarative Pipeline</h2><p>Jenkins pipelines are often defined in a <code>Jenkinsfile</code>. Declarative Pipeline gives a structured syntax with stages, agents, environment variables and post actions.</p><pre><code>// Jenkinsfile
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+  }
+
+  environment {
+    REGISTRY = 'registry.example.com'
+    IMAGE = 'platform/my-app'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh 'mvn -B clean package'
+      }
+    }
+
+    stage('Unit Test') {
+      steps {
+        sh 'mvn test'
+      }
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+        }
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh 'docker build -t $REGISTRY/$IMAGE:$BUILD_NUMBER .'
+      }
+    }
+
+    stage('Deploy to Test') {
+      steps {
+        sh 'kubectl set image deployment/my-app my-app=$REGISTRY/$IMAGE:$BUILD_NUMBER -n test'
+        sh 'kubectl rollout status deployment/my-app -n test'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Pipeline completed successfully'
+    }
+    failure {
+      echo 'Pipeline failed. Check logs and rollback if needed.'
+    }
+  }
+}</code></pre><p>Jenkins is powerful but needs strong governance. Keep plugins updated, restrict admin access, isolate agents and store credentials in Jenkins credentials or an enterprise secret manager.</p></section><section><p>GitLab</p><h2 id="gitlab-ci">GitLab CI Pipeline</h2><p>GitLab CI uses a <code>.gitlab-ci.yml</code> file. Pipelines contain stages and jobs. Jobs run on GitLab runners.</p><pre><code># .gitlab-ci.yml
+stages:
+  - validate
+  - test
+  - build
+  - scan
+  - deploy
+
+variables:
+  IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+
+validate:
+  stage: validate
+  image: alpine:3.20
+  script:
+    - echo "Validate repository"
+
+unit_test:
+  stage: test
+  image: node:22-alpine
+  script:
+    - npm ci
+    - npm test
+  artifacts:
+    when: always
+    reports:
+      junit: junit.xml
+
+build_image:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker build -t "$IMAGE_TAG" .
+    - docker push "$IMAGE_TAG"
+
+production_deploy:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  when: manual
+  environment:
+    name: production
+  script:
+    - kubectl set image deployment/my-app my-app="$IMAGE_TAG" -n production
+    - kubectl rollout status deployment/my-app -n production</code></pre><p>Use protected branches, protected variables and manual production deployments for high-risk environments.</p></section><section><p>Containers</p><h2 id="docker-pipeline">Docker Image Pipeline</h2><p>A production container pipeline should build the image once, scan it, push it to a trusted registry and deploy the exact same digest or tag to each environment.</p><pre><code># Dockerfile example
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]</code></pre><pre><code># Pipeline commands
+docker build -t registry.example.com/platform/my-app:${GIT_SHA} .
+docker image inspect registry.example.com/platform/my-app:${GIT_SHA}
+docker push registry.example.com/platform/my-app:${GIT_SHA}</code></pre><table><thead><tr><th>Bad Practice</th><th>Better Practice</th></tr></thead><tbody><tr><td>Use <code>latest</code> in production</td><td>Use Git SHA or semantic version</td></tr><tr><td>Rebuild per environment</td><td>Build once and promote</td></tr><tr><td>No image scanning</td><td>Scan before deployment</td></tr><tr><td>Secrets in image</td><td>Use secret manager</td></tr></tbody></table></section><section><p>Infrastructure</p><h2 id="terraform-pipeline">Terraform Pipeline</h2><p>Terraform should run in a controlled pipeline with remote state, state locking, validation and approval before production apply.</p><pre><code># Terraform CI steps
+terraform fmt -check -recursive
+terraform init -backend-config=backend-prod.hcl
+terraform validate
+terraform plan -out=tfplan
+terraform show -no-color tfplan</code></pre><pre><code># Apply should be protected
+terraform apply tfplan</code></pre><p>Recommended pull request workflow:</p><pre><code>Pull Request
+  ├── terraform fmt
+  ├── terraform validate
+  ├── terraform plan
+  └── Comment plan result on PR
+Merge to main
+  ├── Approval gate
+  └── terraform apply</code></pre></section><section><p>Configuration</p><h2 id="ansible-pipeline">Ansible Pipeline</h2><p>Ansible pipelines should validate YAML, run ansible-lint, test syntax, run check mode and then execute with limited scope before production rollout.</p><pre><code># CI validation
+ansible-lint
+yamllint .
+ansible-playbook playbooks/site.yml --syntax-check
+ansible-playbook playbooks/site.yml --list-hosts</code></pre><pre><code># Safe production run
+ansible-playbook playbooks/site.yml \
+  -i inventories/prod/hosts.yml \
+  --check --diff \
+  --limit web01.example.com
+
+ansible-playbook playbooks/site.yml \
+  -i inventories/prod/hosts.yml \
+  --limit webservers \
+  --tags nginx</code></pre><p>Use Vault or an enterprise secrets tool. Do not print secrets in pipeline logs.</p></section><section><p>Deployment</p><h2 id="kubernetes-deploy">Kubernetes Deployment Pipeline</h2><p>A Kubernetes pipeline should deploy manifests or Helm charts, wait for rollout status and automatically stop if the deployment fails.</p><pre><code>kubectl apply -f k8s/deployment.yaml -n production
+kubectl rollout status deployment/my-app -n production --timeout=180s
+kubectl get pods -n production -l app=my-app
+kubectl logs deployment/my-app -n production --tail=100</code></pre><pre><code># Rollback commands
+kubectl rollout history deployment/my-app -n production
+kubectl rollout undo deployment/my-app -n production
+kubectl rollout status deployment/my-app -n production</code></pre><p>Production deployments should include readiness probes, liveness probes, resource requests, resource limits and a rollback procedure.</p></section><section><p>Release Control</p><h2 id="strategies">Deployment Strategies</h2><table><thead><tr><th>Strategy</th><th>Downtime</th><th>Rollback</th><th>Best Use</th></tr></thead><tbody><tr><td>Rolling Update</td><td>No</td><td>Easy</td><td>Standard Kubernetes apps</td></tr><tr><td>Blue/Green</td><td>No</td><td>Very fast</td><td>Critical enterprise services</td></tr><tr><td>Canary</td><td>No</td><td>Controlled</td><td>High-traffic systems</td></tr><tr><td>Recreate</td><td>Yes</td><td>Manual</td><td>Small internal apps</td></tr></tbody></table><pre><code># Kubernetes rolling update example
+kubectl set image deployment/my-app my-app=registry.example.com/my-app:1.2.0 -n production
+kubectl rollout status deployment/my-app -n production
+
+# Rollback
+kubectl rollout undo deployment/my-app -n production</code></pre></section><section><p>Hardening</p><h2 id="security">CI/CD Security</h2><p>CI/CD systems are powerful because they can deploy to production. That also makes them high-value attack targets. Treat pipelines like production systems.</p><ul><li>Use least privilege tokens.</li><li>Use short-lived cloud credentials with OIDC where possible.</li><li>Never store secrets in repository files.</li><li>Protect production environments with approvals.</li><li>Use protected branches.</li><li>Pin third-party actions and dependencies.</li><li>Scan dependencies and container images.</li><li>Separate build runners from production deployment runners.</li><li>Disable debug logs when secrets may be printed.</li><li>Rotate credentials regularly.</li></ul><table><thead><tr><th>Risk</th><th>Control</th></tr></thead><tbody><tr><td>Secret leak</td><td>Use secret manager and masked variables</td></tr><tr><td>Compromised action/plugin</td><td>Pin versions and review dependencies</td></tr><tr><td>Over-privileged token</td><td>Job-level least privilege permissions</td></tr><tr><td>Unsafe production deploy</td><td>Manual approval and environment protection</td></tr></tbody></table></section><section><p>Release Quality</p><h2 id="artifacts">Artifacts and Promotion</h2><p>Artifacts should be immutable. Do not rebuild the same application separately for test and production. Build once, sign or scan it, then promote the same artifact through environments.</p><pre><code>Build artifact: my-app-1.2.0.jar
+Docker image: registry.example.com/my-app:1.2.0
+Image digest: sha256:abc123...
+Environment promotion: dev → test → staging → production</code></pre><p>This gives traceability. If production fails, you know exactly which commit, build and image caused it.</p></section><section><p>Feedback</p><h2 id="observability">Pipeline Observability</h2><p>Measure pipeline health. A CI/CD system is not only successful when it runs. It is successful when it gives fast, reliable and actionable feedback.</p><table><thead><tr><th>Metric</th><th>Meaning</th><th>Why It Matters</th></tr></thead><tbody><tr><td>Lead Time</td><td>Commit to production time</td><td>Delivery speed</td></tr><tr><td>Change Failure Rate</td><td>Deployments causing incidents</td><td>Release quality</td></tr><tr><td>MTTR</td><td>Time to recover</td><td>Operational resilience</td></tr><tr><td>Deployment Frequency</td><td>How often releases happen</td><td>Team flow</td></tr><tr><td>Pipeline Duration</td><td>Time for pipeline completion</td><td>Developer feedback speed</td></tr></tbody></table></section><section><p>Operations</p><h2 id="troubleshooting">Troubleshooting</h2><table><thead><tr><th>Problem</th><th>Likely Cause</th><th>Check</th></tr></thead><tbody><tr><td>Pipeline does not start</td><td>Wrong trigger or branch rule</td><td>Check workflow <code>on</code> or GitLab rules</td></tr><tr><td>Build fails</td><td>Dependency or compile error</td><td>Check build logs</td></tr><tr><td>Docker push fails</td><td>Registry auth issue</td><td>Check token and registry URL</td></tr><tr><td>Terraform plan fails</td><td>Provider/backend issue</td><td>Run init and validate</td></tr><tr><td>Ansible unreachable</td><td>SSH, DNS or firewall</td><td>Run ansible ping</td></tr><tr><td>Kubernetes rollout fails</td><td>Image, probe or resource issue</td><td>Describe pod and check events</td></tr></tbody></table><pre><code># Debug commands
+git status
+docker build --no-cache -t test .
+terraform validate
+terraform plan
+ansible all -m ping -i inventories/prod/hosts.yml
+kubectl describe pod my-app -n production
+kubectl get events -n production --sort-by=.lastTimestamp
+kubectl logs deployment/my-app -n production</code></pre></section><section id="commands"><p>Cheat Sheet</p><h2>Useful Commands</h2><pre><code># Git
+git status
+git log --oneline --graph
+git diff
+git push origin feature/my-change
+
+# Docker
+docker build -t app:dev .
+docker run --rm app:dev
+docker push registry.example.com/app:1.0.0
+
+# Terraform
+terraform fmt -recursive
+terraform init
+terraform validate
+terraform plan
+terraform apply
+
+# Ansible
+ansible-lint
+ansible-playbook site.yml --syntax-check
+ansible-playbook site.yml --check --diff
+ansible-playbook site.yml
+
+# Kubernetes
+kubectl apply -f k8s/
+kubectl rollout status deployment/app
+kubectl rollout undo deployment/app
+kubectl describe pod app-123
+kubectl logs deployment/app</code></pre></section><section id="takeaways"><p>Summary</p><h2>Key Takeaways</h2><p>A strong CI/CD platform is not just automation. It is controlled, secure and observable delivery. The best pipelines are readable, version-controlled, repeatable and safe. They build once, test early, scan continuously, deploy with approvals and monitor after release.</p><div>Small changes → Fast feedback → Secure artifact → Controlled deploy → Measured production</div></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

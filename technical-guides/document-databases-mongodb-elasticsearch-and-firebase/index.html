@@ -32,14 +32,60 @@
  </div><div class="guide-article-number" aria-hidden="true">01</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#mongodb">MongoDB <span aria-hidden="true">↗</span></a><a href="#elasticsearch">Elasticsearch <span aria-hidden="true">↗</span></a><a href="#firebase-firestore">Firebase Firestore <span aria-hidden="true">↗</span></a><a href="#compare-technologies">Compare Technologies <span aria-hidden="true">↗</span></a><a href="#architecture-example">Architecture Example <span aria-hidden="true">↗</span></a><a href="#takeaways">Key Takeaways <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>A practical comparison of document storage, full-text search and real-time application data.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/document-databases-mongodb-elasticsearch-and-firebase/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section>
+<div><div>🍃</div><div><h2 id="mongodb">MongoDB</h2><div>Flexible Document Storage</div></div></div>
+<p>MongoDB stores data as BSON documents. It is useful when applications need flexible schemas, fast development, and scalable backend storage.</p>
+<div></div>
+<b>Best for</b>
+<ul><li>Web applications</li><li>Backend APIs</li><li>Microservices</li><li>Product catalogues</li><li>Content management systems</li></ul>
+<div><span>BSON</span><span>Aggregation</span><span>Sharding</span><span>Atlas</span></div>
+<div><div>🔎</div><div><h2 id="elasticsearch">Elasticsearch</h2><div>Search &amp; Analytics</div></div></div>
+<p>Elasticsearch is built for fast search, filtering, aggregations, logs, observability, and analytics across large volumes of documents.</p>
+<div></div>
+<b>Best for</b>
+<ul><li>Full-text search</li><li>Log management</li><li>Security analytics</li><li>Monitoring and observability</li><li>Large-scale data exploration</li></ul>
+<div><span>Search</span><span>Aggregations</span><span>Kibana</span><span>ILM</span></div>
+<div><div>🔥</div><div><h2 id="firebase-firestore">Firebase Firestore</h2><div>Real-time Cloud Database</div></div></div>
+<p>Firestore is designed for cloud-native and mobile applications where real-time synchronization and offline support are important.</p>
+<div></div>
+<b>Best for</b>
+<ul><li>Mobile apps</li><li>React applications</li><li>Live collaboration</li><li>Notifications</li><li>Serverless projects</li></ul>
+<div><span>Real-time</span><span>Offline</span><span>Security Rules</span><span>Cloud</span></div>
+</section>
+<section>
+<h2 id="compare-technologies">Compare Technologies</h2>
+<table>
+<thead><tr><th>Feature</th><th>MongoDB</th><th>Elasticsearch</th><th>Firebase</th></tr></thead>
+<tbody>
+<tr><td>Document model</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Real-time updates</td><td></td><td></td><td>✓</td></tr>
+<tr><td>Full-text search</td><td></td><td>✓</td><td></td></tr>
+<tr><td>Scalability</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Offline support</td><td></td><td></td><td>✓</td></tr>
+<tr><td>Best use case</td><td>Flexible apps</td><td>Search &amp; logs</td><td>Mobile apps</td></tr>
+</tbody>
+</table>
+<h2 id="architecture-example">Architecture Example</h2>
+<div>
+<div><span>💻</span>Application</div><div>→</div><div><span>⚙️</span>API Layer</div>
+<div><span>🍃</span>MongoDB</div><div>→</div><div><span>🔎</span>Elasticsearch</div>
+<div><span>👥</span>Users</div><div>←</div><div><span>🔥</span>Firebase</div>
+</div>
+<div>A modern application can use MongoDB for flexible storage, Elasticsearch for search and analytics, and Firebase for real-time user experience.</div>
+</section>
+<section>
+<h2 id="takeaways">Key Takeaways</h2>
+<div>
+<div><strong>Document databases</strong>They provide flexibility, scalability, and fast development for modern applications.</div>
+<div><strong>MongoDB</strong>Best for flexible backend storage and general-purpose application data.</div>
+<div><strong>Elasticsearch</strong>Best for search, analytics, logs, monitoring, and observability.</div>
+<div><strong>Firebase</strong>Best for mobile apps, real-time sync, and serverless applications.</div>
+<div><strong>Right choice</strong>The correct database depends on the application goal and data access pattern.</div>
+</div>
+<div><span>MongoDB</span><span>Elasticsearch</span><span>Firebase</span><span>NoSQL</span><span>Search</span><span>Analytics</span><span>Real-time</span><span>Cloud</span></div>
+</section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

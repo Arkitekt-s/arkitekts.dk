@@ -32,14 +32,63 @@
  </div><div class="guide-article-number" aria-hidden="true">08</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Git Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Git Architecture <span aria-hidden="true">↗</span></a><a href="#installation">Installation &amp; Configuration <span aria-hidden="true">↗</span></a><a href="#repository">Repositories <span aria-hidden="true">↗</span></a><a href="#commits">Commits <span aria-hidden="true">↗</span></a><a href="#branches">Branches <span aria-hidden="true">↗</span></a><a href="#merge-rebase">Merge &amp; Rebase <span aria-hidden="true">↗</span></a><a href="#tags">Tags &amp; Releases <span aria-hidden="true">↗</span></a><a href="#remote">Remote Repositories <span aria-hidden="true">↗</span></a><a href="#github">GitHub <span aria-hidden="true">↗</span></a><a href="#pull-requests">Pull Requests <span aria-hidden="true">↗</span></a><a href="#branch-strategy">Branching Strategies <span aria-hidden="true">↗</span></a><a href="#github-actions">GitHub Actions <span aria-hidden="true">↗</span></a><a href="#security">Security Best Practices <span aria-hidden="true">↗</span></a><a href="#troubleshooting">Troubleshooting <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Understand Git workflows, collaboration, pull requests and production-ready version control.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/git-and-github-enterprise-guide-version-control-branching-ci-cd-and-production-workflows/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><h2 id="overview">Git Overview</h2><p>Git is a distributed version control system used to track changes, collaborate on software, manage infrastructure as code, and support modern DevOps workflows. GitHub builds on Git by providing repositories, pull requests, code reviews, automation, security scanning, and collaboration features.</p><div>Developer → Git Commit → Pull Request → Review → Merge → CI/CD → Production</div></section><section><h2 id="architecture">Git Architecture</h2><p>Git stores snapshots of files in a directed graph of commits. Every clone contains the full repository history, enabling offline work, branching, merging, and recovery.</p><pre><code>Working Directory → Staging Area → Local Repository → Remote Repository (GitHub)</code></pre></section><section><h2 id="installation">Installation &amp; Configuration</h2><pre><code>git --version
+git config --global user.name "Jane Doe"
+git config --global user.email "jane@example.com"
+git config --global init.defaultBranch main
+git config --global pull.rebase false</code></pre></section><section><h2 id="repository">Repositories</h2><p>Initialize or clone repositories, keep a clean directory structure, use .gitignore, and commit small logical changes.</p><pre><code>git init
+git clone https://github.com/org/project.git
+git status
+git add .
+git commit -m "Initial commit"</code></pre></section><section>
+<h2 id="commits">Commits</h2><p>Each commit should represent one logical change with a descriptive message. Avoid mixing unrelated changes.</p></section><section>
+<h2 id="branches">Branches</h2><pre><code>git switch -c feature/login
+git switch main
+git branch -a</code></pre><p>Feature branches isolate work until it is reviewed and merged.</p></section><section><h2 id="merge-rebase">Merge &amp; Rebase</h2><p>Use merge to preserve branch history and rebase to create a linear history where appropriate. Avoid rebasing shared branches.</p><pre><code>git merge feature/login
+git rebase main</code></pre></section><section><h2 id="tags">Tags &amp; Releases</h2><pre><code>git tag v1.0.0
+git push origin v1.0.0</code></pre></section><section><h2 id="remote">Remote Repositories</h2><pre><code>git remote -v
+git fetch
+git pull
+git push origin main</code></pre></section><section>
+<h2 id="github">GitHub</h2><p>Use pull requests, code owners, protected branches, issues, projects, releases, secret scanning and Dependabot to improve software quality and security.</p></section><section>
+<h2 id="pull-requests">Pull Requests</h2><p>Require reviews, automated checks, and passing CI before merging.</p></section><section><h2 id="branch-strategy">Branching Strategies</h2><p>Common enterprise approaches include GitHub Flow, Git Flow and Trunk-Based Development. Choose one strategy consistently across teams.</p></section><section>
+<h2 id="github-actions">GitHub Actions</h2><pre><code>name: CI
+on: [pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Run tests here"</code></pre></section><section><h2 id="security">Security Best Practices</h2><ul><li>Protect main branches.</li><li>Enable MFA.</li><li>Use SSH keys or passkeys.</li><li>Sign commits where required.</li><li>Never commit secrets.</li><li>Enable secret scanning and Dependabot.</li></ul></section><section>
+<h2 id="troubleshooting">Troubleshooting</h2><pre><code>git status
+git log --oneline --graph
+git reflog
+git restore .
+git reset --hard HEAD~1
+git stash
+git stash pop</code></pre></section><section id="commands"><h2>Essential Commands</h2><pre><code>git init
+git clone
+git status
+git add
+git commit
+git log
+git diff
+git switch
+git checkout
+git branch
+git merge
+git rebase
+git cherry-pick
+git tag
+git fetch
+git pull
+git push
+git stash
+git reflog
+git reset
+git revert</code></pre></section><section id="takeaways"><h2>Key Takeaways</h2><p>Git is the foundation of modern DevOps. Combined with GitHub, protected branches, reviews, CI/CD, and security controls, it enables reliable, auditable, and repeatable software delivery.</p></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>

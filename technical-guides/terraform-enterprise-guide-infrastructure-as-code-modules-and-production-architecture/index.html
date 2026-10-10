@@ -32,14 +32,71 @@
  </div><div class="guide-article-number" aria-hidden="true">07</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#guide-source">Original article <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Terraform Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Terraform Architecture <span aria-hidden="true">↗</span></a><a href="#installation">Installation <span aria-hidden="true">↗</span></a><a href="#hcl">HCL Basics <span aria-hidden="true">↗</span></a><a href="#providers">Providers <span aria-hidden="true">↗</span></a><a href="#resources">Resources <span aria-hidden="true">↗</span></a><a href="#variables">Variables and Outputs <span aria-hidden="true">↗</span></a><a href="#state">State <span aria-hidden="true">↗</span></a><a href="#backends">Remote Backends <span aria-hidden="true">↗</span></a><a href="#modules">Modules <span aria-hidden="true">↗</span></a><a href="#workspaces">Workspaces <span aria-hidden="true">↗</span></a><a href="#lifecycle">Lifecycle <span aria-hidden="true">↗</span></a><a href="#provisioners">Provisioners <span aria-hidden="true">↗</span></a><a href="#ci-cd">CI/CD <span aria-hidden="true">↗</span></a><a href="#security">Security Best Practices <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
- <article class="guide-article-body" aria-label="Technical article content"><div class="guide-pending">
-           <h2 id="guide-source">Published on WordPress</h2>
-           <p>Manage infrastructure with Terraform modules, state, providers and safer deployments.</p>
-           <p>The complete published version is available from the original article.
-              Its full content is added here by the automatic WordPress sync.</p>
-           <a href="https://arkitekts.dk/terraform-enterprise-guide-infrastructure-as-code-modules-and-production-architecture/" target="_blank" rel="noopener noreferrer">READ THE FULL GUIDE ON WORDPRESS <span aria-hidden="true">↗</span></a></div></article>
+ <article class="guide-article-body" aria-label="Technical article content"><section><h2 id="overview">Terraform Overview</h2><p>Terraform is an Infrastructure as Code (IaC) platform used to provision and manage infrastructure through declarative configuration. Instead of manually creating cloud resources, networks, virtual machines, Kubernetes clusters, databases, and DNS records, Terraform describes the desired state in HCL and reconciles infrastructure to match it. Terraform enables repeatable deployments, version control, peer review, automation, and consistent environments.</p><div>Git → Terraform Init → Plan → Review → Apply → Cloud Infrastructure</div></section><section><h2 id="architecture">Terraform Architecture</h2><p>Terraform consists of configuration files, providers, a state file, modules, and remote backends. Providers communicate with cloud APIs while state tracks managed infrastructure. Production environments should use remote state, locking, version control, and automated CI/CD pipelines.</p><pre><code>Developer → Git → CI/CD → terraform init → terraform plan → approval → terraform apply
+                     │
+               Remote Backend (S3/Azure/GCS/Terraform Cloud)</code></pre></section><section>
+<h2 id="installation">Installation</h2><pre><code>terraform version
+terraform init
+terraform validate
+terraform fmt -recursive</code></pre></section><section><h2 id="hcl">HCL Basics</h2><pre><code>terraform {
+  required_version = "&gt;= 1.8"
+}
+
+provider "aws" {
+  region = var.region
+}
+
+resource "aws_s3_bucket" "logs" {
+  bucket = "company-logs-prod"
+}</code></pre></section><section>
+<h2 id="providers">Providers</h2><p>Providers connect Terraform to platforms such as AWS, Azure, Google Cloud, Kubernetes, VMware, GitHub and many more. Pin provider versions to avoid unexpected behavior.</p></section><section>
+<h2 id="resources">Resources</h2><p>Resources are the infrastructure objects Terraform creates and manages.</p><pre><code>resource "aws_instance" "web" {
+  ami = var.ami
+  instance_type = "t3.medium"
+}</code></pre></section><section><h2 id="variables">Variables and Outputs</h2><pre><code>variable "region" {
+ type = string
+}
+output "instance_ip" {
+ value = aws_instance.web.public_ip
+}</code></pre></section><section>
+<h2 id="state">State</h2><p>The state file maps Terraform configuration to real infrastructure. Never edit state manually unless performing a controlled recovery. Protect it because it may contain sensitive information.</p><pre><code>terraform state list
+terraform state show aws_instance.web</code></pre></section><section><h2 id="backends">Remote Backends</h2><p>Use remote backends with state locking in production.</p><pre><code>terraform {
+ backend "s3" {
+  bucket = "terraform-state"
+  key = "prod/network.tfstate"
+  region = "eu-central-1"
+ }
+}</code></pre></section><section>
+<h2 id="modules">Modules</h2><p>Modules package reusable infrastructure. Create separate modules for networking, Kubernetes, IAM, databases, monitoring, and shared services.</p><pre><code>module "network" {
+ source = "./modules/network"
+ cidr = "10.0.0.0/16"
+}</code></pre></section><section>
+<h2 id="workspaces">Workspaces</h2><p>Workspaces separate environments but should not replace good repository structure in large enterprises.</p></section><section>
+<h2 id="lifecycle">Lifecycle</h2><pre><code>lifecycle {
+ prevent_destroy = true
+ create_before_destroy = true
+}</code></pre></section><section>
+<h2 id="provisioners">Provisioners</h2><p>Provisioners exist but should generally be avoided. Prefer cloud-init, configuration management, or Kubernetes manifests after infrastructure provisioning.</p></section><section>
+<h2 id="ci-cd">CI/CD</h2><p>Run terraform fmt, validate and plan in pull requests. Require human approval before apply. Store state remotely and protect credentials with a secrets manager.</p></section><section><h2 id="security">Security Best Practices</h2><ul><li>Use least privilege IAM.</li><li>Protect state files.</li><li>Use remote backends with locking.</li><li>Pin provider versions.</li><li>Store secrets outside Terraform code.</li><li>Review plans before apply.</li></ul></section><section id="performance">
+<h2>Performance</h2><p>Split very large infrastructures into logical stacks and reusable modules. Avoid a single massive state file.</p></section><section id="troubleshooting">
+<h2>Troubleshooting</h2><pre><code>terraform validate
+terraform plan
+terraform graph
+terraform providers
+terraform refresh
+terraform state list</code></pre></section><section id="commands"><h2>Essential Commands</h2><pre><code>terraform init
+terraform plan
+terraform apply
+terraform destroy
+terraform fmt
+terraform validate
+terraform output
+terraform import
+terraform taint
+terraform state list
+terraform workspace list</code></pre></section><section id="takeaways"><h2>Key Takeaways</h2><p>Terraform enables repeatable infrastructure provisioning using declarative code. Success in production depends on remote state, modules, secure pipelines, version control, peer review, state protection, and disciplined change management.</p></section></article>
 </div>
 <section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
 Published articles are mirrored into GitHub Pages.</p>
