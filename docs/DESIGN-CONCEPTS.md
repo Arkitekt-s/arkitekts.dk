@@ -1,6 +1,6 @@
-# Design review — three portfolio directions
+# Design review — four portfolio directions
 
-**Status:** Three public GitHub Pages previews published. They are concept samples, not final WordPress migrations. No DNS change.
+**Status:** Four public GitHub Pages previews published. They are concept samples, not final WordPress migrations. No DNS change.
 
 ## Review gallery
 
@@ -8,6 +8,7 @@
 - **01 Atlas — Precision:** https://arkitekt-s.github.io/arkitekts.dk/concepts/atlas/
 - **02 Nordic — Executive:** https://arkitekt-s.github.io/arkitekts.dk/concepts/nordic/
 - **03 Signal — Mission Control:** https://arkitekt-s.github.io/arkitekts.dk/concepts/signal/
+- **04 Light Journey — White 3D:** https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/
 - **First homepage draft:** https://arkitekt-s.github.io/arkitekts.dk/
 
 ## Design options
@@ -17,6 +18,7 @@
 | **Atlas / Precision** | Experienced engineer who delivers | Navy, icy blue, structured workflow | Most balanced for enterprise / DevOps credibility | Less playful |
 | **Nordic / Executive** | Clear-headed senior engineer | Warm white, deep green, editorial serif | Most distinctive and readable | Less obviously technical |
 | **Signal / Mission Control** | Hands-on systems specialist | Midnight, lime, terminal workflow | Strongest immediate technical feel | Could feel too developer-focused for some audiences |
+| **Light Journey / Interactive 3D** | Practical engineer with a guided story | Warm white, deep blue, scroll-controlled WebGL | Combines readability with immersive engineering process | 3D rendering needs performance and compatibility audits |
 
 ## Content standards
 
