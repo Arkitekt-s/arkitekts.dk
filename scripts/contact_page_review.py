@@ -37,7 +37,7 @@ with sync_playwright() as p:
 
         if page.locator(".hero-subtitle").inner_text().strip()!="Let’s build, collaborate, and solve complex challenges together.":
             failures.append(f"{name}: contact headline wording changed")
-        if page.locator(".navigation a").count()!=4:
+        if page.locator(".navigation a").count()!=3:
             failures.append(f"{name}: navigation incomplete")
         if page.locator("h1").count()!=1:failures.append(f"{name}: missing unique page heading")
         if page.locator('a[href="tel:+4550315137"]').count()<1:
@@ -84,7 +84,7 @@ with sync_playwright() as p:
         if page.locator(".footer-location").inner_text().strip()!="COPENHAGEN · DENMARK":
             failures.append(f"{name}: footer location differs from approved baseline")
         if [a.strip() for a in page.locator(".navigation a").all_text_contents()]!=[
-          "PORTFOLIO","ABOUT","SKILLS","Let's talk"
+          "PROFILE","SKILLS","Let's talk"
         ]:failures.append(f"{name}: navigation labels differ from homepage")
         if w<=760:
             toggle=page.locator("#menu-button")
