@@ -1,0 +1,39 @@
+name: Cinematic frame interaction checks
+on:
+  push:
+    paths:
+      - "concepts/stage-deck-v2/**"
+      - "scripts/cinematic_interaction_review.py"
+      - ".github/workflows/cinema-review.yml"
+  pull_request:
+    paths:
+      - "concepts/stage-deck-v2/**"
+      - "scripts/cinematic_interaction_review.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cinematic-frames:
+    name: Cinematic 3D and globe
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser test tools
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Check JavaScript syntax
+        run: node --check concepts/stage-deck-v2/assets/cinema.js
+      - name: Test four screens and advanced interactions
+        run: python scripts/cinematic_interaction_review.py
+      - name: Save screenshots and test data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-v2-preview-screenshots
+          path: screenshots/stage-deck-v2/
+          if-no-files-found: ignore
+          retention-days: 14
