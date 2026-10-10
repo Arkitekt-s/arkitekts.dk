@@ -17,10 +17,11 @@ The accepted four-frame snapshot is preserved at:
 
 After the final photo of Frame 04, another downward mouse-wheel gesture opens Frame 05.
 
-- A dark near-black scene fades in smoothly from the photo gallery.
+- Frame 04 ends in near-black, and Frame 05 uses the **exact same dark gradient** to make the transition seamless.
 - The same **SOHEIL** header, technical footer and subtle grid lines remain fixed.
 - Left: concise personal invitation, clear real contact email, and GitHub portfolio link.
-- Right: a large glowing **3D point globe**, softly blended into the dark background.
+- Right: a **genuinely transparent 3D point globe**. No solid sphere, outside glow, surrounding shadow or purple lighting.
+- Faint, see-through far-side geographic dots add 3D depth. The dark background stays visible through the globe.
 - Globe rotates slowly on its own (one turn approximately every 7.5 minutes).
 - Drag the globe with mouse or touch to rotate in 3D. Keyboard arrow controls also work when the globe has focus.
 - Dots follow world geography. A highlighted dot and label locate **Copenhagen, Denmark** (55.6761° N, 12.5683° E).
