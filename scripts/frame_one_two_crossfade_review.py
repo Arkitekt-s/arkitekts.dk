@@ -52,7 +52,7 @@ def step(page,n):
 def wait_for(page,expected):
     page.wait_for_function(
        "(n) => Math.abs(Number(document.body.dataset.journeyProgress||0)-n) < .008",
-       expected,timeout=9500
+       arg=expected,timeout=9500
     )
 
 with sync_playwright() as p:
