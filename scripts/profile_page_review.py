@@ -16,7 +16,7 @@ BASE=f"http://127.0.0.1:{server.server_port}"
 SIZES={"small-phone":(320,720),"phone":(390,844),"tablet":(768,1024),"desktop":(1440,900)}
 failures=[]
 records=[]
-EXPECTED_MENU=["PORTFOLIO","ABOUT","SKILLS","Let's talk"]
+EXPECTED_MENU=["PROFILE","SKILLS","Let's talk"]
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
     for name,(w,h) in SIZES.items():
@@ -105,14 +105,14 @@ with sync_playwright() as p:
             if page.locator(selector).inner_text()!=original.locator(selector).inner_text():
                 failures.append(f"{name}: shared chrome differs: {selector}")
         if not original.locator('a[href="../../profile/"]').count():
-            failures.append(f"{name}: homepage ABOUT does not open local Profile")
+            failures.append(f"{name}: homepage PROFILE does not open local Profile")
         original.close()
 
         for route in ("contact","software-skills"):
             sub=context.new_page()
             sub.goto(BASE+f"/{route}/",wait_until="domcontentloaded")
             if not sub.locator('a[href="../profile/"]').count():
-                failures.append(f"{name}: {route} ABOUT is not linked to Profile")
+                failures.append(f"{name}: {route} PROFILE is not linked to Profile")
             sub.close()
 
         if js_errors:failures.append(f"{name}: JS errors {js_errors}")
