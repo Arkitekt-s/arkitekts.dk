@@ -1,0 +1,40 @@
+name: Frame 04 cinematic photo gallery
+on:
+  push:
+    paths:
+      - "concepts/frame-four-gallery/**"
+      - "scripts/frame_four_gallery_review.py"
+      - ".github/workflows/frame-four-gallery.yml"
+  pull_request:
+    paths:
+      - "concepts/frame-four-gallery/**"
+      - "scripts/frame_four_gallery_review.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cinematic-photo-reel:
+    name: Bottom-up shadow and wheel-controlled gallery
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Validate JavaScript syntax
+        run: node --check concepts/frame-four-gallery/assets/journey-four.js
+      - name: Check cinematic shadow, photo wheel, mobile dragging and fixed chrome
+        run: python scripts/frame_four_gallery_review.py
+      - name: Upload screenshots and validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-four-gallery-screenshots
+          path: screenshots/frame-four-gallery/
+          retention-days: 14
+          if-no-files-found: ignore

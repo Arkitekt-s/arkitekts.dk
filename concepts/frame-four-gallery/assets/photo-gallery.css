@@ -1,0 +1,196 @@
+/* Frame 04: cinematic gallery, based on the approved continuous-grid shell.
+   Frames 01–03 use their ORIGINAL shared CSS, JS and locally hosted movie.
+   A bottom-up dark film wipe reveals the horizontal photographic reel.
+*/
+.frame-four-backdrop{
+ position:absolute;inset:0;z-index:20;pointer-events:none;
+ background:
+   radial-gradient(ellipse 53% 51% at 48% 65%,rgba(88,27,109,.22),transparent),
+   linear-gradient(180deg,#100b1c,#160e23 75%,#120b1d);
+ opacity:0;visibility:hidden;will-change:opacity;
+}
+.frame-four-backdrop.is-active{visibility:visible}
+.frame-four-gallery{
+ position:absolute;inset:0;z-index:23;
+ opacity:0;visibility:hidden;overflow:hidden;
+ pointer-events:none;
+ color:#fff;
+}
+.frame-four-gallery.is-visible{visibility:visible;pointer-events:auto}
+.frame-four-curtain{
+ position:absolute;inset:-2px 0;z-index:35;pointer-events:none;
+ transform:translate3d(0,105%,0);will-change:transform;
+ background:linear-gradient(
+  0deg,
+  rgba(13,8,22,.99) 0%,
+  rgba(17,9,29,.98) 56%,
+  rgba(33,16,47,.96) 82%,
+  rgba(60,26,75,.75) 94%,
+  rgba(65,29,77,0) 100%
+ );
+ box-shadow:0 -30px 86px rgba(13,4,22,.55);
+}
+.gallery-kicker{
+ position:absolute;top:12%;left:50%;transform:translate(-50%,20px);
+ opacity:0;white-space:nowrap;z-index:8;
+ font:770 10px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.27em;
+ color:#cbb5da;transition:opacity .7s ease,transform .8s cubic-bezier(.21,.7,.24,1);
+}
+.gallery-kicker span{color:#b760dc;padding:0 9px}
+.frame-four-gallery.is-visible .gallery-kicker{opacity:1;transform:translate(-50%,0)}
+.gallery-viewport{
+ position:absolute;z-index:4;left:0;right:0;top:49%;height:min(49vh,430px);
+ transform:translateY(-50%);overflow:visible;perspective:1400px;
+ touch-action:none;cursor:grab;user-select:none;
+}
+.gallery-viewport.is-dragging{cursor:grabbing}
+.gallery-reel{
+ position:absolute;left:50%;top:50%;display:flex;align-items:center;
+ width:max-content;gap:0;transform:
+ translate3d(calc(-50% + var(--reel-offset,0px) + var(--pointer-nudge,0px)), -50%,0);
+ will-change:transform;
+ transition:transform .62s cubic-bezier(.18,.8,.17,1);
+ transform-style:preserve-3d;
+}
+.gallery-viewport.is-dragging .gallery-reel{transition:none}
+.gallery-photo{
+ margin:0;flex:0 0 clamp(240px,29vw,450px);
+ width:clamp(240px,29vw,450px);
+ height:clamp(180px,23vw,318px);
+ position:relative;isolation:isolate;
+ border:1px solid rgba(239,216,253,.18);
+ box-shadow:0 22px 58px rgba(6,4,16,.65),0 3px 25px rgba(8,5,17,.58);
+ border-radius:2px;overflow:hidden;
+ background:
+ linear-gradient(135deg,#292037,#332542 42%,#16121e);
+ transform:perspective(1100px) rotateY(var(--card-rotate,0deg)) translateZ(var(--card-z,0px)) scale(var(--card-scale,1));
+ filter:brightness(var(--card-brightness,.8)) saturate(var(--card-saturation,.7));
+ opacity:var(--card-opacity,1);
+ transition:transform .65s cubic-bezier(.19,.8,.16,1),filter .6s,opacity .6s;
+ will-change:transform;pointer-events:none;
+}
+.gallery-photo+ .gallery-photo{margin-left:clamp(-44px,-3vw,-18px)}
+.gallery-photo img{
+ display:block;width:100%;height:100%;
+ object-fit:cover;object-position:center center;
+ user-select:none;pointer-events:none;
+}
+.gallery-photo[data-kind="portrait"] img{object-position:center 32%}
+.gallery-photo:after{
+ content:"";position:absolute;inset:45% 0 0;
+ pointer-events:none;
+ background:linear-gradient(to top,rgba(11,8,19,.64),transparent);
+ opacity:.76;
+}
+.gallery-photo figcaption{
+ position:absolute;bottom:15px;left:19px;right:17px;z-index:2;
+ display:flex;justify-content:space-between;align-items:baseline;gap:15px;
+ color:#fff;white-space:nowrap;
+}
+.gallery-photo figcaption span{
+ font:700 10px/1 ui-monospace,Consolas,monospace;
+ letter-spacing:.13em;color:#efe1f7;
+}
+.gallery-photo figcaption strong{
+ font-size:clamp(12px,1.1vw,17px);font-weight:570;letter-spacing:-.02em;
+ overflow:hidden;text-overflow:ellipsis;
+}
+.gallery-counter{
+ position:absolute;z-index:8;bottom:19%;left:50%;
+ transform:translateX(-50%);
+ display:flex;align-items:center;gap:15px;
+ font:740 11px/1 ui-monospace,Consolas,monospace;letter-spacing:.15em;
+ color:#efe3f5;
+}
+.gallery-divider{display:block;height:1px;width:63px;background:rgba(214,160,238,.45)}
+.gallery-controls{
+ position:absolute;z-index:9;right:7%;bottom:14%;
+ display:flex;align-items:center;gap:10px;
+}
+.gallery-controls button{
+ display:grid;place-items:center;
+ width:37px;height:37px;border:1px solid rgba(222,181,241,.46);
+ border-radius:50%;background:#21112f99;color:#f9edfd;
+ font:450 19px/1 Arial,sans-serif;
+}
+.gallery-controls button:hover{background:#8131a0}
+.gallery-controls button:disabled{opacity:.36;cursor:default}
+.gallery-caption{
+ position:absolute;z-index:7;left:6%;bottom:15%;
+ font:710 10px/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.16em;color:#bcacc9;
+ white-space:nowrap;
+}
+.gallery-caption span{color:#a66abd;padding:0 9px}
+.visually-hidden{
+ position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+ overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+/* Keep the approved grid alive through the header, image track and footer. */
+body.frame-four-active .gridlines{opacity:.72}
+body.frame-four-active #pointer-pattern{opacity:0!important}
+body.frame-four-active .wheel-hint{opacity:0!important}
+body.frame-four-active .portal-navigation{z-index:31}
+body.frame-four-active .site-header,body.frame-four-active .site-footer{
+ background:rgba(15,9,25,.34);backdrop-filter:none;-webkit-backdrop-filter:none
+}
+@media(max-width:1000px){
+ .gallery-photo{width:clamp(270px,38vw,450px);flex-basis:clamp(270px,38vw,450px);height:clamp(200px,30vw,315px)}
+ .gallery-controls{right:6%;bottom:14%}
+}
+@media(max-width:760px){
+ .gallery-kicker{top:13%;font-size:9px;letter-spacing:.12em}
+ .gallery-viewport{top:47%;height:43vh}
+ .gallery-photo{
+   width:clamp(240px,69vw,460px);
+   flex-basis:clamp(240px,69vw,460px);
+   height:clamp(205px,47vw,340px);
+ }
+ .gallery-photo+.gallery-photo{margin-left:-23px}
+ .gallery-photo figcaption{left:11px;right:11px;bottom:11px}
+ .gallery-counter{bottom:22%}
+ .gallery-caption{bottom:13%;left:6%;font-size:8px;letter-spacing:.05em}
+ .gallery-controls{bottom:11%;right:6%;gap:7px}
+ .gallery-controls button{width:32px;height:32px}
+}
+@media(max-width:470px){
+ .gallery-viewport{top:47.5%}
+ .gallery-kicker{top:13%;font-size:8px}
+ .gallery-photo{width:74vw;flex-basis:74vw;height:51vw;min-height:185px}
+ .gallery-photo+.gallery-photo{margin-left:-16px}
+ .gallery-counter{bottom:25%;font-size:9px}
+ .gallery-caption{bottom:12.5%;max-width:63%;white-space:normal;line-height:1.6;font-size:8px}
+ .gallery-controls{bottom:11.2%}
+}
+@media(max-height:700px){
+ .gallery-viewport{top:47%}
+ .gallery-photo{height:min(36vh,282px)}
+ .gallery-counter{bottom:19%}
+ .gallery-kicker{top:10%}
+}
+@media(prefers-reduced-motion:reduce){
+ .gallery-reel,.gallery-photo,.gallery-kicker{transition:none!important}
+ .frame-four-curtain{display:none!important}
+}
+
+/* Frame 04 has its own back/next controls. The previous chapter's rail
+   must not overlap photo navigation, especially on narrow phones. */
+body.frame-four-active .portal-navigation{
+ opacity:0!important;
+ visibility:hidden!important;
+ pointer-events:none!important;
+}
+.gallery-back{
+ position:absolute;top:12%;left:6%;z-index:13;
+ padding:9px 12px;border:1px solid rgba(216,180,233,.36);
+ border-radius:999px;background:#21132b83;color:#e4d1ed;
+ font:750 10px/1 ui-monospace,Consolas,monospace;
+ letter-spacing:.1em;cursor:pointer;
+}
+.gallery-back:hover{background:#5d2279;color:#fff}
+@media(max-width:760px){
+ .gallery-back{top:13%;left:5%;font-size:9px;padding:8px}
+}
+@media(max-width:470px){
+ .gallery-back{top:19%;left:6%;font-size:8px}
+}
