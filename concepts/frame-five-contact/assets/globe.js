@@ -234,7 +234,7 @@
   size();
   requestAnimationFrame(update);
   window.soheilGlobe={
-    center:()=>{yaw=initialYaw;pitch=initialPitch;idleResume=performance.now()+3800;},
+    center:(startSpinning=false)=>{yaw=initialYaw;pitch=initialPitch;idleResume=performance.now()+(startSpinning?0:3800);},
     getYaw:()=>yaw,
     getPitch:()=>pitch,
     isReady:()=>loaded,
