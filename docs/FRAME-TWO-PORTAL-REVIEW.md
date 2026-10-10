@@ -18,7 +18,7 @@ This design implements that behavior directly, without changing the existing Fra
 | 80–100% | A subtle dark gradient makes text readable; Frame 02 headline appears one line at a time |
 | Scroll upward | Reverse every step and restore the original three-arch composition |
 
-The video never switches to another asset; it continues playing as the mask grows. This avoids a jarring cut between static photos and moving footage. Mouse parallax still works in the original first frame.
+The three arches grow together, then a synchronized full-screen rendering of the **same** video removes seams. The video footage does not change.
 
 ### Frame 02 editorial direction
 
@@ -32,7 +32,7 @@ This is draft copy to be approved or refined after we see the visual transition.
 
 - The SAME S. brand, SOHEIL, right-hand header navigation, purple grid and footer.
 - Header/footer never move; the movie can expand underneath their translucent backgrounds.
-- Reuse the approved CSS, JS and videos from `concepts/frame-one-live/` and `concepts/frame-one-v3/assets/frame-one.css` **unchanged**.
+- Reuse the approved CSS and videos from `concepts/frame-one-live/` and `concepts/frame-one-v3/assets/frame-one.css` **unchanged**. For reliability, the portal has a small copied version of the approved interaction controller with only its relative media URLs corrected for the new directory. No original approved files are edited.
 - Additional behavior exists only under `concepts/frame-two-portal/`.
 - No proprietary reference-site code, video, shader, asset or screenshot is reused.
 
@@ -46,7 +46,7 @@ GitHub workflow `frame-two-portal.yml` runs Playwright at 320, 390, 768 and 1440
 
 - Approved first-frame appearance and pinned chrome
 - Continuous progress at intermediate wheel positions
-- Full-screen video dimensions at 100%
+- Full-screen video dimensions, one seamless decoded film and continuous playback at 100%
 - Animated and accessible second-frame text
 - Video playback continuity
 - Scrolling upward restores first-frame geometry
