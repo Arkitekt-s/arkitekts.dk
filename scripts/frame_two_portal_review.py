@@ -90,6 +90,17 @@ with sync_playwright() as p:
         }
         if chrome["header"]!=first["header"] or chrome["footer"]!=first["footer"]:
             problems.append(f"{name}: header/footer moved in zoom: {chrome}")
+        # Frame 02 must become ONE seamless movie, not three vertical panels.
+        try:
+            page.wait_for_function(
+                "Number(getComputedStyle(document.getElementById('portal-film')).opacity) > .97",
+                timeout=7000,
+            )
+        except Exception:
+            problems.append(f"{name}: seamless film not visible at full zoom")
+        full_film=page.locator("#portal-film")
+        if not full_film.evaluate("e=>e.readyState>=2"):
+            problems.append(f"{name}: full-viewport film was not decoded")
         page.screenshot(path=str(OUTPUT/f"{name}-04-expanded-movie.png"),animations="allow")
         # Video should continue playing during transition where possible.
         status=page.locator("body").get_attribute("data-video-status")
@@ -97,7 +108,7 @@ with sync_playwright() as p:
             try:
                 page.wait_for_function(
                   "document.querySelector('.arch-video').readyState>=2",timeout=8500)
-                v=page.locator(".arch-video").first
+                v=page.locator("#portal-film")
                 t0=v.evaluate("e=>e.currentTime")
                 page.wait_for_timeout(650)
                 t1=v.evaluate("e=>e.currentTime")
