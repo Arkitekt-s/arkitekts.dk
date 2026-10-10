@@ -35,7 +35,7 @@ with sync_playwright() as p:
 
         if page.locator(".hero-subtitle").inner_text().strip()!="Let’s build, collaborate, and solve complex challenges together.":
             failures.append(f"{name}: contact headline wording changed")
-        if page.locator(".site-nav a").count()!=4:
+        if page.locator(".navigation a").count()!=4:
             failures.append(f"{name}: navigation incomplete")
         if page.locator("h1").count()!=1:failures.append(f"{name}: missing unique page heading")
         if page.locator('a[href="tel:+4550315137"]').count()<1:
@@ -60,9 +60,33 @@ with sync_playwright() as p:
         overflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
         if overflow>2:failures.append(f"{name}: horizontal overflow {overflow}")
 
-        if w<=710:
-            toggle=page.locator("#menu-toggle")
-            if not toggle.is_visible():failures.append(f"{name}: mobile menu toggle missing")
+        # Identical chrome proportions, labels, placement and responsive menu.
+        header=page.locator(".site-header")
+        footer=page.locator(".site-footer")
+        header_rect=header.bounding_box()
+        footer_rect=footer.bounding_box()
+        expected_header=73 if w<=760 else 100
+        expected_footer=65 if w<=760 else 80
+        if header.evaluate("e=>getComputedStyle(e).position")!="fixed":
+            failures.append(f"{name}: shared header is not fixed")
+        if footer.evaluate("e=>getComputedStyle(e).position")!="fixed":
+            failures.append(f"{name}: shared footer is not fixed")
+        if not header_rect or abs(header_rect["height"]-expected_header)>1 or abs(header_rect["y"])>1:
+            failures.append(f"{name}: header differs from baseline {header_rect}")
+        if not footer_rect or abs(footer_rect["height"]-expected_footer)>1 or abs(footer_rect["y"]+footer_rect["height"]-h)>1:
+            failures.append(f"{name}: footer differs from baseline {footer_rect}")
+        if page.locator(".site-name").inner_text().strip()!="S O H E I L":
+            failures.append(f"{name}: fixed wordmark missing")
+        if page.locator(".footer-specialties").inner_text().strip().replace("  "," ")!="LINUX · ANSIBLE · ELASTICSEARCH · KAFKA":
+            failures.append(f"{name}: shared footer specialties changed")
+        if page.locator(".footer-location").inner_text().strip()!="COPENHAGEN · DENMARK":
+            failures.append(f"{name}: footer location differs from approved baseline")
+        if [a.strip() for a in page.locator(".navigation a").all_text_contents()]!=[
+          "PORTFOLIO","ABOUT","TECHNICAL GUIDES","Let's talk"
+        ]:failures.append(f"{name}: navigation labels differ from homepage")
+        if w<=760:
+            toggle=page.locator("#menu-button")
+            if not toggle.is_visible():failures.append(f"{name}: matching mobile menu missing")
             toggle.click()
             if toggle.get_attribute("aria-expanded")!="true":
                 failures.append(f"{name}: mobile menu didn't open")
@@ -70,8 +94,30 @@ with sync_playwright() as p:
             if toggle.get_attribute("aria-expanded")!="false":
                 failures.append(f"{name}: Escape didn't close mobile menu")
         else:
-            if not page.locator("#site-nav").is_visible():
+            if not page.locator("#navigation").is_visible():
                 failures.append(f"{name}: desktop nav not visible")
+        # Let's talk takes the visitor to actual working contact cards.
+        if w<=760:page.locator("#menu-button").click()
+        page.locator('.navigation .contact').click(timeout=5000)
+        page.wait_for_function("location.hash==='#contact-methods'",timeout=5000)
+        page.wait_for_function("document.activeElement?.id==='contact-methods'",timeout=5000)
+        if w<=760 and page.locator("#menu-button").get_attribute("aria-expanded")!="false":
+            failures.append(f"{name}: contact navigation left mobile menu open")
+        # Clipboard JS must actually copy the supplied details.
+        for selector,expected in [
+            ('[data-copy-contact="sohe@arkitekts.dk"]',"sohe@arkitekts.dk"),
+            ('[data-copy-contact="+45 50 31 51 37"]',"+45 50 31 51 37")
+        ]:
+            button=page.locator(selector)
+            if button.count()!=1:failures.append(f"{name}: copy button missing: {expected}")
+            else:
+                button.click(timeout=5000)
+                page.wait_for_function(
+                    "(value)=>[...document.querySelectorAll('[data-copy-contact]')].find(el=>el.dataset.copyContact===value)?.dataset.copied==='true'",
+                    arg=expected,timeout=5000
+                )
+                if expected not in page.locator("#copy-status").inner_text():
+                    failures.append(f"{name}: copy status did not report actual contact")
         page.screenshot(path=str(OUT/f"{name}-contact-top.png"),full_page=False,animations="disabled")
         page.locator(".contact-options").scroll_into_view_if_needed()
         page.wait_for_timeout(300)
@@ -90,6 +136,10 @@ with sync_playwright() as p:
             href=link.evaluate("e=>new URL(e.getAttribute('href'),location.href).pathname")
             if href!="/contact/":failures.append(f"{name}: incorrect Contact destination {href}")
         if homepage_errors:failures.append(f"{name}: homepage JavaScript errors {homepage_errors}")
+        # Compare the shared wording directly with the preserved homepage.
+        for selector in (".site-name",".footer-specialties",".footer-location"):
+            if homepage.locator(selector).inner_text()!=page.locator(selector).inner_text():
+                failures.append(f"{name}: chrome copy differs from approved homepage: {selector}")
 
         # Verify the visible header CTA works, including menu-opening on mobile.
         if w<=760:
