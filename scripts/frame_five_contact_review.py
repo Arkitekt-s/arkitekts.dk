@@ -99,7 +99,15 @@ with sync_playwright() as p:
         back=page.locator("#contact-back").bounding_box()
         reset_button=page.locator("#globe-recenter").bounding_box()
         footer_rect=page.locator(".site-footer").bounding_box()
-        if overlaps(back,title) or overlaps(back,reset_button) or overlaps(back,footer_rect):
+        # An H2 is a full-width block; its box overlaps the top-right Back
+        # even when the real headline glyphs do not. Check painted text.
+        firstline=page.locator(".contact-heading").evaluate("""e=>{
+            const r=document.createRange();
+            r.selectNodeContents(e.firstChild);
+            const b=r.getBoundingClientRect();
+            return {x:b.x,y:b.y,width:b.width,height:b.height};
+        }""")
+        if overlaps(back,firstline) or overlaps(back,reset_button) or overlaps(back,footer_rect):
             errors.append(f"{name}: back control overlaps important content")
         if w<=760 and page.locator(".contact-signoff").is_visible():
             errors.append(f"{name}: mobile footer has duplicate crowded signoff")
