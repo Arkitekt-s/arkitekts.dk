@@ -17,3 +17,26 @@
 @media(max-width:780px){.menu-button{display:flex}.head-row{height:70px}.nav{display:none;position:absolute;top:70px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:#fff;padding:16px 30px 25px;border-bottom:1px solid var(--border);box-shadow:0 22px 40px #153c5b21}.nav.open{display:flex}.nav a{padding:13px 8px;font-size:15px}.nav .nav-cta{text-align:center;margin-top:8px}.hero{padding:70px 0 50px}.hero-grid{grid-template-columns:1fr;gap:0}.hero .desc{max-width:680px}.sculpture{max-width:560px;min-height:420px;margin:auto}.split-heading{grid-template-columns:1fr;gap:20px}.pillars{grid-template-columns:1fr}.pillar h3{margin-top:20px}.journey{padding:80px 0}.journey-layout{grid-template-columns:1fr;gap:20px}.scene-sticky{position:relative;top:0;grid-row:1;min-height:0}.scene-view{min-height:355px}.chapter{min-height:0;padding-block:24px 40px}.chapter:last-child{min-height:0}.project-grid{grid-template-columns:1fr}.article-grid{grid-template-columns:1fr 1fr}.contact-box{grid-template-columns:1fr}.body-layout{grid-template-columns:1fr;gap:30px}.toc{position:static}.section{padding:75px 0}}
 @media(max-width:520px){.shell{width:calc(100% - 36px)}.brand{font-size:21px}.brand small{font-size:8px;letter-spacing:.08em;margin-left:0;padding-left:7px}.brand .brand-symbol{width:30px;height:30px}.preview-ribbon{font-size:9px;letter-spacing:.04em}.hero{padding-top:54px}.hero h1{font-size:clamp(52px,13vw,72px)}.hero .desc{font-size:15px}.hero-meta{gap:14px}.hero-meta span{font-size:9px}.sculpture{min-height:320px}.sculpture .floating-label{padding:9px;font-size:8px}.floating-label.top{right:0}.floating-label.bottom{bottom:7%}.band-row{gap:10px}.band-row span{font-size:10px}.section{padding:65px 0}.section h2{font-size:clamp(38px,10vw,54px)}.intro-statement{font-size:26px}.journey{padding:65px 0}.scene-header{height:57px;padding-inline:17px}.scene-header span{font-size:8px}.scene-view{min-height:285px}.scene-caption{margin-inline:14px;padding:19px;min-height:0}.scene-caption h3{font-size:21px}.scene-controls{padding-inline:13px}.scene-side-pill{top:68px;left:10px;font-size:8px}.chapter{grid-template-columns:38px 1fr;gap:14px}.chapter-marker{width:37px;height:37px;font-size:10px}.chapter-list:before{left:18px}.chapter h3{font-size:29px}.chapter p{font-size:14px}.feature-card .preview-art{height:210px}.feature-body{padding:23px}.feature-body h3{font-size:27px}.article-grid{grid-template-columns:1fr}.contact{padding:65px 0}.contact-box h2{font-size:46px}.page-hero{padding:65px 0}.page-hero h1{font-size:clamp(32px,10vw,49px);overflow-wrap:anywhere}.page-hero p{font-size:15px}.prose pre{padding:15px;font-size:11px}.diagram{padding:16px}.toc{padding:18px}.cta{width:100%}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition-duration:.01ms!important}.sculpture[data-tilt]{transform:none!important}}
+
+/* Phone: keep a compact story scene visible while its chapters scroll. */
+@media(max-width:600px){
+  .journey-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+  .scene-sticky{position:sticky;top:70px;grid-row:1;z-index:25;min-height:0;border-radius:14px;box-shadow:0 10px 25px #18486119}
+  .scene-header{height:37px;padding-inline:13px}
+  .scene-header span{font-size:8px;letter-spacing:.09em}
+  .scene-view{height:148px;min-height:148px}
+  .scene-view .scene-halo{width:38%}
+  .scene-static{width:22%;border-radius:18%}
+  .scene-static span{font-size:21px}
+  .scene-side-pill{display:none}
+  .scene-caption{padding:8px 13px;margin:0 11px 7px;border-radius:9px;min-height:0}
+  .scene-caption .scene-count{font-size:8px}
+  .scene-caption h3{font-size:16px;margin:2px 0;line-height:1.12}
+  .scene-caption p{display:none}
+  .scene-controls{padding:7px 12px;gap:8px}
+  .scene-controls>span{display:none}
+  .scene-controls label{gap:4px;font-size:10px}
+  .scene-controls select,.scene-controls button{font-size:10px;padding:5px}
+  .chapter-list{padding-top:18px}
+  .chapter{scroll-margin-top:390px}
+}
