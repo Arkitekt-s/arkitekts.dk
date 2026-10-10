@@ -228,6 +228,10 @@ def update_project(slug,assets):
     content=path.read_text("utf8")
     # Update only this generated region, preserve existing curated galleries.
     injected=render_media_section(slug,assets)
+    if not injected and START_MARK not in content:
+        # No extra media: leave the original project page byte-for-byte intact.
+        # Prevent recurring commits from adding whitespace each import run.
+        return
     if START_MARK in content:
         content=re.sub(re.escape(START_MARK)+r".*?"+re.escape(END_MARK)+r"\s*","",content,flags=re.S)
     anchor='<nav class="case-chapters" aria-label="On this project page">'
