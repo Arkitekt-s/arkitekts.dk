@@ -93,6 +93,9 @@ with sync_playwright() as p:
         else: failures.append(f"{name}: portrait card has no box")
         if page.locator("#gallery-count").inner_text()!="03":
             failures.append(f"{name}: first gallery card counter should be 03")
+        starting_dark=float(page.locator("body").get_attribute("data-gallery-darkness") or 0)
+        if starting_dark>.015:
+            failures.append(f"{name}: gallery begins too dark ({starting_dark:.3f})")
         page.screenshot(path=str(SHOTS/f"{name}-05-gallery-centered.png"),animations="allow")
 
         # Mouse wheel UP/DOWN maps to horizontal photo movement.
@@ -128,6 +131,35 @@ with sync_playwright() as p:
         new=float(page.locator("body").get_attribute("data-gallery-index") or 0)
         if new<=old+.3:failures.append(f"{name}: next image button ignored ({old}->{new})")
 
+        # The background must fade towards near-black at the end of the reel.
+        # Cards, header and footer must stay visible.
+        for _ in range(7):
+            # The button becomes disabled when its TARGET reaches the end.
+            # Recheck after each animation frame rather than queueing clicks.
+            if not page.locator("#gallery-next").is_enabled():
+                break
+            page.locator("#gallery-next").click(timeout=2000)
+            page.wait_for_timeout(220)
+        page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.98",timeout=6500)
+        last_index=float(page.locator("body").get_attribute("data-gallery-index") or 0)
+        end_dark=float(page.locator("body").get_attribute("data-gallery-darkness") or 0)
+        pseudo_dark=float(page.locator(".frame-four-backdrop").evaluate(
+            "e=>getComputedStyle(e,'::after').opacity"
+        ))
+        if last_index<5.95 or end_dark<.98 or pseudo_dark<.98:
+            failures.append(f"{name}: ending did not fade dark (index {last_index}, darkness {end_dark}, CSS opacity {pseudo_dark})")
+        if page.locator("#gallery-count").inner_text()!="07":
+            failures.append(f"{name}: last photo counter missing")
+        page.screenshot(path=str(SHOTS/f"{name}-07-gallery-dark-ending.png"),animations="allow")
+
+        # Reverse back to a middle photograph: background must lighten again.
+        for _ in range(4):
+            page.locator("#gallery-prev").click()
+        page.wait_for_timeout(850)
+        back_dark=float(page.locator("body").get_attribute("data-gallery-darkness") or 0)
+        if back_dark>.03:
+            failures.append(f"{name}: reversing gallery did not restore purple background ({back_dark})")
+        page.screenshot(path=str(SHOTS/f"{name}-08-gallery-background-restored.png"),animations="allow")
         # The navigation bar and footer grid must never jump.
         after=page.evaluate("""()=>{
             const h=document.querySelector('.site-header').getBoundingClientRect();
@@ -143,10 +175,10 @@ with sync_playwright() as p:
         # External WordPress image may not load in offline previews.
         # Keep image status visible in report, not as a false interaction failure.
         report.append({"screen":name,"width":w,"height":h,"galleryShift":moved,
-                       "galleryReturn":returned,"portraitLoaded":portrait_ok,
+                       "galleryReturn":returned,"endingDarkness":end_dark,"reversedDarkness":back_dark,"portraitLoaded":portrait_ok,
                        "videoReady":page.locator("#portal-film").evaluate("e=>e.readyState>=2"),
                        "errors":errors})
-        print(f"CHECKED {name} {w}x{h}: dark wipe, wheel left/right, drag, gallery buttons; portrait_loaded={portrait_ok}")
+        print(f"CHECKED {name} {w}x{h}: reel + reversible dark end {end_dark:.2f}->{back_dark:.2f}, portrait_loaded={portrait_ok}")
         ctx.close()
     browser.close()
 server.shutdown()
