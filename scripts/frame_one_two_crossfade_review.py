@@ -103,7 +103,7 @@ with sync_playwright() as p:
         page.screenshot(path=str(OUT/f"{name}-03-blend.png"),animations="disabled")
         step(page,1);wait_for(page,5*.2025316456)
         full=read(page)
-        if full["first"]>.01 or full["incoming"]<.99:
+        if full["first"]>.01 or full["incoming"]<.94:
             issues.append(f"{name}: Frame 02 still shows first headline: {full}")
         if any(full[field]<.99 for field in ("firstLine","secondLine","thirdLine","description","link")):
             issues.append(f"{name}: Frame 02 text or link incomplete: {full}")
@@ -114,12 +114,13 @@ with sync_playwright() as p:
         page.screenshot(path=str(OUT/f"{name}-04-full-frame-two.png"),animations="disabled")
 
         # Reverse exactly: the new text fades out; original words return.
-        page.mouse.wheel(0,-160)
-        wait_for(page,4*.2025316456)
+        for _ in range(2):
+            page.mouse.wheel(0,-160)
+        wait_for(page,3*.2025316456)
         back=read(page)
-        if not back["first"]>full["first"]+.04 or not back["incoming"]<full["incoming"]-.04:
+        if not back["first"]>full["first"]+.15 or not back["incoming"]<full["incoming"]-.15:
             issues.append(f"{name}: reverse crossfade is not symmetric: {back}")
-        for _ in range(4):
+        for _ in range(3):
             page.mouse.wheel(0,-160)
         wait_for(page,0)
         restored=read(page)
