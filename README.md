@@ -28,6 +28,21 @@ Six deployed concept previews are available before the WordPress migration. They
 **Not yet verified:** real mobile browser usability, Core Web Vitals and full WordPress content parity.
 **Safety:** All previews intentionally use `noindex,nofollow`. Do not change the domain DNS yet.
 
+
+## New fixed-frame cinematic landing (design review)
+
+**Prototype 07 — Stage Deck** is now available at:
+
+https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck/
+
+The header, footer and grid remain completely fixed. Mouse wheel, touch gestures, arrow keys, and frame markers change only the **center screen** through four scenes: panoramic arches → portrait/photo reel → work/profile navigation → interactive dotted globe/contact. The root homepage has NOT been replaced and DNS is unchanged.
+
+- [Preview the fixed-frame landing](https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck/)
+- [Design requirements and media provenance](docs/STAGE-DECK-REVIEW.md)
+- [Design PR and code review](https://github.com/Arkitekt-s/arkitekts.dk/pull/2)
+
+**Design approval pending:** This prototype is intentionally `noindex,nofollow`. Copy the real portrait and other approved media locally before moving DNS. No other site templates should be redesigned until the owner chooses the fixed-frame design.
+
 ## Progress
 | Step | Status |
 | --- | --- |
