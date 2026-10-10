@@ -257,27 +257,25 @@
       if(!showThird)scatterTen();
     }
     document.body.classList.toggle("frame-three-active",showThird);
-    // 03 → video-only interlude → staircase cover → gallery reveal.
-    // Each opaque vertical column rises from the bottom, left to right.
-    // All columns reach the top before lifting away to show Frame 04.
+    // The photos emerge while the staircase climbs over the outgoing film.
+    // After the wipe, every column is removed from the rendered scene.
+    const staircaseActive=journey>=2.30 && journey<2.83;
+    if(curtain)curtain.style.visibility=staircaseActive?"visible":"hidden";
     curtainPanels.forEach((panel,index)=>{
-      // Hide the entire staircase outside its transition window.
-      // This also prevents corner remnants over the photo carousel.
-      panel.style.visibility=(journey>=2.29 && journey<2.92 && galleryTarget<.01 && galleryPosition<.01)?"visible":"hidden";
-      const lag=index*.015;
-      const rise=smooth(normalize(journey,2.30+lag,2.55+lag));
-      const reveal=smooth(normalize(journey,2.70+lag,2.78+lag));
-      const y=105*(1-rise)-105*reveal;
+      const lag=index*.013;
+      const rise=smooth(normalize(journey,2.30+lag,2.53+lag));
+      const clear=smooth(normalize(journey,2.64+lag,2.70+lag));
+      const y=105*(1-rise)-105*clear;
       panel.style.transform="translate3d(0,"+y.toFixed(2)+"%,0)";
     });
-    // The dark gallery backdrop arrives while the video is fully covered.
-    const cover=smooth(normalize(journey,2.58,2.72));
+    // Start revealing the photo reel during the wipe, not afterwards.
+    const cover=smooth(normalize(journey,2.40,2.60));
     backdrop.style.opacity=String(cover);
-    backdrop.classList.toggle("is-active",journey>2.57);
+    backdrop.classList.toggle("is-active",journey>2.39);
     const leaveFourth=smooth(normalize(journey,3.12,3.80));
-    const galleryOpacity=smooth(normalize(journey,2.57,2.77))*(1-leaveFourth);
+    const galleryOpacity=smooth(normalize(journey,2.40,2.61))*(1-leaveFourth);
     fourth.style.opacity=String(galleryOpacity);
-    const showFourth=journey>2.57 && journey<3.81;
+    const showFourth=journey>2.39 && journey<3.81;
     if(fourthVisible!==showFourth){
       fourthVisible=showFourth;
       fourth.classList.toggle("is-visible",showFourth);
