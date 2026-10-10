@@ -129,3 +129,10 @@ body.frame-three-active .gridlines{opacity:.72}
  .chapter-three.is-visible .twenty-piece{opacity:1;transform:none!important}
  .chapter-three.is-visible .side-statement span{opacity:1;filter:none;transform:none}
 }
+
+/* Keep the original fixed footer unobstructed at every breakpoint.
+   Extra lower text is intentionally omitted: the footer already lists skills. */
+.portal-navigation{bottom:calc(var(--footer-h) + 25px)!important;right:3.4%}
+@media(max-width:760px){
+  .portal-navigation{bottom:calc(var(--footer-h) + 19px)!important;right:5%}
+}
