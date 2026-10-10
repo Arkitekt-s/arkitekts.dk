@@ -134,9 +134,13 @@ with sync_playwright() as p:
         # The background must fade towards near-black at the end of the reel.
         # Cards, header and footer must stay visible.
         for _ in range(7):
-            if page.locator("#gallery-next").is_enabled():
-                page.locator("#gallery-next").click()
-        page.wait_for_timeout(950)
+            # The button becomes disabled when its TARGET reaches the end.
+            # Recheck after each animation frame rather than queueing clicks.
+            if not page.locator("#gallery-next").is_enabled():
+                break
+            page.locator("#gallery-next").click(timeout=2000)
+            page.wait_for_timeout(220)
+        page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.98",timeout=6500)
         last_index=float(page.locator("body").get_attribute("data-gallery-index") or 0)
         end_dark=float(page.locator("body").get_attribute("data-gallery-darkness") or 0)
         pseudo_dark=float(page.locator(".frame-four-backdrop").evaluate(
