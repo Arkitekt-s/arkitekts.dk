@@ -77,18 +77,19 @@ with sync_playwright() as p:
                          ".gallery-kicker","#gallery-back",".gallery-caption","#contact-back"):
             if page.locator(selector).count():
                 errors.append(f"{name}: unwanted content still present: {selector}")
-        # Move through gallery to final photo; same near-black approved ending.
-        for _ in range(7):
-            btn=page.locator("#gallery-next")
-            if not btn.is_enabled():break
-            btn.click(timeout=1800)
-            page.wait_for_timeout(230)
+        # One downward gesture triggers an automatic visual trip through
+        # the remaining photographs, pausing on the dark final picture,
+        # and only THEN crossfading to the contact globe.
+        page.mouse.wheel(0,160)
+        page.wait_for_function("document.body.dataset.galleryAutoExit==='moving'",timeout=4000)
         page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.98",timeout=7000)
         if float(page.locator("body").get_attribute("data-gallery-darkness") or 0)<.98:
             errors.append(f"{name}: last gallery picture did not darken background")
+        if float(page.locator("body").get_attribute("data-journey-progress") or 0)>3.05:
+            errors.append(f"{name}: Frame 05 appeared before last photo")
         page.screenshot(path=str(OUT/f"{name}-04-dark-gallery-end.png"),animations="allow")
-        # Last extra downward wheel gestures now advance into the contact frame.
-        wheel(page,7);wait(page,3.995)
+        page.wait_for_function("document.body.dataset.galleryAutoExit==='complete'",timeout=7000)
+        wait(page,3.995)
         contact=page.locator("#frame-five-contact")
         if contact.get_attribute("aria-hidden")!="false" or not contact.is_visible():
             errors.append(f"{name}: final contact not visible")
@@ -189,6 +190,11 @@ with sync_playwright() as p:
         if float(page.locator("body").get_attribute("data-gallery-index") or 0)<5.7:
             errors.append(f"{name}: returning to the gallery lost the last photo position")
         page.screenshot(path=str(OUT/f"{name}-07-return-gallery.png"),animations="allow")
+        # Manual arrow controls must remain usable after returning.
+        page.locator("#gallery-prev").click(timeout=1800)
+        page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)<5.1",timeout=5000)
+        page.locator("#gallery-next").click(timeout=1800)
+        page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.9",timeout=5000)
         records.append({"screen":name,"size":[w,h],"globeDots":page.evaluate("window.soheilGlobe?.dotCount()"),
                         "firstYaw":before,"autoYaw":after,"overflow":overflow,"jsErrors":crashes})
         print(f"VERIFIED {name} {w}x{h}: five frames, self-hosted 3D globe, Copenhagen, slow rotation, drag, reset, scroll return")
