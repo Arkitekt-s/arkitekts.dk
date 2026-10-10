@@ -89,6 +89,8 @@ with sync_playwright() as p:
         title=page.locator("h1").bounding_box()
         if not title or title["x"]<-4 or title["x"]+title["width"]>w+4:
             failures.append(f"{name}: hero text clipped {title}")
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
+        page.wait_for_timeout(100)
         page.screenshot(path=str(OUT/f"{name}-top.png"),animations="disabled")
 
         if w<=760:
