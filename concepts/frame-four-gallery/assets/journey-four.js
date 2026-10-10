@@ -418,6 +418,9 @@
   if(viewport){
     viewport.addEventListener("pointerdown",event=>{
       if(event.button!==0||position<2.88)return;
+      // Frame 01's unchanged stage handler captures pointerdown globally.
+      // Keep this gallery gesture local, or its capture steals pointermove/up.
+      event.stopPropagation();
       reelDragging=true;downX=event.clientX;downIndex=galleryTarget;
       viewport.classList.add("is-dragging");
       try{viewport.setPointerCapture(event.pointerId);}catch{}
@@ -443,6 +446,8 @@
     };
     viewport.addEventListener("pointerup",endDrag);
     viewport.addEventListener("pointercancel",endDrag);
+    window.addEventListener("pointerup",endDrag,{passive:true});
+    window.addEventListener("blur",endDrag);
     viewport.addEventListener("pointerleave",()=>{
       if(!reelDragging){galleryPointerTarget=0;schedule();}
     });
