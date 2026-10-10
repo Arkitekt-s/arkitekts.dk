@@ -29,6 +29,15 @@ Six deployed concept previews are available before the WordPress migration. They
 **Safety:** All previews intentionally use `noindex,nofollow`. Do not change the domain DNS yet.
 
 
+
+## Cinematic Interaction V2 — new landing prototype
+
+[**Open the interactive landing draft**](https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck-v2/) · [Review PR #3](https://github.com/Arkitekt-s/arkitekts.dk/pull/3) · [Design notes](docs/STAGE-DECK-V2-REVIEW.md)
+
+This is a separate concept. The current homepage and WordPress domain are unchanged. Header and footer stay pinned; wheel/trackpad/swipe move between four frames using zoom-through motion. Additional interactions include press-and-hold perspective, a draggable portrait/server gallery, an illustrative Linux/Ansible terminal, and a draggable/zoomable dotted globe accurately marking Copenhagen at 55.6761° N, 12.5683° E.
+
+The focused browser workflow passed at **320, 390, 768 and 1440px**. Actual hardware, accessibility and performance benchmarks remain to be completed. Images are temporarily served from external sources; these must be transferred before DNS cutover. **Do not apply the visual template across other pages before user approval.**
+
 ## New fixed-frame cinematic landing (design review)
 
 **Prototype 07 — Stage Deck** is now available at:
