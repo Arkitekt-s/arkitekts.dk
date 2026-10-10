@@ -12,6 +12,7 @@ The user supplied three screenshots of the Triptych photo gallery. This is an or
 4. Move the cursor left/right for small parallax. Click/touch and drag for direct navigation.
 5. At the left edge, another upward gesture returns to Frame 03. The persistent chapter navigation also returns to Frame 03 directly.
 6. Arrow buttons and keyboard arrows offer accessible alternatives.
+7. **Dark ending:** When the gallery approaches its final two photos, the atmospheric purple background gradually fades to near-black. The final photo stays visible and centered; the permanent grid/header/footer remain clear. Scrolling back towards earlier photos gradually restores the purple background. No new frame or sudden page cut is added.
 
 ## Images
 
@@ -38,6 +39,6 @@ The site is still served under the free GitHub Pages preview; WordPress and doma
 
 ## Responsive acceptance checks
 
-The test script `scripts/frame_four_gallery_review.py` runs Chromium at 320px, 390px, 768px and 1440px. It checks the original intro, Frame 02, Frame 03, rising shadow wipe, centered portrait card, horizontal response to wheel up/down, drag, gallery buttons, fixed chrome, video decoding, no horizontal browser overflow and JavaScript errors.
+The test script `scripts/frame_four_gallery_review.py` runs Chromium at 320px, 390px, 768px and 1440px. It checks the original intro, Frame 02, Frame 03, rising shadow wipe, centered portrait card, horizontal response to wheel up/down, drag, gallery buttons, progressive near-black background on the last photo, reverse-to-purple movement, fixed chrome, video decoding, no horizontal browser overflow and JavaScript errors.
 
 **Approval required before freezing Frame 04 or migrating to the production domain.**
