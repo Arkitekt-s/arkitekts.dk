@@ -139,3 +139,20 @@ This is still a **draft prototype**, not the selected final site theme. See [des
 
 [Try the new fixed-frame stage deck](https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck/) · [Read the design contract](STAGE-DECK-REVIEW.md)
 
+
+## Milestone 1g — Cinematic interaction V2 (2026-10-10)
+
+- [x] Kept the fixed header, fixed footer, and four-frame template approved as a foundation
+- [x] Added original **zoom-through frame transitions** and intensified pointer-controlled depth
+- [x] Added press-and-hold scene exploration and a draggable photographic reel
+- [x] Added server photography, a Linux/Ansible terminal illustration and engineering-focused deployment visuals
+- [x] Added a draggable **geographic globe** with the real Copenhagen coordinate: 55.6761° N, 12.5683° E
+- [x] Added dedicated pointer/touch globe rotation, zoom by buttons and mouse wheel, keyboard rotation and Copenhagen reset
+- [x] Fixed narrow-phone globe pointer overlap and interactive arch JavaScript errors from initial browser tests
+- [x] Tested 320/390/768/1440px: fixed layout, four frames, mouse parallax, drag gallery, globe rotation and zoom, Copenhagen marker and no JS exceptions
+- [x] Merged [PR #3](https://github.com/Arkitekt-s/arkitekts.dk/pull/3) as an isolated preview; root homepage and WordPress domain remain untouched
+- [ ] Owner approval of [cinematic design V2](https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck-v2/)
+- [ ] Real-device Safari/Android accessibility and performance testing
+- [ ] Self-host media, then migrate source pages and article templates after the design is approved
+
+[Detailed feature review](STAGE-DECK-V2-REVIEW.md) · [Focused interaction test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/cinema-review.yml)
