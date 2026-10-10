@@ -72,6 +72,14 @@ with sync_playwright() as p:
         gallery=page.locator("#frame-four-gallery")
         if gallery.get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 04 photo gallery missing")
+        # Frame 04 must first present photo 01, including its counter.
+        if float(page.locator("body").get_attribute("data-gallery-index") or -1)>0.03:
+            errors.append(f"{name}: gallery does not begin at photo 01")
+        if page.locator("#gallery-count").inner_text().strip()!="01":
+            errors.append(f"{name}: gallery counter does not start at 01")
+        if not page.locator("#gallery-prev").is_disabled():
+            errors.append(f"{name}: gallery previous arrow should start disabled")
+        page.screenshot(path=str(OUT/f"{name}-04-first-photo.png"),animations="allow")
 
         for selector in (".supporting-line",".chapter-kicker",".chapter-footnote",
                          ".gallery-kicker","#gallery-back",".gallery-caption","#contact-back"):
@@ -82,7 +90,11 @@ with sync_playwright() as p:
         # and only THEN crossfading to the contact globe.
         page.mouse.wheel(0,160)
         page.wait_for_function("document.body.dataset.galleryAutoExit==='moving'",timeout=4000)
-        page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.98",timeout=7000)
+        page.wait_for_function("document.body.dataset.galleryAutoPhoto==='04'",timeout=7000)
+        # The gallery is still on-screen halfway through the sequence.
+        if float(page.locator("body").get_attribute("data-journey-progress") or 0)>3.05:
+            errors.append(f"{name}: Frame 05 appeared before photo 04")
+        page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.98",timeout=10000)
         if float(page.locator("body").get_attribute("data-gallery-darkness") or 0)<.98:
             errors.append(f"{name}: last gallery picture did not darken background")
         if float(page.locator("body").get_attribute("data-journey-progress") or 0)>3.05:
