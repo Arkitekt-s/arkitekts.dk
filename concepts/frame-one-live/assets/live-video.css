@@ -1,0 +1,68 @@
+/* Frame 01 — genuinely moving footage, not a CSS-animated photograph.
+   Single continuous mountain shot repeated in three synchronized arch windows.
+   The old mountain photograph remains as the graceful fallback.
+   This is a REVIEW prototype; video currently loads from licensed Coverr CDN.
+ */
+.panorama{--pane-gap:clamp(18px,2.65vw,51px);gap:var(--pane-gap)}
+.arch .scenery{overflow:hidden}
+.arch-video{
+ position:absolute;display:block;top:0;z-index:1;
+ width:calc(300% + var(--pane-gap) + var(--pane-gap));
+ max-width:none;height:100%;
+ object-fit:cover;object-position:center center;
+ opacity:0;visibility:hidden;
+ pointer-events:none;user-select:none;
+ transition:opacity 1.15s ease,visibility 1.15s;
+ filter:saturate(.73) contrast(.98) brightness(.98);
+}
+.arch-one .arch-video{left:0}
+.arch-two .arch-video{left:calc(-100% - var(--pane-gap))}
+.arch-three .arch-video{left:calc(-200% - var(--pane-gap) - var(--pane-gap))}
+.arch-video.is-playing{opacity:1;visibility:visible}
+/* Don't pan three disconnected backgrounds while video provides actual motion. */
+body.video-live .scenery{animation:none}
+body.video-live .light-haze{z-index:2;opacity:.32}
+body.video-live .near-clouds{z-index:3;opacity:.28}
+body.video-live .foreground-shade{z-index:4}
+body.video-live .arch .edge-highlight{z-index:7}
+body.video-live .panorama{filter:drop-shadow(0 24px 50px #120c2380)}
+/* Hover depth still works when footage plays; the movie is not a static image. */
+body.video-live .arch-video{transform:translate3d(var(--film-x,0px),var(--film-y,0px),0) scale(1.04)}
+body.is-holding .arch-video{transform:translate3d(var(--film-x,0px),var(--film-y,0px),0) scale(1.13)}
+.live-status{position:absolute;top:12%;left:3.1%;z-index:14;display:inline-flex;gap:9px;align-items:center;margin:0;padding:6px 10px;border-radius:4px;background:#150c208f;color:#dab0e4;border:1px solid #cc8ef037;font:760 9px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;pointer-events:none}
+.live-status i{width:6px;height:6px;background:#d2b5d7;border-radius:50%;box-shadow:0 0 0 4px #d7b0da1b}
+body.video-live .live-status i{background:#80efcf;box-shadow:0 0 0 4px #80efcf1c}
+body.video-live .live-status{color:#d3f2ed}
+body.video-unavailable .live-status{color:#e5c4e6}
+body.video-unavailable .live-status i{background:#ffbfac}
+body.motion-off .arch-video{transition:none}
+@media(max-width:760px){
+ .panorama{--pane-gap:3.1vw}
+ .live-status{left:5%;top:10.6%;font-size:8px}
+}
+@media(max-width:470px){
+ .panorama{--pane-gap:10px}
+ .live-status{left:5%;top:13%;font-size:7px;letter-spacing:.05em}
+ .arch-video{filter:saturate(.79) contrast(.97)}
+}
+@media(prefers-reduced-motion:reduce){
+ .arch-video{opacity:0!important;visibility:hidden!important}
+ body.video-live .scenery{animation:none}
+}
+
+/* Everything belongs to one continuous frame. The same grid, atmosphere,
+   and pointer-generated patterns extend through translucent header/footer. */
+.site-header,.site-footer{background:rgba(24,10,32,.24);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.gridlines{opacity:.82}
+.pointer-pattern{display:block;position:fixed;inset:0;width:100%;height:100%;z-index:85;pointer-events:none;mix-blend-mode:screen;opacity:.86}
+body.motion-off .pointer-pattern{opacity:0}
+body.video-live .live-status{background:#0f1829b0}
+body.video-unavailable .live-status{background:#2e1639b2}
+body.is-holding .pointer-pattern{opacity:1}
+@media (max-width:760px){
+ .pointer-pattern{opacity:.55}
+ .site-header,.site-footer{background:rgba(25,10,34,.32)}
+}
+@media(prefers-reduced-motion:reduce){
+ .pointer-pattern{display:none}
+}
