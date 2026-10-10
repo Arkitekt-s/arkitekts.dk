@@ -1,0 +1,42 @@
+name: Frame 05 Copenhagen globe and contact review
+on:
+  push:
+    paths:
+      - "concepts/frame-five-contact/**"
+      - "scripts/frame_five_contact_review.py"
+      - ".github/workflows/frame-five-review.yml"
+  pull_request:
+    paths:
+      - "concepts/frame-five-contact/**"
+      - "scripts/frame_five_contact_review.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contact-globe:
+    name: Five scenes, real 3D points, Copenhagen and mouse control
+    runs-on: ubuntu-latest
+    timeout-minutes: 11
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium and Playwright
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Validate JavaScript modules
+        run: |
+          node --check concepts/frame-five-contact/assets/globe.js
+          node --check concepts/frame-five-contact/assets/journey-five.js
+      - name: Test five cinematic frames with geographical globe
+        run: python scripts/frame_five_contact_review.py
+      - name: Store device screenshots and globe test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-five-copenhagen-globe-screenshots
+          path: screenshots/frame-five-contact/
+          retention-days: 14
+          if-no-files-found: ignore
