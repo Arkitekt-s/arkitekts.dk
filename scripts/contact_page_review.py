@@ -84,7 +84,7 @@ with sync_playwright() as p:
         if page.locator(".footer-location").inner_text().strip()!="COPENHAGEN · DENMARK":
             failures.append(f"{name}: footer location differs from approved baseline")
         if [a.strip() for a in page.locator(".navigation a").all_text_contents()]!=[
-          "PORTFOLIO","ABOUT","TECHNICAL GUIDES","Let's talk"
+          "PORTFOLIO","ABOUT","SKILLS","Let's talk"
         ]:failures.append(f"{name}: navigation labels differ from homepage")
         if w<=760:
             toggle=page.locator("#menu-button")
