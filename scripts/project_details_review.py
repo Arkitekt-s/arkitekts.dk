@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Six dedicated project pages: routes, content, working controls, and shared DNA."""
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from threading import Thread
+from playwright.sync_api import sync_playwright
+import json
+
+ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/"screenshots"/"portfolio-details"
+OUT.mkdir(parents=True,exist_ok=True)
+server=ThreadingHTTPServer(("127.0.0.1",0),partial(SimpleHTTPRequestHandler,directory=str(ROOT)))
+Thread(target=server.serve_forever,daemon=True).start()
+BASE=f"http://127.0.0.1:{server.server_port}"
+SIZES={"small-phone":(320,720),"phone":(390,844),"tablet":(768,1024),"desktop":(1440,900)}
+CASES=[
+ ("web-development","Web Development"),
+ ("copenhagen-valuation","Machine Learning-Based Apartment Valuation"),
+ ("full-stack-application","Full-Stack Application"),
+ ("basecamp-response","Basecamp Response Monitor"),
+ ("shopflow-mobile","ShopFlow Mobile"),
+ ("camp-booking","CAMP Booking System")
+]
+MENU=["PORTFOLIO","PROFILE","SKILLS","Let's talk"]
+LINKS=["/portfolio/","/profile/","/software-skills/","/contact/"]
+errors=[]
+report=[]
+
+with sync_playwright() as p:
+    browser=p.chromium.launch(headless=True)
+    for name,(w,h) in SIZES.items():
+        ctx=browser.new_context(viewport={"width":w,"height":h},device_scale_factor=1)
+        ctx.grant_permissions(["clipboard-read","clipboard-write"],origin=BASE)
+        listing=ctx.new_page()
+        listing.goto(BASE+"/portfolio/",wait_until="domcontentloaded")
+        listing.wait_for_function("document.body.dataset.portfolioReady==='true'",timeout=6000)
+        for slug,title in CASES:
+            card=listing.locator("#"+slug)
+            if not card.locator(f'a.project-visual[href="{slug}/"]').count():
+                errors.append(f"{name}: {slug} image is not linked to project page")
+            if not card.locator(f'h3 a[href="{slug}/"]').count():
+                errors.append(f"{name}: {slug} heading not linked to project")
+            if not card.locator(f'a.project-open[href="{slug}/"]').count():
+                errors.append(f"{name}: {slug} main action not linked")
+
+        # Test the actual click from the Portfolio listing into a case study.
+        image_link=listing.locator("#basecamp-response a.project-visual")
+        image_link.click()
+        listing.wait_for_url("**/portfolio/basecamp-response/",timeout=6000)
+        if listing.locator("h1").inner_text().strip(" \n.")!="Basecamp Response Monitor":
+            errors.append(f"{name}: clicking portfolio card reached wrong destination")
+        listing.close()
+
+        for i,(slug,title) in enumerate(CASES):
+            page=ctx.new_page()
+            js_errors=[]
+            page.on("pageerror",lambda e:js_errors.append(str(e)))
+            route=f"/portfolio/{slug}/"
+            response=page.goto(BASE+route,wait_until="domcontentloaded",timeout=25000)
+            if response.status!=200:errors.append(f"{name}: {slug} returned {response.status}")
+            page.wait_for_function("document.body.dataset.caseReady==='true'",timeout=5000)
+            if page.locator("h1").count()!=1:errors.append(f"{name}: {slug} should have one h1")
+            if page.locator("h1").inner_text().replace("\n"," ").rstrip(". ")!=title:
+                errors.append(f"{name}: {slug} has wrong project title")
+            if page.locator(".case-main-paragraph").count()!=2:
+                errors.append(f"{name}: {slug} missing challenge or outcome")
+            if page.locator(".case-steps .case-step").count()!=3:
+                errors.append(f"{name}: {slug} missing original project work steps")
+            if not page.locator(".case-stack li").count():
+                errors.append(f"{name}: {slug} missing technology stack")
+            if page.locator(".case-resource-links a").count()<1:
+                errors.append(f"{name}: {slug} missing original project link")
+            external=page.locator(".case-resource-links a").first.get_attribute("href")
+            if not external.startswith("https://arkitekts.dk/portfolio/"):
+                errors.append(f"{name}: {slug} original project reference missing")
+            if page.locator(".navigation a").all_inner_texts()!=MENU:
+                errors.append(f"{name}: {slug} navigation differs from approved DNA")
+            for n,expected in enumerate(LINKS):
+                dest=page.locator(".navigation a").nth(n).evaluate("el=>new URL(el.href).pathname")
+                if dest!=expected:errors.append(f"{name}: {slug} nav link {n} wrong: {dest}")
+            for sel in (".site-name",".footer-specialties",".footer-location"):
+                if page.locator(sel).count()!=1:
+                    errors.append(f"{name}: {slug} missing shared {sel}")
+            head=page.locator(".site-header").bounding_box()
+            foot=page.locator(".site-footer").bounding_box()
+            header_expected=73 if w<=760 else 100
+            footer_expected=65 if w<=760 else 80
+            if not head or abs(head["y"])>1 or abs(head["height"]-header_expected)>1:
+                errors.append(f"{name}: {slug} header changed {head}")
+            if not foot or abs(foot["y"]+foot["height"]-h)>1 or abs(foot["height"]-footer_expected)>1:
+                errors.append(f"{name}: {slug} footer changed {foot}")
+            overflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
+            if overflow>2:errors.append(f"{name}: {slug} horizontal overflow {overflow}")
+            heading=page.locator("h1").bounding_box()
+            if not heading or heading["x"]<-3 or heading["x"]+heading["width"]>w+3:
+                errors.append(f"{name}: {slug} clipped heading {heading}")
+            if not page.locator(f'a.case-related-next[href="../{CASES[(i+1)%6][0]}/"]').count():
+                errors.append(f"{name}: {slug} next project link missing")
+            if not page.locator(f'a.case-related-prev[href="../{CASES[(i-1)%6][0]}/"]').count():
+                errors.append(f"{name}: {slug} previous project link missing")
+            if not page.locator('a.case-return[href="../"]').count():
+                errors.append(f"{name}: {slug} back to portfolio missing")
+
+            cover=page.locator(".case-cover")
+            cover.scroll_into_view_if_needed()
+            img=cover.locator("img")
+            if slug=="full-stack-application":
+                if not cover.locator(".case-app").count():
+                    errors.append(f"{name}: {slug} conceptual UI absent")
+            else:
+                if img.count()!=1:
+                    errors.append(f"{name}: {slug} missing original screenshot")
+                else:
+                    img.evaluate("e=>e.loading='eager'")
+                    page.wait_for_function(
+                        "()=>document.querySelector('.case-cover img')?.complete",timeout=7000
+                    )
+                    natural=img.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight,src:e.getAttribute('src')})")
+                    if natural["w"]<200 or natural["h"]<200 or not natural["src"].startswith("../assets/"):
+                        errors.append(f"{name}: {slug} local image broken {natural}")
+            page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
+            page.screenshot(path=str(OUT/f"{name}-{slug}-top.png"),animations="disabled")
+
+            if w<=760 and i==0:
+                menu=page.locator("#menu-button")
+                menu.click()
+                if menu.get_attribute("aria-expanded")!="true":
+                    errors.append(f"{name}: {slug} mobile menu fails open")
+                page.keyboard.press("Escape")
+                if menu.get_attribute("aria-expanded")!="false":
+                    errors.append(f"{name}: {slug} mobile menu fails closed")
+
+            if i==0:
+                # Real link copy, not decorative JS.
+                page.locator("#case-copy").click()
+                page.wait_for_function(
+                    "document.querySelector('#case-copy')?.dataset.copied==='true'",timeout=6000
+                )
+                copied=page.evaluate("navigator.clipboard.readText()")
+                if copied!=BASE+route:errors.append(f"{name}: copy project link wrong: {copied}")
+                page.locator('.case-chapters a[href="#approach"]').click()
+                page.wait_for_function("location.hash==='#approach'",timeout=6000)
+                page.wait_for_function("document.activeElement?.id==='approach'",timeout=6000)
+                if page.locator('.case-chapters a[href="#approach"]').get_attribute("aria-current")!="location":
+                    errors.append(f"{name}: active chapter did not update")
+            if js_errors:errors.append(f"{name}: {slug} JavaScript errors {js_errors}")
+            report.append({"device":name,"slug":slug,"overflow":overflow,"jsErrors":js_errors})
+            page.close()
+        print(f"VERIFIED {name} {w}x{h}: all six case pages, full navigation, image and controls")
+        ctx.close()
+
+    # Core writing and original links stay readable without JavaScript.
+    nojs=browser.new_context(viewport={"width":390,"height":844},java_script_enabled=False)
+    for slug,title in CASES:
+        page=nojs.new_page()
+        page.goto(BASE+f"/portfolio/{slug}/",wait_until="domcontentloaded")
+        if page.locator(".case-steps li").count()!=3:
+            errors.append(f"no JS: {slug} loses meaningful content")
+        page.close()
+    nojs.close()
+    browser.close()
+server.shutdown()
+(OUT/"report.json").write_text(json.dumps({"results":report,"errors":errors},indent=2))
+if errors:raise SystemExit("\n".join("FAIL "+e for e in errors))
+print("PASS: six standalone project pages, links, copy, mobile and content.")
