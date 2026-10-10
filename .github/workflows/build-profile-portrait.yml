@@ -1,0 +1,42 @@
+name: Prepare transparent Profile portrait
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/build_profile_portrait.py"
+      - ".github/workflows/build-profile-portrait.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cutout:
+    name: Remove fake checkerboard from portrait
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out PR branch for portrait asset
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare local one-time cutout
+        run: |
+          python -m pip install pillow numpy opencv-python-headless
+          python scripts/build_profile_portrait.py
+      - name: Save transparent asset in this PR
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/assets/soheil-cutout.webp
+          if git diff --cached --quiet; then
+            echo "Portrait asset already matches."
+          else
+            git commit -m "Generate actual transparent portrait asset"
+            git push origin HEAD:${{ github.head_ref }}
+          fi

@@ -44,8 +44,37 @@ with sync_playwright() as p:
         ):
             if exact not in page.locator("main").inner_text():
                 failures.append(f"{name}: missing supplied profile content: {exact}")
-        if page.locator(".profile-portrait img").get_attribute("src")!="https://arkitekts.dk/wp-content/uploads/2026/07/soheil.transparent-e1783081143381.png":
-            failures.append(f"{name}: user portrait URL was changed")
+        image=page.locator(".profile-portrait img")
+        if image.get_attribute("src")!="assets/soheil-cutout.webp":
+            failures.append(f"{name}: Profile must use the local transparent cutout")
+        page.wait_for_function(
+            "document.querySelector('.profile-portrait img')?.complete",
+            timeout=5000
+        )
+        image_data=image.evaluate("""img=>{
+            const c=document.createElement('canvas');
+            c.width=img.naturalWidth;c.height=img.naturalHeight;
+            const ctx=c.getContext('2d',{willReadFrequently:true});
+            ctx.drawImage(img,0,0);
+            const a=(x,y)=>ctx.getImageData(x,y,1,1).data[3];
+            return {w:c.width,h:c.height,topLeft:a(0,0),
+              topRight:a(c.width-1,0),
+              center:a(Math.floor(c.width*.5),Math.floor(c.height*.55))};
+        }""")
+        if image_data["w"]<400 or image_data["h"]<300:
+            failures.append(f"{name}: new portrait unavailable: {image_data}")
+        if image_data["topLeft"]>30 or image_data["topRight"]>30:
+            failures.append(f"{name}: checkerboard was not removed: {image_data}")
+        if image_data["center"]<200:
+            failures.append(f"{name}: subject was erased from portrait: {image_data}")
+        portrait_style=page.locator(".profile-portrait").evaluate(
+            "el=>({overflow:getComputedStyle(el).overflow,opacity:getComputedStyle(el).opacity})"
+        )
+        if portrait_style["overflow"]!="visible":
+            failures.append(f"{name}: portrait still crops the subject")
+        if w<=760 and float(portrait_style["opacity"])<.95:
+            failures.append(f"{name}: mobile portrait is too faint")
+
         if page.locator(".education-logo-wrap img").count()!=1:
             failures.append(f"{name}: education school logo missing")
         if page.locator('a[href="https://studieordninger.kea.dk/2025/36/225"]').count()!=1:
@@ -95,6 +124,10 @@ with sync_playwright() as p:
             failures.append(f"{name}: bright background missing")
 
         page.screenshot(path=str(OUT/f"{name}-hero.png"),animations="disabled")
+        # Verify the new cutout when it appears further down on small screens.
+        page.locator(".profile-portrait").scroll_into_view_if_needed()
+        page.screenshot(path=str(OUT/f"{name}-portrait.png"),animations="disabled")
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         if w<=760:
             menu=page.locator("#menu-button")
             menu.click()
