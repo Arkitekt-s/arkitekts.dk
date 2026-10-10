@@ -1,0 +1,40 @@
+name: Frame 03 interactive number review
+on:
+  push:
+    paths:
+      - "concepts/frame-three-journey/**"
+      - "scripts/frame_three_journey_review.py"
+      - ".github/workflows/frame-three-review.yml"
+  pull_request:
+    paths:
+      - "concepts/frame-three-journey/**"
+      - "scripts/frame_three_journey_review.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cinematic-number:
+    name: Three frames and reactive reassembling 20
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser testing dependencies
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Validate JavaScript syntax
+        run: node --check concepts/frame-three-journey/assets/journey.js
+      - name: Test full scrolling journey and number interaction
+        run: python scripts/frame_three_journey_review.py
+      - name: Store actual screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-three-interactive-20-screenshots
+          path: screenshots/frame-three-journey/
+          if-no-files-found: ignore
+          retention-days: 14
