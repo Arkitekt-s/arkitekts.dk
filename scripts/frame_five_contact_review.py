@@ -57,6 +57,10 @@ with sync_playwright() as p:
         if any(value.strip()!="10" for value in pieces.locator("text").all_text_contents()):
             errors.append(f"{name}: number is not 10")
         first=pieces.first
+        # The pointer may already be inside the hotspot after scrolling
+        # into Frame 03. Move outside to inspect the true resting state.
+        page.mouse.move(1,1)
+        page.wait_for_timeout(50)
         scatter=first.evaluate("e=>parseFloat(e.style.getPropertyValue('--offset-x'))")
         ten.hover(force=True)
         assembled=first.evaluate("e=>parseFloat(e.style.getPropertyValue('--offset-x'))")
