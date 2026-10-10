@@ -72,6 +72,23 @@ with sync_playwright() as p:
             failures.append(f"{label}: right copy wrong")
         if not film.evaluate("e=>e.readyState>=2"):
             failures.append(f"{label}: moving film stopped or vanished")
+        # Central '20' must start assembled, fixed and fully visible.
+        # No automatic entrance animation or global mouse-grid movement.
+        neutral=page.locator(".twenty-piece").evaluate_all("""elements=>elements.map(e=>({
+            animation:getComputedStyle(e).animationName,
+            x:parseFloat(e.style.getPropertyValue('--offset-x'))||0,
+            y:parseFloat(e.style.getPropertyValue('--offset-y'))||0,
+            angle:parseFloat(e.style.getPropertyValue('--angle'))||0
+        }))""")
+        if any(p["animation"]!="none" for p in neutral):
+            failures.append(f"{label}: automatic animation still changes '20' on scene entry: {neutral}")
+        if any(abs(p["x"])>.001 or abs(p["y"])>.001 or abs(p["angle"])>.001 for p in neutral):
+            failures.append(f"{label}: 20 is not neutral before mouse enters: {neutral}")
+        if page.locator("#twenty-hotspot").get_attribute("data-reacting")=="true":
+            failures.append(f"{label}: number reacted without a mouse entering")
+        pattern_opacity=page.locator("#pointer-pattern").evaluate("e=>getComputedStyle(e).opacity")
+        if pattern_opacity!="0":
+            failures.append(f"{label}: global mouse patterns still visible in Frame 03 ({pattern_opacity})")
         page.screenshot(path=str(OUT/f"{label}-03-interactive-number.png"),animations="allow")
 
         # Only the numeral responds to pointer proximity.
