@@ -28,7 +28,7 @@
 }
 .frame-four-gallery.is-visible{visibility:visible;pointer-events:auto}
 .frame-four-curtain{
- position:absolute;inset:-2px 0;z-index:35;pointer-events:none;
+ position:absolute;inset:-2px 0;z-index:22;pointer-events:none;
  overflow:hidden;
 }
 .frame-four-curtain-panel{
