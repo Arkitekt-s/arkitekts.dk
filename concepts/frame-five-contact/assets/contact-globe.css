@@ -226,3 +226,27 @@ html body.frame-one.frame-five-active .site-footer {
   box-shadow: none !important;
   border-color: transparent !important;
 }
+
+/* Minimal left-edge cue for scrolling through the cinematic journey. */
+.side-scroll-cue{
+ position:absolute;left:clamp(12px,1.35vw,24px);top:50%;
+ transform:translateY(-50%);z-index:90;pointer-events:none;
+ display:flex;flex-direction:column;align-items:center;gap:12px;
+ color:rgba(255,255,255,.88);
+ transition:opacity .35s ease,visibility .35s ease;
+}
+.side-scroll-cue span{
+ writing-mode:vertical-rl;transform:rotate(180deg);
+ font:750 9px/1.2 ui-monospace,Consolas,monospace;
+ letter-spacing:.24em;
+}
+.side-scroll-cue i{
+ display:block;width:1px;height:65px;
+ background:linear-gradient(to bottom,rgba(255,255,255,.75),rgba(255,255,255,.12));
+ transform-origin:top;animation:side-scroll-pulse 2s ease-in-out infinite;
+}
+.side-scroll-cue b{font:400 20px/1 Arial,sans-serif;}
+@keyframes side-scroll-pulse{0%,100%{opacity:.35;transform:scaleY(.65)}50%{opacity:1;transform:scaleY(1)}}
+body.frame-five-active .side-scroll-cue{opacity:0;visibility:hidden}
+@media(max-width:760px){.side-scroll-cue{left:9px;gap:8px}.side-scroll-cue i{height:42px}.side-scroll-cue span{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.side-scroll-cue i{animation:none}}
