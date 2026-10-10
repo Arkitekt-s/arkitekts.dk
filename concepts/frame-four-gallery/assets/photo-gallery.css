@@ -10,6 +10,16 @@
  opacity:0;visibility:hidden;will-change:opacity;
 }
 .frame-four-backdrop.is-active{visibility:visible}
+/* Near the last photographs, the atmospheric purple fades to deep charcoal.
+   This is the BACKGROUND only: the photos, grid and fixed chrome remain clear.
+   JavaScript updates the intensity from the actual horizontal reel position. */
+.frame-four-backdrop::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(180deg,#09080e 0%,#07070c 54%,#050509 100%);
+ opacity:var(--gallery-end-darkness,0);
+ will-change:opacity;
+}
+
 .frame-four-gallery{
  position:absolute;inset:0;z-index:23;
  opacity:0;visibility:hidden;overflow:hidden;
