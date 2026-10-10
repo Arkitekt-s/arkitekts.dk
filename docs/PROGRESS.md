@@ -280,3 +280,23 @@ Do not modify either approved concept folder, shared frame styles, or video asse
 [Frame 03 preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-three-journey/) · [Design review](FRAME-THREE-REVIEW.md) · [Automated interaction checks](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-three-review.yml)
 
 No changes to the approved two-frame assets, WordPress or DNS. Do not start Frame 04 until the user approves Frame 03.
+
+## Milestone 1o — Frame 04 cinematic photo gallery (2026-10-10)
+
+- [x] Built a separate [four-frame design preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/) without editing approved Frames 01–03
+- [x] Frame 03 transitions into Frame 04 using a **dark shadow wipe rising bottom to top**
+- [x] Created a depth-layered horizontal photo reel based on the supplied design reference
+- [x] Used the original publicly available Soheil portrait, initially centered in the gallery
+- [x] Added six **clearly temporary** Unsplash placeholders for professional/personal imagery, to be replaced later
+- [x] **Mouse-wheel up/down** moves photos horizontally while the page and header/footer remain stationary
+- [x] Added subtle pointer parallax, drag/swipe, gallery arrow buttons, keyboard alternatives, a Frame 03 back control
+- [x] Kept the shared grid uninterrupted and fixed navigation consistent; corrected mobile button overlap
+- [x] Fixed inherited pointer-capture conflict with original Frame 01 motion handler
+- [x] Passed Chromium checks at 320, 390, 768 and 1440px for wipe, gallery centering, horizontal scroll in both directions, drag, buttons, fixed chrome and JS
+- [x] Merged [PR #12](https://github.com/Arkitekt-s/arkitekts.dk/pull/12) as **isolated preview**; original baselines unchanged
+- [ ] User approves Frame 04 and selects final photos
+- [ ] Move approved photos to locally hosted assets; Safari/iPhone/Android, performance and accessibility audits
+- [ ] Freeze Frame 04 only after approval; no WordPress or DNS changes until complete migration
+
+[Frame 04 interactive demo](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/) · [Design and media sources](FRAME-FOUR-GALLERY-REVIEW.md) · [Browser test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-four-gallery.yml)
+
