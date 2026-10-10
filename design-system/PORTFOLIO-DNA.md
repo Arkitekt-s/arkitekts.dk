@@ -84,3 +84,18 @@ Contact page is `noindex,nofollow` while it is a design preview.
 
 Change only the requested page and its direct links; avoid editing approved frame animation logic.
 Use branch / PR / browser checks before merging and deploying.
+
+
+## Original WordPress Portfolio media archive
+
+The six published project pages on `arkitekts.dk` are the source of truth.
+`scripts/archive_portfolio_media.py` downloads original photos and public PDFs,
+stores optimized image copies and unchanged PDFs below `portfolio/assets/original/`,
+and generates `portfolio/media-manifest.json` with per-project source links.
+
+Generated `Original project files` galleries sit beside the existing hand-curated
+images; they do not replace previous content. CAMP now includes ten original
+screenshots and the complete ten-page research-group PDF. The original document
+can be read or downloaded directly without relying on WordPress. A Full-Stack
+application screenshot was also restored. Company, school and software logos
+are intentionally excluded from the photo galleries.
