@@ -25,7 +25,7 @@ with sync_playwright() as p:
     for device,(width,height) in widths.items():
         page=browser.new_page(viewport={"width":width,"height":height},device_scale_factor=1)
         errors=[]
-        page.on("pageerror",lambda error:errors.append(str(error)))
+        page.on("pageerror",lambda error:errors.append(str(error) + " STACK: " + str(getattr(error,"stack",""))))
         response=page.goto(URL,wait_until="domcontentloaded",timeout=30000)
         page.locator(".story-panel.active").wait_for()
         if response.status != 200:
