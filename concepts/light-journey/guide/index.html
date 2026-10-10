@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f9f8"><meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Preview of a consistent, readable technical guide template for Kafka, Logstash and Elasticsearch.">
+<title>Kafka to Elasticsearch — Technical Guide Template | Soheil</title>
+<link rel="icon" type="image/svg+xml" href="../../../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/experience.css"><script defer src="../assets/experience.js"></script></head>
+<body><a class="skip-link" href="#content">Skip to main content</a>
+<div class="preview-ribbon">DESIGN PROTOTYPE · TECHNICAL GUIDE TEMPLATE · <a href="../">BACK TO 3D HOMEPAGE</a></div>
+<header class="header"><div class="shell head-row">
+<a href="../" class="brand" aria-label="Soheil homepage"><span class="brand-symbol">S.</span><span>SOHEIL</span><small>ENGINEERING</small></a>
+<button class="menu-button" id="menu-button" aria-label="Open navigation" aria-expanded="false" aria-controls="main-navigation"><span></span><span></span><span></span></button>
+<nav class="nav" id="main-navigation" aria-label="Main navigation"><a href="../#about">About</a><a href="../#journey">My approach</a><a href="../#work">Work</a><a href="../#insights" aria-current="page">Technical guides</a><a href="../#contact" class="nav-cta">Let's connect ↗</a></nav></div><div class="progress-strip" aria-hidden="true"></div></header>
+<main id="content">
+<section class="page-hero"><div class="shell"><div class="crumbs"><a href="../">Home</a><span>/</span><a href="../#insights">Technical guides</a><span>/</span><span>Example guide</span></div>
+<p class="eyebrow" style="margin-top:42px">TECHNICAL ARTICLE / TEMPLATE PREVIEW</p>
+<h1>From Kafka<br>to Elasticsearch.</h1>
+<p>An example of how technical content will look: clear explanations, architecture diagrams, safe code samples and practical checks, all using the same website design.</p>
+<div class="capabilities" style="margin-top:27px"><span>DATA PIPELINES</span><span>LOGSTASH</span><span>SEARCH</span><span>OPERATIONS</span></div></div></section>
+<section class="section"><div class="shell body-layout">
+<aside class="toc"><strong>IN THIS GUIDE</strong><a href="#overview">Overview</a><a href="#architecture">Architecture</a><a href="#concepts">Core concepts</a><a href="#commands">Useful checks</a><a href="#mistakes">Common mistakes</a><a href="#takeaways">Key takeaways</a></aside>
+<article class="prose">
+<h2 id="overview">Overview</h2>
+<p>A typical pipeline reads events from a Kafka topic, processes them in Logstash and indexes the output into Elasticsearch. Clear ownership and health checks matter at every point.</p>
+<div class="callout">This is a <strong>design sample</strong>, not a complete production deployment tutorial. Existing WordPress guides will be migrated and checked for technical accuracy before publication.</div>
+<h2 id="architecture">Architecture</h2>
+<div class="diagram" aria-label="Ingestion diagram"><span>Producer</span><b>→</b><span>Kafka topic</span><b>→</b><span>Logstash</span><b>→</b><span>Elasticsearch</span></div>
+<p>Consumers in Logstash use a configured group and offsets. Elasticsearch receives the processed documents through the output configuration.</p>
+<h2 id="concepts">Core concepts</h2>
+<p><strong>Kafka:</strong> Buffers and distributes events within topics.</p>
+<p><strong>Logstash:</strong> Consumes events, optionally transforms them, and sends them to one or more destinations.</p>
+<p><strong>Elasticsearch:</strong> Stores documents and makes them searchable. Index naming, mappings and shard sizing influence operations.</p>
+<h2 id="commands">Useful verification checks</h2>
+<p>For a properly configured Elasticsearch endpoint, retrieve the cluster health information with an authenticated client. Use your organization's certificate and access settings.</p>
+<button class="copy-code" type="button" data-copy-target="sample-health">Copy example command</button>
+<pre><code id="sample-health">curl --fail --silent --show-error \
+  --cacert /path/to/trusted-ca.pem \
+  -u "$ES_USER:$ES_PASSWORD" \
+  "https://elasticsearch.example.invalid:9200/_cluster/health?pretty"</code></pre>
+<p>Never paste production secrets into a guide or Git repository. Environment-specific authentication is intentionally omitted from this sample.</p>
+<h2 id="mistakes">Common mistakes</h2>
+<p>Successful connections do not guarantee documents are reaching the expected index. Verify topic names, access permissions, consumer state, filters and Elasticsearch output.</p>
+<h2 id="takeaways">Key takeaways</h2>
+<p>Trace the flow from producer to destination. Check logs and state at every boundary, and make changes through reviewed configuration.</p>
+<p><a href="../case-study/">See how case studies use the same template →</a></p>
+</article></div></section>
+<section class="contact"><div class="shell contact-box"><div><p class="section-label">NEXT / PRACTICAL ENGINEERING</p><h2>Clarity in every detail.</h2><p>The goal is consistency across every article, from the first paragraph through the final technical example.</p></div><a class="cta blue" href="../case-study/">Case study layout ↗</a></div></section>
+</main><footer class="footer"><div class="shell footer-row"><strong>SOHEIL.</strong><span>© <span data-year>2026</span> Soheil Fattahieh</span><div class="footer-links"><a href="../">Homepage</a><a href="../case-study/">Case study</a><a href="https://github.com/Arkitekt-s/arkitekts.dk">GitHub</a></div></div></footer>
+</body></html>
