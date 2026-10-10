@@ -257,46 +257,32 @@
       if(!showThird)scatterTen();
     }
     document.body.classList.toggle("frame-three-active",showThird);
-    // The photos emerge while the staircase climbs over the outgoing film.
-    // After the wipe, every column is removed from the rendered scene.
-    const staircaseActive=journey>=2.30 && journey<2.83;
-    if(curtain)curtain.style.visibility=staircaseActive?"visible":"hidden";
-    curtainPanels.forEach((panel,index)=>{
-      const lag=index*.013;
-      const rise=smooth(normalize(journey,2.30+lag,2.53+lag));
-      const clear=smooth(normalize(journey,2.64+lag,2.70+lag));
-      const y=105*(1-rise)-105*clear;
-      panel.style.transform="translate3d(0,"+y.toFixed(2)+"%,0)";
-    });
-    // Start revealing the photo reel during the wipe, not afterwards.
-    const cover=smooth(normalize(journey,2.40,2.60));
-    backdrop.style.opacity=String(cover);
-    backdrop.classList.toggle("is-active",journey>2.39);
-    const leaveFourth=smooth(normalize(journey,3.12,3.80));
-    const galleryOpacity=smooth(normalize(journey,2.40,2.61))*(1-leaveFourth);
-    fourth.style.opacity=String(galleryOpacity);
-    // Reveal the first photo strictly INSIDE the staircase silhouette.
-    // Every step follows the same panel's upward edge; no rectangular
-    // reveal can expose a photo in the uncovered right-hand video area.
-    if(journey>=2.30 && journey<2.77){
+    // One staircase mask reveals both the gallery and its background.
+    // There is no separate dark curtain over the photographs.
+    if(curtain)curtain.style.display="none";
+    const stairStart=2.30,stairEnd=2.70;
+    let revealMask="none";
+    if(journey<stairStart){
+      revealMask="inset(100% 0 0 0)";
+    }else if(journey<stairEnd){
       const points=["0% 100%"];
       for(let i=0;i<10;i++){
-        const lag=i*.013;
-        const rise=smooth(normalize(journey,2.30+lag,2.53+lag));
-        const finish=smooth(normalize(journey,2.64,2.77));
-        const top=(105*(1-rise)*(1-finish));
-        const y=Math.min(100,Math.max(0,top)).toFixed(3)+"%";
-        const left=(i*10)+"%",right=((i+1)*10)+"%";
-        points.push(left+" "+y,right+" "+y);
+        const rise=smooth(normalize(journey,stairStart+i*.015,stairEnd-.135+i*.015));
+        const top=(100*(1-rise)).toFixed(3)+"%";
+        points.push((i*10)+"% "+top,((i+1)*10)+"% "+top);
       }
       points.push("100% 100%");
-      fourth.style.clipPath="polygon("+points.join(",")+")";
-    }else{
-      fourth.style.clipPath=journey<2.30?"inset(100% 0 0 0)":"none";
+      revealMask="polygon("+points.join(",")+")";
     }
-    const reelReady=journey>=2.77;
+    backdrop.style.clipPath=revealMask;
+    backdrop.style.opacity=journey>=stairStart?"1":"0";
+    backdrop.classList.toggle("is-active",journey>=stairStart);
+    const leaveFourth=smooth(normalize(journey,3.12,3.80));
+    fourth.style.opacity=String(1-leaveFourth);
+    fourth.style.clipPath=revealMask;
+    const reelReady=journey>=stairEnd;
     fourth.classList.toggle("gallery-reveal-complete",reelReady);
-    const showFourth=journey>2.39 && journey<3.81;
+    const showFourth=journey>=stairStart && journey<3.81;
     if(fourthVisible!==showFourth){
       fourthVisible=showFourth;
       fourth.classList.toggle("is-visible",showFourth);
