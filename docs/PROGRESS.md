@@ -260,3 +260,23 @@ The saved approved Frame 01 snapshot is unchanged; these adjustments belong to t
 **Current approved experience:** https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/
 
 Do not modify either approved concept folder, shared frame styles, or video assets until the user explicitly asks. The public WordPress website and DNS remain unchanged.
+
+## Milestone 1n — Frame 03 interactive number (2026-10-10)
+
+- [x] Built a separate [three-frame cinematic preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-three-journey/) without changing the two-frame approved baseline
+- [x] Kept the exact moving mountain video, continuous vertical grid, fixed header and footer
+- [x] Frame 02 story fades out; Frame 03 enters with **BUILDING RELIABLE — 20 — SYSTEMS THAT LAST**
+- [x] Created an original SVG number 20 split into nine independently animated fragments
+- [x] Pointer approach scatters the number; leaving restores the exact original arrangement
+- [x] Added touch/click and keyboard activation for the same interaction
+- [x] Added reverse scrolling through Frame 03 → Frame 02 → Frame 01
+- [x] Removed redundant skills text and moved the frame controls clear of the mobile footer
+- [x] Passed four Playwright browser tests (320/390/768/1440), checking film, reactions, reassembly, reverse scrolling and fixed chrome
+- [x] [PR #10](https://github.com/Arkitekt-s/arkitekts.dk/pull/10) merged as an isolated new concept
+- [ ] **User approval of Frame 03** before freezing it as a baseline
+- [ ] Confirm whether **20** should remain a design motif or represent a specific factual message
+- [ ] Real iPhone/Android and performance/accessibility checks
+
+[Frame 03 preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-three-journey/) · [Design review](FRAME-THREE-REVIEW.md) · [Automated interaction checks](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-three-review.yml)
+
+No changes to the approved two-frame assets, WordPress or DNS. Do not start Frame 04 until the user approves Frame 03.
