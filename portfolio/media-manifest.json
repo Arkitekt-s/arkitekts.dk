@@ -1,0 +1,141 @@
+{
+  "source": "https://arkitekts.dk",
+  "note": "Original public WordPress portfolio media backed up inside GitHub.",
+  "projects": {
+    "web-development": {
+      "source_page": "https://arkitekts.dk/portfolio/wordpress-environmental-engineering-innovation/",
+      "files": []
+    },
+    "copenhagen-valuation": {
+      "source_page": "https://arkitekts.dk/portfolio/copenhagen-amager-accommodation-price-prediction/",
+      "files": []
+    },
+    "full-stack-application": {
+      "source_page": "https://arkitekts.dk/portfolio/spring-boot-web-application-development-project/",
+      "files": [
+        {
+          "filename": "web3-82e32af.webp",
+          "path": "assets/original/full-stack-application/web3-82e32af.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2022/04/web3-830x498.png",
+          "caption": "web3-830x498",
+          "kind": "image",
+          "size_bytes": 81010
+        }
+      ]
+    },
+    "basecamp-response": {
+      "source_page": "https://arkitekts.dk/portfolio/basecamp-customer-response-monitor/",
+      "files": []
+    },
+    "shopflow-mobile": {
+      "source_page": "https://arkitekts.dk/portfolio/react-native-shopping-app-development/",
+      "files": []
+    },
+    "camp-booking": {
+      "source_page": "https://arkitekts.dk/portfolio/university-copenhagen-seminar-booking-system-development/",
+      "files": [
+        {
+          "filename": "1-3b76f06.webp",
+          "path": "assets/original/camp-booking/1-3b76f06.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/1.png",
+          "caption": "1",
+          "kind": "image",
+          "size_bytes": 108870
+        },
+        {
+          "filename": "2-2-0343668.webp",
+          "path": "assets/original/camp-booking/2-2-0343668.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/2-2.png",
+          "caption": "2-2",
+          "kind": "image",
+          "size_bytes": 118664
+        },
+        {
+          "filename": "3-90d637d.webp",
+          "path": "assets/original/camp-booking/3-90d637d.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/3.png",
+          "caption": "3",
+          "kind": "image",
+          "size_bytes": 111786
+        },
+        {
+          "filename": "4-6a34f8e.webp",
+          "path": "assets/original/camp-booking/4-6a34f8e.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/4.png",
+          "caption": "4",
+          "kind": "image",
+          "size_bytes": 78502
+        },
+        {
+          "filename": "5-f8406eb.webp",
+          "path": "assets/original/camp-booking/5-f8406eb.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/5.png",
+          "caption": "5",
+          "kind": "image",
+          "size_bytes": 87586
+        },
+        {
+          "filename": "6-ed7246a.webp",
+          "path": "assets/original/camp-booking/6-ed7246a.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/6.png",
+          "caption": "6",
+          "kind": "image",
+          "size_bytes": 104334
+        },
+        {
+          "filename": "7-8bb0eb3.webp",
+          "path": "assets/original/camp-booking/7-8bb0eb3.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/7.png",
+          "caption": "7",
+          "kind": "image",
+          "size_bytes": 62616
+        },
+        {
+          "filename": "8-83035dd.webp",
+          "path": "assets/original/camp-booking/8-83035dd.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/8.png",
+          "caption": "8",
+          "kind": "image",
+          "size_bytes": 110966
+        },
+        {
+          "filename": "9-6483fed.webp",
+          "path": "assets/original/camp-booking/9-6483fed.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/9.png",
+          "caption": "9",
+          "kind": "image",
+          "size_bytes": 114286
+        },
+        {
+          "filename": "10-b184469.webp",
+          "path": "assets/original/camp-booking/10-b184469.webp",
+          "source": "https://arkitekts.dk/wp-content/uploads/2019/02/10.png",
+          "caption": "10",
+          "kind": "image",
+          "size_bytes": 95128
+        },
+        {
+          "filename": "camp-research-group-opt-min-2-76ccd40.pdf",
+          "path": "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40.pdf",
+          "source": "https://arkitekts.dk/wp-content/uploads/2023/01/CAMP-research-group_opt-min-2.pdf",
+          "caption": "CAMP research group_opt-min (2)",
+          "kind": "pdf",
+          "pages": 10,
+          "previews": [
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-01.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-02.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-03.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-04.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-05.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-06.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-07.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-08.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-09.webp",
+            "assets/original/camp-booking/camp-research-group-opt-min-2-76ccd40-page-10.webp"
+          ],
+          "size_bytes": 15008504
+        }
+      ]
+    }
+  }
+}
