@@ -90,6 +90,19 @@ with sync_playwright() as p:
             errors.append(f"{name}: globe clipped: {rect}")
         if not title or title["x"]<-5 or title["x"]+title["width"]>w+5:
             errors.append(f"{name}: contact headline clipped: {title}")
+        # Layout regression: Back must not cover headline, recenter or footer.
+        def overlaps(a,b):
+            return (a and b and a["x"]<b["x"]+b["width"]
+                    and a["x"]+a["width"]>b["x"]
+                    and a["y"]<b["y"]+b["height"]
+                    and a["y"]+a["height"]>b["y"])
+        back=page.locator("#contact-back").bounding_box()
+        reset_button=page.locator("#globe-recenter").bounding_box()
+        footer_rect=page.locator(".site-footer").bounding_box()
+        if overlaps(back,title) or overlaps(back,reset_button) or overlaps(back,footer_rect):
+            errors.append(f"{name}: back control overlaps important content")
+        if w<=760 and page.locator(".contact-signoff").is_visible():
+            errors.append(f"{name}: mobile footer has duplicate crowded signoff")
         page.screenshot(path=str(OUT/f"{name}-05-copenhagen-globe.png"),animations="allow")
 
         # Globe must rotate slowly by itself and respond to direct manipulation.
