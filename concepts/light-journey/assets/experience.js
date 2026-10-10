@@ -73,15 +73,31 @@
   };
   if (chapters.length) {
     setStage(0);
-    const io = new IntersectionObserver(entries => {
-      // Prefer the chapter nearest the top third of the viewport.
-      const visible = entries.filter(e => e.isIntersecting);
-      if (!visible.length) return;
-      visible.sort((a, b) => Math.abs(a.boundingClientRect.top - window.innerHeight * .25) - Math.abs(b.boundingClientRect.top - window.innerHeight * .25));
-      const stage = Number(visible[0].target.dataset.stage);
-      if (Number.isInteger(stage)) setStage(stage);
-    }, { rootMargin: "-16% 0px -40% 0px", threshold: [0, .2, .4] });
-    chapters.forEach(ch => io.observe(ch));
+    // Native scroll selects whichever chapter is closest to the reading line.
+    // Unlike intersection entry order, this stays stable when several chapters are visible.
+    let stageCheckScheduled = false;
+    const determineVisibleChapter = () => {
+      stageCheckScheduled = false;
+      const readingLine = window.innerHeight * .49;
+      let best = 0;
+      let distance = Infinity;
+      chapters.forEach((ch, i) => {
+        const rect = ch.getBoundingClientRect();
+        const center = rect.top + rect.height * .5;
+        const delta = Math.abs(center - readingLine);
+        if (delta < distance) { distance = delta; best = i; }
+      });
+      if (best !== currentStage) setStage(best);
+    };
+    const onChapterScroll = () => {
+      if (!stageCheckScheduled) {
+        stageCheckScheduled = true;
+        requestAnimationFrame(determineVisibleChapter);
+      }
+    };
+    window.addEventListener("scroll", onChapterScroll, { passive: true });
+    window.addEventListener("resize", onChapterScroll, { passive: true });
+    onChapterScroll();
     // Keyboard and touch users can activate the stages explicitly.
     chapters.forEach((ch,i)=>ch.addEventListener("focusin", ()=>setStage(i)));
   }
