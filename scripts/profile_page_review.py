@@ -124,6 +124,10 @@ with sync_playwright() as p:
             failures.append(f"{name}: bright background missing")
 
         page.screenshot(path=str(OUT/f"{name}-hero.png"),animations="disabled")
+        # Verify the new cutout when it appears further down on small screens.
+        page.locator(".profile-portrait").scroll_into_view_if_needed()
+        page.screenshot(path=str(OUT/f"{name}-portrait.png"),animations="disabled")
+        page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         if w<=760:
             menu=page.locator("#menu-button")
             menu.click()
