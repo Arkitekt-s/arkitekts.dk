@@ -192,3 +192,18 @@ body.frame-five-active .site-footer{
 @media(max-width:470px){
  .contact-back{top:calc(var(--header-h,73px) + 8px);bottom:auto}
 }
+
+/* Final position: top-right of the scene, away from the heading and globe.
+   Prevents overlapping the 05 / 05 label, the footer and globe controls. */
+.contact-back{
+ left:auto;right:clamp(32px,5.8vw,112px);
+ top:calc(var(--header-h,100px) + 15px);
+ bottom:auto;
+}
+@media(max-width:760px){
+ .contact-back{left:auto;right:5%;top:calc(var(--header-h,73px) + 9px);bottom:auto}
+ .contact-signoff{display:none}
+}
+@media(max-width:470px){
+ .contact-back{left:auto;right:5%;top:calc(var(--header-h,73px) + 8px);bottom:auto;font-size:8px;padding:7px 9px}
+}
