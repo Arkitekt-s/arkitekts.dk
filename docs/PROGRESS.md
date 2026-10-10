@@ -192,3 +192,20 @@ The existing root homepage is unchanged. This preview uses `noindex,nofollow`, D
 [Try Frame 01 Live](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-live/) · [Test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-one-live.yml) · [Source and licensing](FRAME-ONE-LIVE-REVIEW.md)
 
 No WordPress or DNS changes were made. Frame 02, 03 and 04 have not been altered.
+
+## Milestone 1j — Frame 01 approved baseline (2026-10-10)
+
+- [x] User approved the **live mountain video + mouse patterns** as the design foundation
+- [x] Saved exact original snapshot in [baseline/frame-one-live-approved-v1](https://github.com/Arkitekt-s/arkitekts.dk/tree/baseline/frame-one-live-approved-v1)
+- [x] Documented [approved design system](../design-system/README.md) for all future frames
+- [x] Created [reusable design tokens](../design-system/tokens.json) covering header/footer, grid, colors, typography and animation
+- [x] Added [Frame 01 immutable asset manifest](../design-system/frame-one-approved-v1.json) and automatic checksum verification
+- [x] [GitHub PR #6](https://github.com/Arkitekt-s/arkitekts.dk/pull/6) merged; no changes to the approved first-frame assets
+- [x] Automated baseline-lock and website validation checks passed
+- [ ] Enable GitHub server-enforced branch protection for `main` and the baseline branch (manual repository-owner setting)
+- [ ] Start Frame 02 **only after separate design discussion**, while leaving Frame 01 unchanged
+- [ ] Later: mobile device performance, full WordPress migration and DNS only after approval
+
+**Approved reference:** https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-live/
+
+Note: the reference snapshot and checks preserve/flag Frame 01 changes, but are not the same as enabled GitHub branch-protection rules.
