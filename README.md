@@ -1,3 +1,13 @@
+## Frame 04 — cinematic personal photo gallery
+
+[**Open the new four-frame interactive preview**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/)
+
+Frames 01–03 remain untouched. Scroll down through the journey. From Frame 03, a dark shadow wipes **bottom to top**, revealing a horizontal photo gallery with Soheil's real published portrait at the center and six replaceable sample photos. Inside Frame 04, **wheel up/down moves the photos horizontally**. The gallery also supports dragging, cursor parallax, mobile touch, buttons and keyboard controls. The same fixed header, footer and grid remain.
+
+[Review PR #12](https://github.com/Arkitekt-s/arkitekts.dk/pull/12) · [Design notes](docs/FRAME-FOUR-GALLERY-REVIEW.md) · [Browser tests](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-four-gallery.yml)
+
+**Frame 04 is a working draft awaiting visual approval.** No production homepage, WordPress or DNS changes.
+
 ## Frame 03 — interactive number and cinematic story
 
 [**Open the new three-frame interactive preview**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-three-journey/)
