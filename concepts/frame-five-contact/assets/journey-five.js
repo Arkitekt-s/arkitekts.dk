@@ -229,7 +229,8 @@
     }
     // Frame 03 changes only the editorial composition. The seamless movie,
     // original grid, header and footer remain in place.
-    const leaveThree=smooth(normalize(journey,2.22,2.64));
+    // Scene 03 text fades out before the staircase begins: video only.
+    const leaveThree=smooth(normalize(journey,2.05,2.28));
     const enterThree=smooth(normalize(journey,1.41,1.89));
     const thirdOpacity=enterThree*(1-leaveThree);
     third.style.opacity=String(thirdOpacity);
@@ -256,25 +257,24 @@
       if(!showThird)scatterTen();
     }
     document.body.classList.toggle("frame-three-active",showThird);
-    // A bottom-to-top dark wipe covers the moving film, then clears to
-    // reveal the image carousel. The chrome remains in its fixed position.
-    const enter=smooth(normalize(journey,2.08,2.52));
-    const exit=smooth(normalize(journey,2.52,2.98));
-    // Each vertical strip rises in turn, fills the screen, then clears.
+    // 03 → video-only interlude → staircase cover → gallery reveal.
+    // Each opaque vertical column rises from the bottom, left to right.
+    // All columns reach the top before lifting away to show Frame 04.
     curtainPanels.forEach((panel,index)=>{
-      const lag=index*.023;
-      const fill=smooth(normalize(journey,2.08+lag,2.34+lag));
-      const clear=smooth(normalize(journey,2.55+lag,2.77+lag));
-      const y=journey<2.55+lag?105*(1-fill):-105*clear;
+      const lag=index*.015;
+      const rise=smooth(normalize(journey,2.30+lag,2.55+lag));
+      const reveal=smooth(normalize(journey,2.72+lag,2.89+lag));
+      const y=105*(1-rise)-105*reveal;
       panel.style.transform="translate3d(0,"+y.toFixed(2)+"%,0)";
     });
-    const cover=smooth(normalize(journey,2.19,2.66));
+    // The dark gallery backdrop arrives while the video is fully covered.
+    const cover=smooth(normalize(journey,2.58,2.71));
     backdrop.style.opacity=String(cover);
-    backdrop.classList.toggle("is-active",journey>2.05);
+    backdrop.classList.toggle("is-active",journey>2.57);
     const leaveFourth=smooth(normalize(journey,3.12,3.80));
-    const galleryOpacity=smooth(normalize(journey,2.48,2.91))*(1-leaveFourth);
+    const galleryOpacity=smooth(normalize(journey,2.69,2.92))*(1-leaveFourth);
     fourth.style.opacity=String(galleryOpacity);
-    const showFourth=journey>2.47 && journey<3.81;
+    const showFourth=journey>2.68 && journey<3.81;
     if(fourthVisible!==showFourth){
       fourthVisible=showFourth;
       fourth.classList.toggle("is-visible",showFourth);
