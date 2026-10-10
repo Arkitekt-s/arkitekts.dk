@@ -174,3 +174,21 @@ This is still a **draft prototype**, not the selected final site theme. See [des
 **New isolated first-frame preview:** https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-v3/
 
 The existing root homepage is unchanged. This preview uses `noindex,nofollow`, DNS is unchanged, and Frames 2–4 will not be redesigned until Frame 01 is approved.
+
+## Milestone 1i — Live mountain Frame 01 (2026-10-10)
+
+- [x] Kept the header/footer/background grid unified across the same frame
+- [x] Replaced fake-photo motion with **real moving mountain/cloud video** in all three panoramic arches
+- [x] Downloaded and optimized licensed Pexels footage, served by this repository as a 12-second H.264 MP4 + VP9 WebM
+- [x] Eliminated third-party video streaming dependencies
+- [x] Added cursor-generated luminous paths, deforming lattice/grid pattern, magnetic rings and intensified press-and-hold perspective
+- [x] Preserved reduced-motion fallback and explicit pause control
+- [x] Browser checks confirmed the movie *actually plays and advances*, pointer canvas renders, motion pauses, desktop/mobile layouts stay fixed with no JS exceptions
+- [x] [Pull Request #5](https://github.com/Arkitekt-s/arkitekts.dk/pull/5) merged as isolated preview only — existing root site unchanged
+- [ ] Owner review of first-frame composition, video content and mouse patterns
+- [ ] Measure real-device performance and check Safari/iOS and Android
+- [ ] Lock the approved first frame before creating Frame 02
+
+[Try Frame 01 Live](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-live/) · [Test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-one-live.yml) · [Source and licensing](FRAME-ONE-LIVE-REVIEW.md)
+
+No WordPress or DNS changes were made. Frame 02, 03 and 04 have not been altered.
