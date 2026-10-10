@@ -223,8 +223,8 @@
     document.body.classList.toggle("frame-four-active",showFourth);
 
     // The final scene rises out of the gallery's dark ending.
-    // The visual transition is an opaque deep-purple dissolve; the
-    // approved gallery and all earlier scene sources remain unchanged.
+    // The backdrop matches the gallery's fully darkened near-black colors.
+    // The approved gallery and all earlier scene sources remain unchanged.
     const contactFade=smooth(normalize(journey,3.22,3.96));
     fifthBackdrop.style.opacity=String(smooth(normalize(journey,3.02,3.94)));
     fifthBackdrop.classList.toggle("is-active",journey>3.01);
