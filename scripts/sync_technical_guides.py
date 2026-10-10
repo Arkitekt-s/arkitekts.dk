@@ -67,6 +67,7 @@ def clean_post_html(raw):
     root=showcase.select_one("main") if showcase else None
     if root is None:root=soup
     for node in list(root.find_all(True)):
+        if node.name is None or node.parent is None:continue
         if node.name in DROP or node.get("class") and any(c in (
             "db-sidebar","db-nav","db-help","db-hero","wp-block-navigation"
         ) for c in node.get("class",[])):
