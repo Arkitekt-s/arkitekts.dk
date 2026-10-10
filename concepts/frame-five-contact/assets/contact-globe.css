@@ -179,3 +179,16 @@ body.frame-five-active .site-footer{
  .contact-back{bottom:calc(var(--footer-h,65px) + 7px)}
  .contact-signoff{bottom:calc(var(--footer-h,65px) + 10px)}
 }
+
+/* Place Back above the content, not over the interactive globe's controls. */
+.contact-back{
+ top:calc(var(--header-h,100px) + 14px);
+ bottom:auto;
+}
+.contact-signoff{pointer-events:none}
+@media(max-width:760px){
+ .contact-back{top:calc(var(--header-h,73px) + 9px);bottom:auto}
+}
+@media(max-width:470px){
+ .contact-back{top:calc(var(--header-h,73px) + 8px);bottom:auto}
+}
