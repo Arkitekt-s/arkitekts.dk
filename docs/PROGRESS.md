@@ -300,3 +300,17 @@ No changes to the approved two-frame assets, WordPress or DNS. Do not start Fram
 
 [Frame 04 interactive demo](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/) · [Design and media sources](FRAME-FOUR-GALLERY-REVIEW.md) · [Browser test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-four-gallery.yml)
 
+
+## Milestone 1p — Frame 04 dark gallery ending (2026-10-10)
+
+- [x] Added a reversible fade from the purple Frame 04 background to near-black as the reel approaches its final photograph
+- [x] Fade starts near image 5 of 7 and reaches full depth on image 7
+- [x] Moving back to earlier photographs restores the original atmospheric purple
+- [x] Kept gallery photos, fixed chrome, continuous grid and Frames 01–03 untouched
+- [x] Browser tests passed at 320/390/768/1440px, verifying forward/reverse color change as well as gallery controls
+- [x] Merged [PR #13](https://github.com/Arkitekt-s/arkitekts.dk/pull/13)
+- [ ] Final visual approval of Frame 04 before freezing design baseline
+
+[Interactive preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/) · [Test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-four-gallery.yml)
+
+WordPress and DNS remain unchanged.
