@@ -249,6 +249,7 @@
   let fieldWidth=0,fieldHeight=0,fieldDpr=1;
   let mx=-900,my=-900,trail=[],energy=0,fieldScheduled=false,fieldLast=0;
   let pointerHeld=false,fieldPointerActive=false;
+  let lastInteraction=0,fieldDraws=0;
   const GRID_X=13,GRID_Y=8;
   const points=[];
   for(let row=0;row<GRID_Y;row++){
@@ -277,6 +278,9 @@
   }
   function renderField(now){
     if(!ctx)return;
+    fieldDraws+=1;
+    if(field){field.dataset.draws=String(fieldDraws);}
+    if(!pointerHeld&&now-lastInteraction>800)fieldPointerActive=false;
     ctx.clearRect(0,0,fieldWidth,fieldHeight);
     if(reducedVideo() || pausedByUser){fieldScheduled=false;return;}
     const active=fieldPointerActive || energy>.015 || trail.length;
@@ -330,7 +334,8 @@
   }
   addEventListener("pointermove",e=>{
     if(!ctx||reducedVideo()||pausedByUser)return;
-    mx=e.clientX;my=e.clientY;energy=1;fieldPointerActive=true;
+    mx=e.clientX;my=e.clientY;energy=1;fieldPointerActive=true;lastInteraction=performance.now();
+    if(field){field.dataset.pointerX=String(Math.round(mx));field.dataset.pointerY=String(Math.round(my));}
     const now=performance.now();
     if(!trail.length || Math.hypot(mx-trail[trail.length-1].x,my-trail[trail.length-1].y)>7){
       trail.push({x:mx,y:my,born:now});
