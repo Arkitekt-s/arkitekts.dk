@@ -149,6 +149,10 @@ footer a{font-weight:800;color:var(--accent)}
 .chooser .mini.light-mini{background:linear-gradient(125deg,#f9fcfb,#d6e7eb);color:#1c5c9a}
 .chooser .mini.light-mini strong{font-weight:650}
 .chooser .mini.light-mini i{font-style:normal;color:#0b7f89}
+.chooser .mini.immersive-mini{background:radial-gradient(circle at 77% 37%,#6a49a3,#181535 59%,#090d24);color:#f8f5ff}
+.chooser .mini.immersive-mini i{color:#b7a5ff;font-style:normal}
+.chooser .mini.immersive-mini strong{z-index:2}
+.chooser .mini.immersive-mini:after{border-color:#b2aaff;opacity:.45}
 .chooser .mini .mini-logo{font-size:12px;font-weight:900;letter-spacing:.13em}
 .chooser .mini strong{font-size:clamp(33px,3.3vw,50px);letter-spacing:-.075em;line-height:1.05;z-index:1}
 .chooser .mini.nordic-mini strong{font-family:Georgia,serif;font-weight:normal;letter-spacing:-.055em}
