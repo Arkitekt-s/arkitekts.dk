@@ -53,6 +53,9 @@
   let lastVisible=false, thirdVisible=false, fourthVisible=false, fifthVisible=false, galleryVisited=false;
   let galleryTarget=2,galleryPosition=2,galleryPointer=0,galleryPointerTarget=0;
   let reelDragging=false,downX=0,downIndex=0,galleryStep=320;
+  // A single downward gesture in Frame 04 completes the photo journey
+  // before revealing Frame 05. Reversible by scrolling upward.
+  let galleryAutoExit=false,galleryExitReadyAt=0;
   let filmSuspendedForGallery=false;
   let lastRendered=0;
 
@@ -275,7 +278,20 @@
     if(Math.abs(galleryPosition-galleryTarget)<.003)galleryPosition=galleryTarget;
     galleryPointer+=(galleryPointerTarget-galleryPointer)*(reduced.matches?1:.12);
     if(Math.abs(galleryPointer-galleryPointerTarget)<.05)galleryPointer=galleryPointerTarget;
-    if(position!==target || galleryPosition!==galleryTarget || galleryPointer!==galleryPointerTarget)frame=requestAnimationFrame(frameStep);
+    if(galleryAutoExit && !reelDragging && galleryPosition>=photos.length-1-.025){
+      // Hold the LAST photo in view long enough to read it, with the
+      // gallery ending dark, BEFORE starting the Frame 05 crossfade.
+      if(!galleryExitReadyAt)galleryExitReadyAt=performance.now()+(reduced.matches?0:750);
+      else if(performance.now()>=galleryExitReadyAt){
+        galleryAutoExit=false;
+        galleryExitReadyAt=0;
+        document.body.dataset.galleryAutoExit="complete";
+        setTarget(4);
+      }
+    }
+    if(position!==target || galleryPosition!==galleryTarget ||
+       galleryPointer!==galleryPointerTarget || galleryAutoExit)
+      frame=requestAnimationFrame(frameStep);
   }
   function schedule(){
     if(!frame)frame=requestAnimationFrame(frameStep);
@@ -283,6 +299,24 @@
   function setTarget(value){
     target=clamp(value,0,4);
     if(reduced.matches)position=target;
+    schedule();
+  }
+  function cancelGalleryExit(){
+    if(!galleryAutoExit)return;
+    galleryAutoExit=false;
+    galleryExitReadyAt=0;
+    galleryTarget=clamp(Math.round(galleryPosition),0,photos.length-1);
+    document.body.dataset.galleryAutoExit="cancelled";
+    schedule();
+  }
+  function beginGalleryExit(){
+    if(galleryAutoExit)return;
+    galleryAutoExit=true;
+    galleryExitReadyAt=0;
+    setTarget(3); // Keep Frame 04 fully visible until its final image arrives.
+    galleryTarget=photos.length-1;
+    galleryPointerTarget=0;
+    document.body.dataset.galleryAutoExit="moving";
     schedule();
   }
 
@@ -295,21 +329,21 @@
     const pixels=event.deltaMode===1?event.deltaY*18:event.deltaMode===2?event.deltaY*innerHeight:event.deltaY;
     if(!Number.isFinite(pixels)||Math.abs(pixels)<.1)return;
     const delta=clamp(pixels,-160,160);
-    if(target>3.003 || position>3.02){
-      // Once we enter Frame 05, the wheel navigates the last scene.
-      // Scrolling back stops at the end of the gallery, keeping photos.
-      setTarget(Math.max(3,target+delta/790));
-    }else if(target>=2.995 && position>2.90){
-      // Inside Frame 04: vertical gestures slide the photographs sideways.
-      // At the last photo, another downward gesture enters contact/globe.
-      if(delta>0 && galleryTarget>=photos.length-1-.01 && galleryPosition>=photos.length-1-.1){
-        setTarget(target+delta/790);
-      }else if(delta<0 && galleryTarget<=.005){
-        setTarget(2);
-      }else{
+    if(galleryAutoExit){
+      // A reverse gesture cancels the automatic glide safely.
+      if(delta<0)cancelGalleryExit();
+      return;
+    }
+    if(target>=2.94 && target<3.20 && position>=2.70 && position<3.20){
+      if(delta>0)beginGalleryExit();
+      else if(galleryTarget<=.005)setTarget(2);
+      else{
         galleryTarget=clamp(galleryTarget+delta/240,0,photos.length-1);
         schedule();
       }
+    }else if(target>3.003 || position>3.20){
+      // Scroll back from Frame 05 to the gallery's last photograph.
+      setTarget(Math.max(3,target+delta/790));
     }else setTarget(target+delta/790);
   },{passive:false});
 
@@ -324,7 +358,13 @@
     const delta=touchY-next;
     touchY=next;
     if(event.cancelable)event.preventDefault();
-    setTarget(target+delta/Math.max(300,innerHeight*.72));
+    if(galleryAutoExit){
+      if(delta<0)cancelGalleryExit();
+    }else if(delta>0 && target>=2.94 && target<3.20 && position>=2.70 && position<3.20){
+      beginGalleryExit();
+    }else{
+      setTarget(target+delta/Math.max(300,innerHeight*.72));
+    }
   },{passive:false});
   stage.addEventListener("touchend",()=>{touchY=null},{passive:true});
   stage.addEventListener("touchcancel",()=>{touchY=null},{passive:true});
@@ -335,12 +375,16 @@
     if(event.target instanceof Element && event.target.closest("a,button,input,textarea,select"))return;
     if((key==="ArrowLeft"||key==="ArrowRight") && position>2.92 && position<3.05){
       event.preventDefault();
+      cancelGalleryExit();
       galleryTarget=clamp(galleryTarget+(key==="ArrowRight"?1:-1),0,photos.length-1);
       schedule();
     }else if((key==="ArrowDown"||key==="ArrowUp"||key===" " ) && position>2.92 && position<3.05){
       event.preventDefault();
-      galleryTarget=clamp(galleryTarget+(key==="ArrowUp"?-1:1),0,photos.length-1);
-      schedule();
+      if(key==="ArrowUp"){
+        cancelGalleryExit();
+        galleryTarget=clamp(galleryTarget-1,0,photos.length-1);
+        schedule();
+      }else beginGalleryExit();
     }else if(key==="ArrowDown"||key==="PageDown"||key===" "){
       event.preventDefault();setTarget(target+.24);
     }else if(key==="ArrowUp"||key==="PageUp"){
@@ -352,10 +396,8 @@
     }
   });
   document.getElementById("next-chapter")?.addEventListener("click",()=>{
-    if(position>2.94 && position<3.02){
-      if(galleryTarget>=photos.length-1-.02)setTarget(4);
-      else {galleryTarget=clamp(galleryTarget+1,0,photos.length-1);schedule();}
-    }else setTarget(Math.min(4,Math.floor(target+.12)+1));
+    if(position>2.90 && position<3.20)beginGalleryExit();
+    else setTarget(Math.min(4,Math.floor(target+.12)+1));
   });
   document.getElementById("previous-chapter")?.addEventListener("click",()=>setTarget(position>3.03?3:position>2.75?2:Math.max(0,Math.ceil(target-.12)-1)));
 
@@ -433,6 +475,7 @@
     document.body.dataset.galleryIndex=galleryPosition.toFixed(3);
   }
   function moveGallery(direction){
+    cancelGalleryExit();
     galleryTarget=clamp(Math.round(galleryTarget)+direction,0,photos.length-1);
     schedule();
   }
@@ -441,6 +484,7 @@
   if(viewport){
     viewport.addEventListener("pointerdown",event=>{
       if(event.button!==0||position<2.88)return;
+      cancelGalleryExit();
       // Frame 01's unchanged stage handler captures pointerdown globally.
       // Keep this gallery gesture local, or its capture steals pointermove/up.
       event.stopPropagation();
