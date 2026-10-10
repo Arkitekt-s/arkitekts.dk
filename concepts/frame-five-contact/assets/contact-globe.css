@@ -163,3 +163,19 @@ body.frame-five-active .site-footer{
 @media(prefers-reduced-motion:reduce){
  .contact-details,.globe-shell{transition:none!important}
 }
+
+/* Protect controls from the permanent footer hit area on short screens. */
+.contact-back{
+ bottom:calc(var(--footer-h,80px) + 15px);
+}
+.contact-signoff{
+ bottom:calc(var(--footer-h,80px) + 20px);
+}
+@media(max-width:760px){
+ .contact-back{bottom:calc(var(--footer-h,65px) + 10px)}
+ .contact-signoff{bottom:calc(var(--footer-h,65px) + 13px)}
+}
+@media(max-width:470px){
+ .contact-back{bottom:calc(var(--footer-h,65px) + 7px)}
+ .contact-signoff{bottom:calc(var(--footer-h,65px) + 10px)}
+}
