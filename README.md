@@ -8,7 +8,7 @@
 
 ## Choose your design
 
-Five deployed concept previews are available before the WordPress migration. They do **not** replace the current homepage:
+Six deployed concept previews are available before the WordPress migration. They do **not** replace the current homepage:
 
 - [Compare all three](https://arkitekt-s.github.io/arkitekts.dk/concepts/)
 - [01 · Atlas — Precision](https://arkitekt-s.github.io/arkitekts.dk/concepts/atlas/)
@@ -16,6 +16,8 @@ Five deployed concept previews are available before the WordPress migration. The
 - [03 · Signal — Mission Control](https://arkitekt-s.github.io/arkitekts.dk/concepts/signal/)
 - [04 · Light Journey — White + 3D](https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/)
 - [05 · Immersive Studio — full-screen cinematic 3D](https://arkitekt-s.github.io/arkitekts.dk/concepts/immersive-studio/)
+- [06 · Personal Journey — photo + 3D + real biography](https://arkitekt-s.github.io/arkitekts.dk/concepts/personal-journey/)
+- [Personal Journey review notes](docs/PERSONAL-JOURNEY-REVIEW.md)
 - [Light Journey — case-study template](https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/case-study/)
 - [Light Journey — technical article template](https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/guide/)
 - [Design review notes](docs/DESIGN-CONCEPTS.md)
