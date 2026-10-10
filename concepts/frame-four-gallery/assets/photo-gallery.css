@@ -203,3 +203,9 @@ body.frame-four-active .portal-navigation{
 @media(max-width:470px){
  .gallery-back{top:19%;left:6%;font-size:8px}
 }
+
+/* During the staircase handoff, expose only photograph 01.
+   Release the complete carousel after the left-to-right reveal finishes. */
+.frame-four-gallery:not(.gallery-reveal-complete) .gallery-photo:not([data-photo="0"]){visibility:hidden!important}
+.frame-four-gallery:not(.gallery-reveal-complete) .gallery-controls,
+.frame-four-gallery:not(.gallery-reveal-complete) .gallery-counter{opacity:0!important;pointer-events:none!important}
