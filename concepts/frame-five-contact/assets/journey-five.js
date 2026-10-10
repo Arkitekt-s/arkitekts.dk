@@ -235,7 +235,7 @@
       fifth.classList.toggle("is-visible",showFifth);
       fifth.inert=!showFifth;
       fifth.setAttribute("aria-hidden",String(!showFifth));
-      if(showFifth && window.soheilGlobe)window.soheilGlobe.center();
+      if(showFifth && window.soheilGlobe)window.soheilGlobe.center(true);
     }
     document.body.classList.toggle("frame-five-active",showFifth);
     // Stop the full-screen film once the gallery fully covers it.
