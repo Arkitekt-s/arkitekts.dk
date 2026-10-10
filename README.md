@@ -1,3 +1,13 @@
+## Frame 03 — interactive number and cinematic story
+
+[**Open the new three-frame interactive preview**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-three-journey/)
+
+The first two approved frames remain unchanged. Scroll down from the moving arches through the full-screen movie into an animated center number **20**. Move the mouse near the number to separate its nine pieces; move away to reassemble them. On mobile, tap to animate. The header, footer, grid and movie remain consistent.
+
+[Review GitHub PR #10](https://github.com/Arkitekt-s/arkitekts.dk/pull/10) · [Design notes](docs/FRAME-THREE-REVIEW.md) · [Interaction tests](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-three-review.yml)
+
+**Frame 03 is a draft awaiting approval; the number is illustrative.** Existing homepage, frozen two-frame baseline, WordPress and DNS have not changed.
+
 ## Clean Frame 01 + continuous header/footer grid
 
 [**Open the updated two-frame interactive demo**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/)
