@@ -42,6 +42,11 @@ PAGES=OrderedDict([
  ("camp-booking","university-copenhagen-seminar-booking-system-development"),
 ])
 # Already migrated from the SAME WordPress uploads; don't download duplicates.
+# Decorative company, school and technology badges are not project photos.
+DECORATIVE_IMAGES={
+ "jord-white.png","python-black.png","kea-white.png",
+ "24-white.png","uni-black.png",
+}
 EXISTING={
  "web-development":{"website-1.png","soheil-fattahieh1.png"},
  "copenhagen-valuation":{"price-copenhagen.png","final-prediction_005.png","final-prediction_002.png"},
@@ -92,7 +97,7 @@ def find_media(source_html,slug):
         if not urls:continue
         u=urls[0]
         name=normalized_filename(u)
-        if name in EXISTING[slug]:continue
+        if name in EXISTING[slug] or name in DECORATIVE_IMAGES:continue
         if re.search(r"(?:pngfind|shadow|avatar|favicon|icon|logo|gravatar|placeholder)",name,re.I):
             continue
         ext=Path(urlparse(u).path).suffix.lower()
