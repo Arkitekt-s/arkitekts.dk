@@ -26,6 +26,20 @@ MENU=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
 LINKS=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
 errors=[]
 report=[]
+# Extra media appears only when the original WordPress import has completed.
+MANIFEST_FILE=ROOT/"portfolio"/"media-manifest.json"
+MEDIA=json.loads(MANIFEST_FILE.read_text("utf8"))["projects"] if MANIFEST_FILE.exists() else {}
+if MEDIA:
+    for slug,record in MEDIA.items():
+        for asset in record["files"]:
+            if not (ROOT/"portfolio"/asset["path"]).exists():
+                errors.append(f"{slug}: archived original file missing: {asset['path']}")
+            if asset["kind"]=="pdf":
+                if not (ROOT/"portfolio"/asset["path"]).read_bytes().startswith(b"%PDF-"):
+                    errors.append(f"{slug}: archived file is not a valid PDF")
+                for image in asset.get("previews",[]):
+                    if not (ROOT/"portfolio"/image).exists():
+                        errors.append(f"{slug}: PDF preview missing: {image}")
 
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
@@ -142,6 +156,34 @@ with sync_playwright() as p:
                 image_info=gallery_image.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight})")
                 if image_info["w"]<400 or image_info["h"]<300:
                     errors.append(f"{name}: {slug} original gallery image broken {image_info}")
+            if MEDIA:
+                originals=MEDIA.get(slug,{}).get("files",[])
+                archived_images=[x for x in originals if x["kind"]=="image"]
+                archived_pdfs=[x for x in originals if x["kind"]=="pdf"]
+                if (archived_images or archived_pdfs) and page.locator(".original-media-archive").count()!=1:
+                    errors.append(f"{name}: {slug} missing original media archive section")
+                if page.locator(".original-media-photo img").count()!=len(archived_images):
+                    errors.append(f"{name}: {slug} imported photos not connected to project page")
+                if page.locator(".original-pdf-file").count()!=len(archived_pdfs):
+                    errors.append(f"{name}: {slug} original PDF not connected")
+                for original_img in page.locator(".original-media-photo img").all():
+                    original_img.scroll_into_view_if_needed(timeout=7000)
+                    original_img.evaluate("e=>e.loading='eager'")
+                    original_img.evaluate("e=>e.complete||new Promise(r=>{e.addEventListener('load',r,{once:true});e.addEventListener('error',r,{once:true})})")
+                    data=original_img.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight})")
+                    if data["w"]<230 or data["h"]<175:
+                        errors.append(f"{name}: {slug} imported image is broken: {data}")
+                if archived_pdfs:
+                    if not page.locator('.original-pdf-links a[download]').count():
+                        errors.append(f"{name}: {slug} PDF download button missing")
+                    first_preview=page.locator(".original-pdf-preview img").first
+                    first_preview.scroll_into_view_if_needed(timeout=7000)
+                    first_preview.evaluate("e=>e.loading='eager'")
+                    first_preview.evaluate("e=>e.complete||new Promise(r=>{e.addEventListener('load',r,{once:true});e.addEventListener('error',r,{once:true})})")
+                    if first_preview.evaluate("e=>e.naturalWidth")<200:
+                        errors.append(f"{name}: {slug} PDF preview not visible")
+                if archived_images or archived_pdfs:
+                    page.screenshot(path=str(OUT/f"{name}-{slug}-original-media.png"),animations="disabled")
             page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
             page.screenshot(path=str(OUT/f"{name}-{slug}-top.png"),animations="disabled")
 
