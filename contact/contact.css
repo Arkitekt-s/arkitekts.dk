@@ -215,3 +215,140 @@ body.is-arriving .hero-copy{opacity:1}
  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
  body.has-js [data-reveal]{opacity:1;translate:none}
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   SHARED SITE CHROME · copied proportions from the approved five-frame
+   homepage. Only color treatment changes: light page, original layout.
+   ───────────────────────────────────────────────────────────────────── */
+:root{
+ --header-h:100px;
+ --footer-h:80px;
+}
+.page-shell{max-width:none}
+.site-header{
+ position:fixed;z-index:100;left:0;right:0;top:0;
+ height:var(--header-h);
+ display:grid;grid-template-columns:1fr 1fr 1.9fr;gap:22px;
+ align-items:center;padding:0 3.1%;margin:0;
+ border-bottom:1px solid var(--line);
+ background:rgba(249,245,252,.86);
+ -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+.site-header .brand-icon{
+ font-size:39px;font-weight:950;line-height:1;letter-spacing:-.13em;
+ justify-self:start;transform:skew(-5deg);
+ text-decoration:none;color:#25162f;
+}
+.site-header .brand-icon span{color:#b139ce}
+.site-name{
+ justify-self:center;font:700 12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
+ letter-spacing:.28em;padding-left:12px;white-space:nowrap;color:#302038;
+}
+.menu-button{display:none}
+.navigation{display:flex;align-items:center;justify-content:flex-end;gap:clamp(11px,2vw,34px);margin:0}
+.navigation a{
+ font:750 10px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+ letter-spacing:.2em;color:#42314a;text-decoration:none;white-space:nowrap;
+ transition:color .2s ease;
+}
+.navigation a:hover{color:#8d2db9}
+.navigation .contact{
+ border-radius:100px;background:#b20fd0;color:white;
+ padding:15px 23px;letter-spacing:0;
+ font:780 12px/1.2 Inter,Arial,sans-serif;
+ transition:background .2s ease,transform .2s ease;
+}
+.navigation .contact:hover{background:#9920b8;color:white;transform:translateY(-1px)}
+.site-footer{
+ position:fixed;z-index:100;left:0;right:0;bottom:0;
+ height:var(--footer-h);min-height:0;
+ display:grid;grid-template-columns:1fr 2.6fr 1fr;
+ gap:20px;align-items:center;margin:0;padding:0 3.1%;
+ border-top:1px solid var(--line);
+ background:rgba(248,244,251,.92);
+ -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+}
+.footer-mark{font-size:26px;font-weight:900;letter-spacing:-.09em;text-decoration:none;justify-self:start}
+.footer-specialties{
+ justify-self:center;font:740 10px/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.19em;color:#59445f;white-space:nowrap;
+}
+.footer-specialties i{font-style:normal;color:#a87ab7;margin:0 12px}
+.footer-location{
+ justify-self:end;font:700 10px/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.15em;color:#866c90;white-space:nowrap;
+}
+#content{
+ padding:var(--header-h) clamp(24px,5.8vw,105px) var(--footer-h);
+}
+#contact-methods{scroll-margin-top:calc(var(--header-h) + 20px);outline:none}
+.option-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:42px;flex-wrap:wrap;margin-top:12px}
+.option-bottom .option-note{margin:0;flex:1 1 180px}
+.copy-contact{
+ background:none;border:1px solid currentColor;color:inherit;opacity:.78;
+ font:760 9px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.12em;
+ padding:9px 12px;cursor:pointer;white-space:nowrap;
+ transition:opacity .2s,background .2s,color .2s;
+}
+.copy-contact:hover,.copy-contact:focus-visible{opacity:1}
+.copy-contact span{margin-left:10px;font-size:13px}
+.copy-contact[data-copied="true"]{opacity:1;border-color:#dcaceb;color:#dfb5f5}
+.email-card .copy-contact[data-copied="true"]{color:#742896;border-color:#9447aa}
+.closing{flex-wrap:wrap}
+.closing-legal{width:100%;margin:1px 0 0;font:640 10px/1.6 ui-monospace,Consolas,monospace;color:#827188}
+.closing-legal span{color:#b997c9;padding:0 8px}
+.closing-legal a{text-decoration:none;font:inherit;border:none;color:inherit;padding:0}
+.closing-legal a:hover{color:var(--violet)}
+/* Static visual animation stays CSS-only. JavaScript is reserved for actual
+   navigation, accessible interaction and copy-to-clipboard feedback. */
+.contact-atmosphere .atmosphere-orb{transform:none;transition:none}
+body.has-js [data-reveal]{opacity:1;translate:none;transition:none}
+@media(max-width:1100px){
+ .site-header{grid-template-columns:1fr .8fr 2fr;gap:12px}
+ .navigation{gap:14px}
+ .navigation a{letter-spacing:.07em}
+ .footer-specialties{letter-spacing:.1em}
+}
+@media(max-width:760px){
+ :root{--header-h:73px;--footer-h:65px}
+ .site-header{grid-template-columns:1fr 1fr auto;padding:0 5%;gap:5px}
+ .site-header .brand-icon{font-size:31px}
+ .site-name{font-size:10px;letter-spacing:.2em;padding:0}
+ .menu-button{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;width:42px;height:42px;
+  border:1px solid rgba(82,47,99,.38);border-radius:8px;
+  background:#f2e5fa;color:#42214e;cursor:pointer;margin:0;
+ }
+ .menu-button span{width:20px;height:2px;background:currentColor}
+ .navigation{
+  display:none;position:absolute;top:var(--header-h);left:0;right:0;
+  flex-direction:column;align-items:stretch;gap:0;
+  padding:13px 21px 23px;margin:0;background:#fcf9fe;
+  border-bottom:1px solid rgba(112,67,126,.25);
+  box-shadow:0 20px 50px rgba(42,24,53,.18)
+ }
+ .navigation.open{display:flex}
+ .navigation a{font-size:14px;padding:14px 8px}
+ .navigation .contact{text-align:center;margin-top:8px;padding:13px 18px}
+ .site-footer{
+  grid-template-columns:1fr 2.2fr 1fr;
+  gap:8px;padding:0 5%;height:var(--footer-h);
+  align-items:center
+ }
+ .footer-mark{font-size:22px}
+ .footer-specialties{font-size:8px;letter-spacing:.05em}
+ .footer-specialties i{margin:0 3px}
+ .footer-location{font-size:8px;letter-spacing:0}
+ #content{padding:var(--header-h) 22px var(--footer-h)}
+}
+@media(max-width:470px){
+ .site-name{font-size:10px;letter-spacing:.10em}
+ .footer-specialties{font-size:7px;letter-spacing:0}
+ .footer-location{font-size:7px}
+ .closing-legal{font-size:9px}
+ .closing-legal span{padding:0 4px}
+}
+
+/* Screen reader feedback must not shift the permanent homepage-style footer. */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
