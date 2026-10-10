@@ -19,8 +19,8 @@ TITLES=[
  "Full-Stack Application","Basecamp Response Monitor",
  "ShopFlow Mobile","CAMP Booking System"
 ]
-PATHS=["/portfolio/","/profile/","/software-skills/","/contact/"]
-MENU=["PORTFOLIO","PROFILE","SKILLS","Let's talk"]
+PATHS=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
+MENU=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
 failures=[]
 results=[]
 

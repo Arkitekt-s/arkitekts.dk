@@ -352,3 +352,16 @@ body.has-js [data-reveal]{opacity:1;translate:none;transition:none}
 
 /* Screen reader feedback must not shift the permanent homepage-style footer. */
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+
+/* Shared five-link site header: make GUIDES fit between Skills and Talk.
+   Keep approved fixed header, centered identity and footer unchanged. */
+@media(min-width:761px) and (max-width:1199px){
+ .site-header{grid-template-columns:minmax(68px,.8fr) minmax(110px,.75fr) minmax(0,2.7fr);gap:7px}
+ .site-header .site-name{font-size:10px;letter-spacing:.17em}
+ .site-header .navigation{gap:clamp(7px,1vw,13px)}
+ .site-header .navigation>a:not(.contact){font-size:clamp(8px,.78vw,10px);letter-spacing:0}
+ .site-header .navigation .contact{font-size:10px;padding:12px clamp(11px,1.3vw,18px)}
+}
+@media(max-width:760px){
+ .site-header .navigation{max-height:calc(100dvh - var(--header-h) - 30px);overflow-y:auto}
+}

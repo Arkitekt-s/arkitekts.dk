@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f6fb"><meta name="robots" content="noindex,nofollow">
+<meta name="description" content="A practical comparison of document storage, full-text search and real-time application data."><title>Document Databases: MongoDB, Elasticsearch and Firebase — Soheil Fattahieh</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../contact/contact.css">
+<link rel="stylesheet" href="../guides.css"><link rel="stylesheet" href="../article.css"><script defer src="../article.js"></script></head><body class="guides-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<div class="contact-atmosphere" aria-hidden="true"><div class="atmosphere-grid"></div><div class="atmosphere-orb"></div></div>
+<div class="page-shell"><header class="site-header" aria-label="Fixed site header">
+      <a class="brand-icon" href="../../concepts/frame-five-contact/" aria-label="Soheil home">S<span>.</span></a>
+      <span class="site-name" aria-label="Soheil Fattahieh">S O H E I L</span>
+      <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open menu"><span></span><span></span><span></span></button>
+      <nav class="navigation" id="navigation" aria-label="Main navigation">
+      <a href="../../portfolio/">PORTFOLIO</a>
+<a href="../../profile/">PROFILE</a>
+<a href="../../software-skills/">SKILLS</a>
+<a href="../../technical-guides/" aria-current="page">GUIDES</a>
+      <a class="contact" href="../../contact/">Let's talk</a>
+      </nav></header><main id="content">
+<nav class="guide-breadcrumb" aria-label="Breadcrumb">
+ <a href="../">ALL TECHNICAL GUIDES <span aria-hidden="true">↖</span></a><span>/</span>
+ <span>GUIDE 01 / 11</span></nav>
+<section class="guide-article-hero" aria-labelledby="article-title">
+ <div><p class="guides-kicker"><i></i> 01 / TECHNICAL GUIDE <span>—</span> DATABASES</p>
+ <h1 id="article-title">Document Databases: MongoDB, Elasticsearch and Firebase<span>.</span></h1>
+ <p class="guide-article-intro">A practical comparison of document storage, full-text search and real-time application data.</p>
+ <ul class='guide-tags'><li>MongoDB</li><li>Elasticsearch</li><li>Firebase</li></ul>
+ <div class="guide-article-actions"><a href="#article-content">START READING <span aria-hidden="true">↓</span></a>
+ <a href="https://arkitekts.dk/document-databases-mongodb-elasticsearch-and-firebase/" target="_blank" rel="noopener noreferrer">ORIGINAL ARTICLE <span aria-hidden="true">↗</span></a>
+ <button id="guide-copy" type="button">COPY LINK <span aria-hidden="true">↗</span></button><span id="guide-copy-status" role="status" aria-live="polite"></span></div>
+ </div><div class="guide-article-number" aria-hidden="true">01</div>
+</section>
+<div class="guide-reader" id="article-content">
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#mongodb">MongoDB <span aria-hidden="true">↗</span></a><a href="#elasticsearch">Elasticsearch <span aria-hidden="true">↗</span></a><a href="#firebase-firestore">Firebase Firestore <span aria-hidden="true">↗</span></a><a href="#compare-technologies">Compare Technologies <span aria-hidden="true">↗</span></a><a href="#architecture-example">Architecture Example <span aria-hidden="true">↗</span></a><a href="#takeaways">Key Takeaways <span aria-hidden="true">↗</span></a></nav>
+   <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
+ <article class="guide-article-body" aria-label="Technical article content"><section>
+<div><div>🍃</div><div><h2 id="mongodb">MongoDB</h2><div>Flexible Document Storage</div></div></div>
+<p>MongoDB stores data as BSON documents. It is useful when applications need flexible schemas, fast development, and scalable backend storage.</p>
+<div></div>
+<b>Best for</b>
+<ul><li>Web applications</li><li>Backend APIs</li><li>Microservices</li><li>Product catalogues</li><li>Content management systems</li></ul>
+<div><span>BSON</span><span>Aggregation</span><span>Sharding</span><span>Atlas</span></div>
+<div><div>🔎</div><div><h2 id="elasticsearch">Elasticsearch</h2><div>Search &amp; Analytics</div></div></div>
+<p>Elasticsearch is built for fast search, filtering, aggregations, logs, observability, and analytics across large volumes of documents.</p>
+<div></div>
+<b>Best for</b>
+<ul><li>Full-text search</li><li>Log management</li><li>Security analytics</li><li>Monitoring and observability</li><li>Large-scale data exploration</li></ul>
+<div><span>Search</span><span>Aggregations</span><span>Kibana</span><span>ILM</span></div>
+<div><div>🔥</div><div><h2 id="firebase-firestore">Firebase Firestore</h2><div>Real-time Cloud Database</div></div></div>
+<p>Firestore is designed for cloud-native and mobile applications where real-time synchronization and offline support are important.</p>
+<div></div>
+<b>Best for</b>
+<ul><li>Mobile apps</li><li>React applications</li><li>Live collaboration</li><li>Notifications</li><li>Serverless projects</li></ul>
+<div><span>Real-time</span><span>Offline</span><span>Security Rules</span><span>Cloud</span></div>
+</section>
+<section>
+<h2 id="compare-technologies">Compare Technologies</h2>
+<table>
+<thead><tr><th>Feature</th><th>MongoDB</th><th>Elasticsearch</th><th>Firebase</th></tr></thead>
+<tbody>
+<tr><td>Document model</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Real-time updates</td><td></td><td></td><td>✓</td></tr>
+<tr><td>Full-text search</td><td></td><td>✓</td><td></td></tr>
+<tr><td>Scalability</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>Offline support</td><td></td><td></td><td>✓</td></tr>
+<tr><td>Best use case</td><td>Flexible apps</td><td>Search &amp; logs</td><td>Mobile apps</td></tr>
+</tbody>
+</table>
+<h2 id="architecture-example">Architecture Example</h2>
+<div>
+<div><span>💻</span>Application</div><div>→</div><div><span>⚙️</span>API Layer</div>
+<div><span>🍃</span>MongoDB</div><div>→</div><div><span>🔎</span>Elasticsearch</div>
+<div><span>👥</span>Users</div><div>←</div><div><span>🔥</span>Firebase</div>
+</div>
+<div>A modern application can use MongoDB for flexible storage, Elasticsearch for search and analytics, and Firebase for real-time user experience.</div>
+</section>
+<section>
+<h2 id="takeaways">Key Takeaways</h2>
+<div>
+<div><strong>Document databases</strong>They provide flexibility, scalability, and fast development for modern applications.</div>
+<div><strong>MongoDB</strong>Best for flexible backend storage and general-purpose application data.</div>
+<div><strong>Elasticsearch</strong>Best for search, analytics, logs, monitoring, and observability.</div>
+<div><strong>Firebase</strong>Best for mobile apps, real-time sync, and serverless applications.</div>
+<div><strong>Right choice</strong>The correct database depends on the application goal and data access pattern.</div>
+</div>
+<div><span>MongoDB</span><span>Elasticsearch</span><span>Firebase</span><span>NoSQL</span><span>Search</span><span>Analytics</span><span>Real-time</span><span>Cloud</span></div>
+</section></article>
+</div>
+<section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
+Published articles are mirrored into GitHub Pages.</p>
+<a href="https://arkitekts.dk/document-databases-mongodb-elasticsearch-and-firebase/" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL GUIDE <span aria-hidden="true">↗</span></a></section>
+<nav class="guide-related" aria-label="Other technical guides">
+  <a href="../hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture/" rel="prev"><span>← PREVIOUS GUIDE</span><strong>HashiCorp Vault Enterprise Guide: Secrets Management, PKI, Authentication and Production Architecture</strong></a>
+  <a href="../java-apache-kafka-building-scalable-backend-systems/" rel="next"><span>NEXT GUIDE →</span><strong>Java &amp; Apache Kafka: Building Scalable Backend Systems</strong></a>
+</nav>
+<div class="guide-end"><a href="../">VIEW ALL GUIDES <span aria-hidden="true">↗</span></a><a href="../../contact/">LET’S TALK <span aria-hidden="true">↗</span></a></div>
+</main><footer class="site-footer" aria-label="Fixed site footer">
+      <a class="footer-mark" href="../../concepts/frame-five-contact/" aria-label="Soheil home">S.</a>
+      <span class="footer-specialties">LINUX <i>·</i> ANSIBLE <i>·</i> ELASTICSEARCH <i>·</i> KAFKA</span>
+      <span class="footer-location">COPENHAGEN · DENMARK</span></footer></div></body></html>

@@ -22,8 +22,8 @@ CASES=[
  ("shopflow-mobile","ShopFlow Mobile"),
  ("camp-booking","CAMP Booking System")
 ]
-MENU=["PORTFOLIO","PROFILE","SKILLS","Let's talk"]
-LINKS=["/portfolio/","/profile/","/software-skills/","/contact/"]
+MENU=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
+LINKS=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
 errors=[]
 report=[]
 

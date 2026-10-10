@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f6fb"><meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Package Kubernetes applications using Helm charts, values, releases, GitOps and rollbacks."><title>Helm Enterprise Guide: Kubernetes Package Management, Charts and Production Architecture — Soheil Fattahieh</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../contact/contact.css">
+<link rel="stylesheet" href="../guides.css"><link rel="stylesheet" href="../article.css"><script defer src="../article.js"></script></head><body class="guides-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<div class="contact-atmosphere" aria-hidden="true"><div class="atmosphere-grid"></div><div class="atmosphere-orb"></div></div>
+<div class="page-shell"><header class="site-header" aria-label="Fixed site header">
+      <a class="brand-icon" href="../../concepts/frame-five-contact/" aria-label="Soheil home">S<span>.</span></a>
+      <span class="site-name" aria-label="Soheil Fattahieh">S O H E I L</span>
+      <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open menu"><span></span><span></span><span></span></button>
+      <nav class="navigation" id="navigation" aria-label="Main navigation">
+      <a href="../../portfolio/">PORTFOLIO</a>
+<a href="../../profile/">PROFILE</a>
+<a href="../../software-skills/">SKILLS</a>
+<a href="../../technical-guides/" aria-current="page">GUIDES</a>
+      <a class="contact" href="../../contact/">Let's talk</a>
+      </nav></header><main id="content">
+<nav class="guide-breadcrumb" aria-label="Breadcrumb">
+ <a href="../">ALL TECHNICAL GUIDES <span aria-hidden="true">↖</span></a><span>/</span>
+ <span>GUIDE 10 / 11</span></nav>
+<section class="guide-article-hero" aria-labelledby="article-title">
+ <div><p class="guides-kicker"><i></i> 10 / TECHNICAL GUIDE <span>—</span> KUBERNETES</p>
+ <h1 id="article-title">Helm Enterprise Guide: Kubernetes Package Management, Charts and Production Architecture<span>.</span></h1>
+ <p class="guide-article-intro">Package Kubernetes applications using Helm charts, values, releases, GitOps and rollbacks.</p>
+ <ul class='guide-tags'><li>Helm</li><li>Kubernetes</li><li>Charts</li></ul>
+ <div class="guide-article-actions"><a href="#article-content">START READING <span aria-hidden="true">↓</span></a>
+ <a href="https://arkitekts.dk/helm-enterprise-guide-kubernetes-package-management-charts-and-production-architecture/" target="_blank" rel="noopener noreferrer">ORIGINAL ARTICLE <span aria-hidden="true">↗</span></a>
+ <button id="guide-copy" type="button">COPY LINK <span aria-hidden="true">↗</span></button><span id="guide-copy-status" role="status" aria-live="polite"></span></div>
+ </div><div class="guide-article-number" aria-hidden="true">10</div>
+</section>
+<div class="guide-reader" id="article-content">
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#overview">Helm Overview <span aria-hidden="true">↗</span></a><a href="#architecture">Helm Architecture <span aria-hidden="true">↗</span></a><a href="#chart-structure">Chart Structure <span aria-hidden="true">↗</span></a><a href="#chart-yaml">Chart.yaml <span aria-hidden="true">↗</span></a><a href="#values">Values Files <span aria-hidden="true">↗</span></a><a href="#templates">Templates <span aria-hidden="true">↗</span></a><a href="#functions">Template Functions <span aria-hidden="true">↗</span></a><a href="#helpers">Helpers <span aria-hidden="true">↗</span></a><a href="#dependencies">Dependencies <span aria-hidden="true">↗</span></a><a href="#repositories">Repositories &amp; OCI <span aria-hidden="true">↗</span></a><a href="#releases">Releases <span aria-hidden="true">↗</span></a><a href="#upgrades">Upgrades &amp; Rollbacks <span aria-hidden="true">↗</span></a><a href="#gitops">GitOps <span aria-hidden="true">↗</span></a><a href="#security">Security Best Practices <span aria-hidden="true">↗</span></a><a href="#troubleshooting">Troubleshooting <span aria-hidden="true">↗</span></a></nav>
+   <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
+ <article class="guide-article-body" aria-label="Technical article content"><section><h2 id="overview">Helm Overview</h2><p>Helm is the package manager for Kubernetes. It packages Kubernetes resources into reusable charts, supports parameterized deployments through values files, and simplifies upgrades, rollbacks and multi-environment deployments.</p><div>Chart → Values → helm install → Release → Kubernetes Resources</div><table><thead><tr><th>Component</th><th>Purpose</th><th>Enterprise Recommendation</th></tr></thead><tbody><tr><td>Chart</td><td>Application package</td><td>One chart per service</td></tr><tr><td>Values</td><td>Configuration</td><td>Separate per environment</td></tr><tr><td>Release</td><td>Installed chart</td><td>Track versions</td></tr></tbody></table></section><section><h2 id="architecture">Helm Architecture</h2><pre><code>Git → CI/CD → Helm Chart → Values → Kubernetes API → Cluster</code></pre></section><section>
+<h2 id="chart-structure">Chart Structure</h2><pre><code>mychart/
+├── Chart.yaml
+├── values.yaml
+├── charts/
+├── templates/
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── ingress.yaml
+│   ├── _helpers.tpl
+│   └── NOTES.txt
+└── .helmignore</code></pre></section><section>
+<h2 id="chart-yaml">Chart.yaml</h2><pre><code>apiVersion: v2
+name: myapp
+version: 1.0.0
+appVersion: "1.0.0"
+type: application</code></pre></section><section><h2 id="values">Values Files</h2><pre><code>image:
+  repository: ghcr.io/company/app
+  tag: 1.0.0
+replicaCount: 3
+service:
+  type: ClusterIP</code></pre><table><thead><tr><th>File</th><th>Use</th></tr></thead><tbody><tr><td>values.yaml</td><td>Default values</td></tr><tr><td>values-dev.yaml</td><td>Development</td></tr><tr><td>values-prod.yaml</td><td>Production</td></tr></tbody></table></section><section>
+<h2 id="templates">Templates</h2><pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}</code></pre></section><section><h2 id="functions">Template Functions</h2><pre><code>{{ default "nginx" .Values.image.repository }}
+{{ upper .Values.environment }}
+{{ quote .Values.tag }}</code></pre></section><section>
+<h2 id="helpers">Helpers</h2><pre><code>{{- define "myapp.fullname" -}}
+{{ .Release.Name }}-{{ .Chart.Name }}
+{{- end -}}</code></pre></section><section>
+<h2 id="dependencies">Dependencies</h2><pre><code>dependencies:
+- name: redis
+  version: 20.x.x
+  repository: https://charts.bitnami.com/bitnami</code></pre></section><section><h2 id="repositories">Repositories &amp; OCI</h2><pre><code>helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm pull oci://registry.example.com/charts/myapp</code></pre></section><section>
+<h2 id="releases">Releases</h2><pre><code>helm install app ./chart
+helm list
+helm status app</code></pre></section><section><h2 id="upgrades">Upgrades &amp; Rollbacks</h2><pre><code>helm upgrade app ./chart -f values-prod.yaml
+helm history app
+helm rollback app 2</code></pre><table><thead><tr><th>Strategy</th><th>Benefit</th></tr></thead><tbody><tr><td>helm upgrade</td><td>Controlled release</td></tr><tr><td>helm rollback</td><td>Fast recovery</td></tr></tbody></table></section><section>
+<h2 id="gitops">GitOps</h2><p>Helm integrates with Argo CD and Flux. Store charts and values in Git and let GitOps controllers synchronize cluster state automatically.</p></section><section><h2 id="security">Security Best Practices</h2><ul><li>Do not store secrets in values files.</li><li>Use external secret managers.</li><li>Lint charts before release.</li><li>Pin chart versions.</li><li>Review templates.</li></ul></section><section>
+<h2 id="troubleshooting">Troubleshooting</h2><table><thead><tr><th>Problem</th><th>Check</th></tr></thead><tbody><tr><td>Template error</td><td>helm template</td></tr><tr><td>Failed upgrade</td><td>helm history</td></tr><tr><td>Bad values</td><td>helm lint</td></tr></tbody></table><pre><code>helm lint ./chart
+helm template ./chart
+helm get values app
+helm history app</code></pre></section><section id="commands"><h2>Useful Commands</h2><pre><code>helm create app
+helm lint
+helm template
+helm install
+helm upgrade
+helm rollback
+helm uninstall
+helm list
+helm status
+helm history
+helm dependency update
+helm package
+helm repo add
+helm search repo</code></pre></section><section id="takeaways"><h2>Key Takeaways</h2><p>Helm standardizes Kubernetes application packaging and deployment. Combined with GitOps, version-controlled values and CI/CD, it enables repeatable, auditable and production-ready releases.</p></section></article>
+</div>
+<section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
+Published articles are mirrored into GitHub Pages.</p>
+<a href="https://arkitekts.dk/helm-enterprise-guide-kubernetes-package-management-charts-and-production-architecture/" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL GUIDE <span aria-hidden="true">↗</span></a></section>
+<nav class="guide-related" aria-label="Other technical guides">
+  <a href="../ci-cd-enterprise-guide-github-actions-jenkins-gitlab-ci-and-production-pipelines/" rel="prev"><span>← PREVIOUS GUIDE</span><strong>CI/CD Enterprise Guide: GitHub Actions, Jenkins, GitLab CI and Production Pipelines</strong></a>
+  <a href="../hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture/" rel="next"><span>NEXT GUIDE →</span><strong>HashiCorp Vault Enterprise Guide: Secrets Management, PKI, Authentication and Production Architecture</strong></a>
+</nav>
+<div class="guide-end"><a href="../">VIEW ALL GUIDES <span aria-hidden="true">↗</span></a><a href="../../contact/">LET’S TALK <span aria-hidden="true">↗</span></a></div>
+</main><footer class="site-footer" aria-label="Fixed site footer">
+      <a class="footer-mark" href="../../concepts/frame-five-contact/" aria-label="Soheil home">S.</a>
+      <span class="footer-specialties">LINUX <i>·</i> ANSIBLE <i>·</i> ELASTICSEARCH <i>·</i> KAFKA</span>
+      <span class="footer-location">COPENHAGEN · DENMARK</span></footer></div></body></html>

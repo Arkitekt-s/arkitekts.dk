@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f6fb"><meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Linux architecture, Red Hat operations, file systems, commands, networking and security."><title>Linux &amp; Red Hat Cheat Sheet HTML Rendered — Soheil Fattahieh</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../contact/contact.css">
+<link rel="stylesheet" href="../guides.css"><link rel="stylesheet" href="../article.css"><script defer src="../article.js"></script></head><body class="guides-page">
+<a class="skip-link" href="#content">Skip to content</a>
+<div class="contact-atmosphere" aria-hidden="true"><div class="atmosphere-grid"></div><div class="atmosphere-orb"></div></div>
+<div class="page-shell"><header class="site-header" aria-label="Fixed site header">
+      <a class="brand-icon" href="../../concepts/frame-five-contact/" aria-label="Soheil home">S<span>.</span></a>
+      <span class="site-name" aria-label="Soheil Fattahieh">S O H E I L</span>
+      <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open menu"><span></span><span></span><span></span></button>
+      <nav class="navigation" id="navigation" aria-label="Main navigation">
+      <a href="../../portfolio/">PORTFOLIO</a>
+<a href="../../profile/">PROFILE</a>
+<a href="../../software-skills/">SKILLS</a>
+<a href="../../technical-guides/" aria-current="page">GUIDES</a>
+      <a class="contact" href="../../contact/">Let's talk</a>
+      </nav></header><main id="content">
+<nav class="guide-breadcrumb" aria-label="Breadcrumb">
+ <a href="../">ALL TECHNICAL GUIDES <span aria-hidden="true">↖</span></a><span>/</span>
+ <span>GUIDE 03 / 11</span></nav>
+<section class="guide-article-hero" aria-labelledby="article-title">
+ <div><p class="guides-kicker"><i></i> 03 / TECHNICAL GUIDE <span>—</span> LINUX</p>
+ <h1 id="article-title">Linux &amp; Red Hat Cheat Sheet HTML Rendered<span>.</span></h1>
+ <p class="guide-article-intro">Linux architecture, Red Hat operations, file systems, commands, networking and security.</p>
+ <ul class='guide-tags'><li>Linux</li><li>Red Hat</li><li>Operations</li></ul>
+ <div class="guide-article-actions"><a href="#article-content">START READING <span aria-hidden="true">↓</span></a>
+ <a href="https://arkitekts.dk/03-linux-red-hat-cheat-sheet-html-rendered/" target="_blank" rel="noopener noreferrer">ORIGINAL ARTICLE <span aria-hidden="true">↗</span></a>
+ <button id="guide-copy" type="button">COPY LINK <span aria-hidden="true">↗</span></button><span id="guide-copy-status" role="status" aria-live="polite"></span></div>
+ </div><div class="guide-article-number" aria-hidden="true">03</div>
+</section>
+<div class="guide-reader" id="article-content">
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#linux-architecture">Linux Architecture <span aria-hidden="true">↗</span></a><a href="#red-hat-enterprise-linux">Red Hat Enterprise Linux <span aria-hidden="true">↗</span></a><a href="#production-operations">Production Operations <span aria-hidden="true">↗</span></a><a href="#linux-architecture-map">Linux Architecture Map <span aria-hidden="true">↗</span></a><a href="#production-server-flow">Production Server Flow <span aria-hidden="true">↗</span></a><a href="#filesystem">Linux File System Cheat Sheet <span aria-hidden="true">↗</span></a><a href="#commands">Essential Linux Commands <span aria-hidden="true">↗</span></a><a href="#systemd-service-management">systemd &amp; Service Management <span aria-hidden="true">↗</span></a><a href="#dnf-rpm-package-management">DNF &amp; RPM Package Management <span aria-hidden="true">↗</span></a><a href="#users-groups-permissions-sudo">Users, Groups, Permissions &amp; sudo <span aria-hidden="true">↗</span></a><a href="#security">SELinux &amp; firewalld <span aria-hidden="true">↗</span></a><a href="#networking-cheat-sheet">Networking Cheat Sheet <span aria-hidden="true">↗</span></a><a href="#storage-lvm-filesystems">Storage, LVM &amp; Filesystems <span aria-hidden="true">↗</span></a><a href="#logging-troubleshooting-flow">Logging &amp; Troubleshooting Flow <span aria-hidden="true">↗</span></a><a href="#production-linux-best-practices">Production Linux Best Practices <span aria-hidden="true">↗</span></a></nav>
+   <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
+ <article class="guide-article-body" aria-label="Technical article content"><section><div><div>🐧</div><div><h2 id="linux-architecture">Linux Architecture</h2><div>Kernel &amp; User Space</div></div></div><p>Linux is built around the kernel. The kernel manages CPU, memory, disks, network devices, processes, system calls, and security boundaries.</p><div></div><b>Core layers</b><ul><li>Hardware: CPU, RAM, disks, NICs</li><li>Kernel: scheduler, memory, drivers</li><li>System libraries: glibc and runtime libraries</li><li>System services: systemd, journald, sshd</li><li>User tools: bash, dnf, vim, curl</li></ul><div><span>Kernel</span><span>User Space</span><span>Shell</span><span>Drivers</span></div><div><div>🎩</div><div><h2 id="red-hat-enterprise-linux">Red Hat Enterprise Linux</h2><div>Enterprise Platform</div></div></div><p>RHEL is designed for enterprise workloads. It focuses on stability, security updates, certified ecosystems, lifecycle management, and automation.</p><div></div><b>Important RHEL areas</b><ul><li>RPM package format</li><li>DNF package manager</li><li>SELinux policy enforcement</li><li>firewalld zones and services</li><li>System roles and automation</li></ul><div><span>RHEL 9</span><span>RHEL 10</span><span>RPM</span><span>DNF</span></div><div><div>⚙️</div><div><h2 id="production-operations">Production Operations</h2><div>Run &amp; Secure Systems</div></div></div><p>A production Linux engineer must understand services, logs, permissions, ports, firewall rules, storage, backup, monitoring, and change control.</p><div></div><b>Daily responsibilities</b><ul><li>Check system health</li><li>Review logs and failed services</li><li>Patch packages safely</li><li>Manage users and access</li><li>Monitor disk, CPU, memory, and network</li></ul><div><span>Monitoring</span><span>Patching</span><span>Logs</span><span>Security</span></div></section><section><h2 id="linux-architecture-map">Linux Architecture Map</h2><table><thead><tr><th>Layer</th><th>Purpose</th><th>Examples</th></tr></thead><tbody><tr><td>Hardware</td><td>Physical or virtual resources</td><td>CPU, RAM, disks, NICs</td></tr><tr><td>Kernel</td><td>Controls hardware and system calls</td><td>Scheduler, memory manager</td></tr><tr><td>Init system</td><td>Starts and manages services</td><td>systemd, systemctl, journald</td></tr><tr><td>Security</td><td>Controls access and isolation</td><td>Users, groups, sudo, SELinux</td></tr><tr><td>Applications</td><td>Business or platform workloads</td><td>Apache, Nginx, Java, Kafka, Elasticsearch</td></tr></tbody></table><h2 id="production-server-flow">Production Server Flow</h2><div><div><span>🌐</span>Network</div><div>→</div><div><span>🔥</span>firewalld</div><div>→</div><div><span>⚙️</span>Service</div><div><span>🔐</span>SELinux</div><div>→</div><div><span>📁</span>Storage</div><div>→</div><div><span>📊</span>Logs</div></div><div>A request enters through the network, passes firewall policy, reaches a service, is controlled by SELinux and permissions, writes to storage, and produces logs for troubleshooting.</div></section><section><h2 id="filesystem">Linux File System Cheat Sheet</h2><table><tbody><tr><td><b>/etc</b></td><td>System configuration files</td></tr><tr><td><b>/var/log</b></td><td>Log files such as messages, secure, audit, and application logs</td></tr><tr><td><b>/var/lib</b></td><td>Persistent state data for services</td></tr><tr><td><b>/usr/bin</b></td><td>User command binaries</td></tr><tr><td><b>/usr/sbin</b></td><td>System administration binaries</td></tr><tr><td><b>/home</b></td><td>User home directories</td></tr><tr><td><b>/root</b></td><td>Root user home directory</td></tr><tr><td><b>/tmp</b></td><td>Temporary files</td></tr><tr><td><b>/boot</b></td><td>Kernel and boot loader files</td></tr></tbody></table></section><br/><section><h2 id="commands">Essential Linux Commands</h2><pre><code># system information
+hostnamectl
+uname -r
+cat /etc/redhat-release
+
+# disk and memory
+df -h
+du -sh /var/log/*
+free -h
+lsblk
+
+# processes
+ps aux | grep java
+top
+uptime
+
+# logs
+journalctl -xe
+journalctl -u sshd -n 100
+tail -f /var/log/messages</code></pre><h2 id="systemd-service-management">systemd &amp; Service Management</h2><pre><code># service status
+systemctl status sshd
+systemctl status firewalld
+
+# start, stop, restart
+systemctl start nginx
+systemctl restart nginx
+systemctl stop nginx
+
+# boot behavior
+systemctl enable nginx
+systemctl disable nginx
+
+# failed services
+systemctl --failed
+journalctl -u nginx -n 200 --no-pager</code></pre></section><section><h2 id="dnf-rpm-package-management">DNF &amp; RPM Package Management</h2><pre><code># package operations
+dnf search nginx
+dnf install nginx
+dnf update
+dnf remove nginx
+
+# package information
+rpm -qa | grep nginx
+rpm -qi nginx
+rpm -ql nginx
+
+# repo checks
+dnf repolist
+dnf clean all
+dnf makecache</code></pre><h2 id="users-groups-permissions-sudo">Users, Groups, Permissions &amp; sudo</h2><pre><code># users and groups
+id soheil
+getent passwd soheil
+getent group wheel
+
+# ownership and permissions
+ls -l /etc/ssh/sshd_config
+chown root:root file
+chmod 644 file
+chmod 750 script.sh
+
+# sudo
+sudo -l
+visudo</code></pre><div>Permission example: 644 means owner can read/write, group can read, and others can read. It does not give execute permission.</div></section><section><h2 id="security">SELinux &amp; firewalld</h2><pre><code># SELinux
+getenforce
+sestatus
+ausearch -m AVC -ts recent
+sealert -a /var/log/audit/audit.log
+
+# firewalld
+firewall-cmd --state
+firewall-cmd --get-active-zones
+firewall-cmd --list-all
+firewall-cmd --add-service=https --permanent
+firewall-cmd --reload</code></pre><h2 id="networking-cheat-sheet">Networking Cheat Sheet</h2><pre><code># IP and routes
+ip addr
+ip route
+nmcli connection show
+
+# DNS
+resolvectl status
+nslookup example.com
+dig example.com
+
+# ports
+ss -tulpn
+ss -tnp | grep 9093
+nc -vz server.example.com 443
+curl -vk https://server.example.com</code></pre></section><section><h2 id="storage-lvm-filesystems">Storage, LVM &amp; Filesystems</h2><pre><code># block devices
+lsblk
+blkid
+df -hT
+
+# LVM overview
+pvs
+vgs
+lvs
+
+# mount points
+findmnt
+cat /etc/fstab
+
+# disk usage
+du -sh /var/* | sort -h</code></pre><h2 id="logging-troubleshooting-flow">Logging &amp; Troubleshooting Flow</h2><table><thead><tr><th>Step</th><th>Command</th><th>Purpose</th></tr></thead><tbody><tr><td>Health</td><td>uptime, free -h, df -h</td><td>Find CPU, memory, disk pressure</td></tr><tr><td>Service</td><td>systemctl status app</td><td>Check running or failed state</td></tr><tr><td>Logs</td><td>journalctl -u app</td><td>Find service errors</td></tr><tr><td>Network</td><td>ss -tulpn, nc -vz</td><td>Check ports and reachability</td></tr><tr><td>Security</td><td>getenforce, firewall-cmd</td><td>Check SELinux and firewall blocks</td></tr></tbody></table></section><section><h2 id="production-linux-best-practices">Production Linux Best Practices</h2><table><thead><tr><th>Area</th><th>Good practice</th><th>Why it matters</th></tr></thead><tbody><tr><td>Access</td><td>Use named users and sudo rules</td><td>Improves auditability</td></tr><tr><td>Patching</td><td>Patch in test before production</td><td>Reduces outage risk</td></tr><tr><td>Storage</td><td>Separate logs and application data</td><td>Protects root filesystem</td></tr><tr><td>Services</td><td>Enable only needed services</td><td>Reduces attack surface</td></tr><tr><td>Firewall</td><td>Open only required ports</td><td>Limits unwanted access</td></tr><tr><td>SELinux</td><td>Keep enforcing where possible</td><td>Adds strong security boundary</td></tr><tr><td>Monitoring</td><td>Alert on disk, memory, CPU, services</td><td>Finds issues early</td></tr><tr><td>Documentation</td><td>Document runbooks</td><td>Speeds incident handling</td></tr></tbody></table></section><br/><section id="takeaways"><h2>Key Takeaways</h2><div><div><strong>Linux architecture</strong>Understand kernel, user space, services, storage, network, and security layers.</div><div><strong>RHEL focus</strong>Red Hat adds lifecycle, support, security, and stable package management.</div><div><strong>systemd</strong>Use systemctl and journalctl together when checking services.</div><div><strong>Security</strong>Permissions, sudo, SELinux, and firewalld must be checked together.</div><div><strong>Production mindset</strong>Use monitoring, automation, change control, and repeatable configuration.</div></div><div><span>Linux</span><span>RHEL</span><span>systemd</span><span>DNF</span><span>RPM</span><span>SELinux</span><span>firewalld</span><span>LVM</span><span>Ansible</span><span>DevOps</span></div></section></article>
+</div>
+<section class="guide-original"><span>SOURCE OF TRUTH</span><p>This guide comes from my WordPress AI documentation system.
+Published articles are mirrored into GitHub Pages.</p>
+<a href="https://arkitekts.dk/03-linux-red-hat-cheat-sheet-html-rendered/" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL GUIDE <span aria-hidden="true">↗</span></a></section>
+<nav class="guide-related" aria-label="Other technical guides">
+  <a href="../java-apache-kafka-building-scalable-backend-systems/" rel="prev"><span>← PREVIOUS GUIDE</span><strong>Java &amp; Apache Kafka: Building Scalable Backend Systems</strong></a>
+  <a href="../docker-cheat-sheet-containers-images-and-production-architecture-8/" rel="next"><span>NEXT GUIDE →</span><strong>Docker Cheat Sheet: Containers, Images and Production Architecture</strong></a>
+</nav>
+<div class="guide-end"><a href="../">VIEW ALL GUIDES <span aria-hidden="true">↗</span></a><a href="../../contact/">LET’S TALK <span aria-hidden="true">↗</span></a></div>
+</main><footer class="site-footer" aria-label="Fixed site footer">
+      <a class="footer-mark" href="../../concepts/frame-five-contact/" aria-label="Soheil home">S.</a>
+      <span class="footer-specialties">LINUX <i>·</i> ANSIBLE <i>·</i> ELASTICSEARCH <i>·</i> KAFKA</span>
+      <span class="footer-location">COPENHAGEN · DENMARK</span></footer></div></body></html>
