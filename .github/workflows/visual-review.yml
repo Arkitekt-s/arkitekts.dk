@@ -5,6 +5,7 @@ on:
       - 'concepts/**'
       - 'scripts/visual_review.py'
       - 'scripts/light_experience_review.py'
+      - 'scripts/immersive_studio_review.py'
       - '.github/workflows/visual-review.yml'
   workflow_dispatch:
 permissions:
@@ -26,6 +27,10 @@ jobs:
         run: python scripts/visual_review.py
       - name: Review light-theme 3D portfolio and shared templates
         run: python scripts/light_experience_review.py
+      - name: Review cinematic interactive 3D studio on all screen sizes
+        run: python scripts/immersive_studio_review.py
+      - name: Check cinematic 3D JavaScript syntax
+        run: node --check concepts/immersive-studio/assets/studio.js
       - name: Check interactive JavaScript syntax
         run: node --check concepts/light-journey/assets/experience.js
       - name: Save desktop/tablet/mobile screenshots
