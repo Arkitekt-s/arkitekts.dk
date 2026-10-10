@@ -72,6 +72,8 @@ with sync_playwright() as p:
                     failures.append(f"{device} {path}: {label} mark too small: {css}")
                 if css["visible"]!="visible" or css["display"]=="none":
                     failures.append(f"{device} {path}: {label} logo not visible")
+            if page.locator('link[rel="icon"]').get_attribute("href") is None or "soheil-favicon.svg" not in page.locator('link[rel="icon"]').get_attribute("href"):
+                failures.append(f"{device} {path}: page still uses the protected old favicon")
             if selector:
                 content=page.locator(selector).inner_text()
                 if number not in content:
@@ -116,6 +118,8 @@ with sync_playwright() as p:
         if res.status!=200:failures.append(f"{path}: missing subpage")
         if page.locator(".site-header nav.navigation a").all_inner_texts()!=LABELS:
             failures.append(f"{path}: chapter order differs")
+        if "soheil-favicon.svg" not in page.locator('link[rel="icon"]').get_attribute("href"):
+            failures.append(f"{path}: article/project favicon differs")
         if "soheil-logo.svg" not in page.locator(".site-header .brand-icon").evaluate(
             "x=>getComputedStyle(x).backgroundImage"):
             failures.append(f"{path}: brand identity differs")
@@ -135,9 +139,12 @@ for asset in ("soheil-logo.svg","soheil-logo-inverse.svg"):
     body=(ROOT/"assets"/asset).read_text("utf8")
     if "<path " not in body or '<rect fill="#b02ecb"' not in body:
         failures.append("Approved logo shape or magenta period is missing: "+asset)
-favicon=(ROOT/"assets"/"favicon.svg").read_text("utf8")
+favicon=(ROOT/"assets"/"soheil-favicon.svg").read_text("utf8")
 if "#b02ecb" not in favicon:
-    failures.append("Website favicon does not match approved magenta logo")
+    failures.append("New website favicon does not match approved magenta logo")
+legacy=(ROOT/"assets"/"favicon.svg").read_text("utf8")
+if 'M13 41l10-21' not in legacy:
+    failures.append("Protected original Frame 01 favicon has changed")
 SERVER.shutdown()
 (SCREENS/"report.json").write_text(json.dumps({"devices":stats,"subpages":len(MORE),"issues":failures},indent=2))
 if failures:
