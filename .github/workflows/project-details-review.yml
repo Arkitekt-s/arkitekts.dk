@@ -1,0 +1,45 @@
+name: Individual portfolio case studies
+
+on:
+  pull_request:
+    paths:
+      - "portfolio/**"
+      - "scripts/project_details_review.py"
+      - ".github/workflows/project-details-review.yml"
+  push:
+    paths:
+      - "portfolio/**"
+      - "scripts/project_details_review.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  individual-project-pages:
+    name: Six project pages, links, responsive design and actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium and Playwright
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Verify meaningful JavaScript
+        run: |
+          node --check portfolio/case-study.js
+          node --check portfolio/portfolio.js
+      - name: Test dedicated project pages and navigation
+        run: python scripts/project_details_review.py
+      - name: Save responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: six-project-detail-screenshots
+          path: screenshots/portfolio-details/
+          retention-days: 14
+          if-no-files-found: ignore

@@ -78,6 +78,19 @@
     search.focus();
   });
 
+  // Clicking any non-interactive space on a card opens that project.
+  // Native image/title/action links remain the accessible keyboard path.
+  cards.forEach(card=>{
+    const destination=card.querySelector("a.project-open")?.href;
+    if(!destination)return;
+    card.addEventListener("click",event=>{
+      if(event.defaultPrevented||event.button!==0)return;
+      if(event.target.closest("a,button,summary,details,input"))return;
+      if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+      location.assign(destination);
+    });
+  });
+
   // Bookmarkable filters, e.g. /portfolio/?category=integration&q=Slack.
   const params=new URLSearchParams(location.search);
   const q=params.get("q");

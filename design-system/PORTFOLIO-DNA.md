@@ -29,6 +29,7 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - **Skills:** `/software-skills/` — new bright skills page with category filters and live search.
 - **Profile:** `/profile/` — bright biography and education page, with section navigation.
 - **Portfolio:** `/portfolio/` — six original projects, locally hosted screenshots, searchable filters and detailed case summaries. All four header links stay inside the GitHub preview.
+- **Six project pages:** `/portfolio/{project-slug}/` — standalone original-source case studies, shared header/footer, project images, previous/next project navigation, and real copy-link controls.
 
 GitHub Pages base path in preview: `https://arkitekt-s.github.io/arkitekts.dk/`.
 All new internal URLs are relative, so moving the site to a custom domain is straightforward.
@@ -39,7 +40,7 @@ Migrates six published WordPress case studies: Web Development, Apartment Valuat
 Full-Stack Grocery Delivery, Basecamp Response Monitor, ShopFlow Mobile, and CAMP Booking.
 Five actual portfolio images are cached within GitHub using `scripts/build_portfolio_images.py`.
 The full-stack card shows a clearly illustrative CSS app layout rather than an unrelated image.
-Project case-study details use native expandable HTML; search and category filters use meaningful JavaScript.
+Project cards link to their own case study pages by image, heading, and an explicit VIEW FULL PROJECT link. Compact previews remain expandable on the listing. Individual pages show detailed context, execution, results, technologies and original project references. Project gallery images are cached locally. JavaScript handles accessible navigation, chapter highlighting and copy-link actions.
 Original detailed WordPress case studies remain linked for reference until separately migrated.
 
 ## Profile page content
