@@ -34,10 +34,16 @@ jobs:
           test "$(wc -c < concepts/frame-one-live/assets/mountain-loop.mp4)" -gt 150000
           ffprobe -v error -show_entries format=duration,size -of json concepts/frame-one-live/assets/mountain-loop.mp4
           ls -lh concepts/frame-one-live/assets/mountain-loop.mp4
+          ffmpeg -hide_banner -loglevel error -y -i concepts/frame-one-live/assets/mountain-loop.mp4 \
+            -an -c:v libvpx-vp9 -b:v 0 -crf 34 -deadline realtime -cpu-used 5 -row-mt 1 \
+            -threads 2 concepts/frame-one-live/assets/mountain-loop.webm
+          test "$(wc -c < concepts/frame-one-live/assets/mountain-loop.webm)" -gt 80000
+          ffprobe -v error -show_entries stream=codec_name,width,height -show_entries format=duration,size -of json concepts/frame-one-live/assets/mountain-loop.webm
+          ls -lh concepts/frame-one-live/assets/mountain-loop.webm
       - name: Commit optimized footage to preview branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add concepts/frame-one-live/assets/mountain-loop.mp4
+          git add concepts/frame-one-live/assets/mountain-loop.mp4 concepts/frame-one-live/assets/mountain-loop.webm
           git commit -m "assets: self-host optimized licensed mountain motion video for Frame 01"
           git push origin HEAD:design/frame-one-live-video
