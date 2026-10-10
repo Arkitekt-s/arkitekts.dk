@@ -101,3 +101,20 @@ Updated: 2026-10-10
 [Design proposal and technical boundaries](IMMERSIVE-STUDIO-REVIEW.md)
 
 **No domain change.** Existing drafts remain available. Prototype content is intentionally marked `noindex`.
+
+## Milestone 1e — Personal cinematic journey (2026-10-10)
+
+- [x] Retrieved public WordPress profile details, biography and published project links
+- [x] Used the actual portrait from the existing WordPress site (temporary external media dependency)
+- [x] Built a separate [Personal Journey preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/personal-journey/)
+- [x] Added four full-screen 3D episodes with mouse-pointer depth, native scrolling and clickable episode controls
+- [x] Added personal stories, degree background, real project links and technical guides
+- [x] Kept white backgrounds for long-form reading
+- [x] [GitHub PR #1](https://github.com/Arkitekt-s/arkitekts.dk/pull/1) passed browser checks and was merged as a **standalone concept only** — the site homepage was not replaced
+- [x] Passed responsive browser tests at 320, 390, 768 and 1440 px; no detected horizontal overflow or JS errors
+- [ ] Owner chooses and approves the personal design and the balance of 3D/white content
+- [ ] Export portrait and all media from WordPress to local GitHub assets before changing DNS
+- [ ] Migrate complete WordPress site including page slugs, metadata and SEO
+- [ ] Real-device testing, Lighthouse and full accessibility audit
+
+This is still a **draft prototype**, not the selected final site theme. See [design review and source notes](PERSONAL-JOURNEY-REVIEW.md).
