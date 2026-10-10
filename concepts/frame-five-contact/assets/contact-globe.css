@@ -83,10 +83,15 @@
 body.frame-five-active .gridlines{opacity:.59}
 body.frame-five-active #pointer-pattern{opacity:0!important}
 body.frame-five-active .portal-navigation{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
-body.frame-five-active .site-header,
-body.frame-five-active .site-footer{
- background:rgba(11,7,20,.32);backdrop-filter:none;-webkit-backdrop-filter:none;
+/* Keep the cinematic scene visible through the fixed navigation bars. */
+body.frame-one .site-header,
+body.frame-one .site-footer{
+ background:transparent;
+ box-shadow:none;
+ backdrop-filter:none;
+ -webkit-backdrop-filter:none;
 }
+
 @media(max-width:1120px){
  .contact-layout{grid-template-columns:minmax(270px,43%) minmax(0,57%);padding:6% 5% 8%;gap:14px}
  .contact-heading{font-size:clamp(58px,7vw,90px)}
