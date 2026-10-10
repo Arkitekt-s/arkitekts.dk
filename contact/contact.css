@@ -349,3 +349,6 @@ body.has-js [data-reveal]{opacity:1;translate:none;transition:none}
  .closing-legal{font-size:9px}
  .closing-legal span{padding:0 4px}
 }
+
+/* Screen reader feedback must not shift the permanent homepage-style footer. */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
