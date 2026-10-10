@@ -82,3 +82,22 @@ Updated: 2026-10-10
 
 [Design rules and acceptance targets](LIGHT-JOURNEY-REVIEW.md)
 
+
+## Milestone 1d — Immersive Engineering Studio, concept 05 (2026-10-10)
+
+- [x] Built a separate [cinematic full-screen 3D preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/immersive-studio/)
+- [x] Procedurally modeled server racks, a data-flow nucleus, connections and a production portal with Three.js
+- [x] Four native-scroll 3D camera chapters; responsive desktop pointer movement
+- [x] Kept main content sections on readable white backgrounds
+- [x] Kept global navigation visible and changed its colors on white sections
+- [x] Added quality settings, a motion control and a CSS fallback
+- [x] Fixed the initial 3D renderer error and headline clipping found by tests
+- [x] Passed [responsive browser validation](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/visual-review.yml) at 320px, 390px, 768px and 1440px
+- [ ] Design approval: visual direction, 3D intensity and mobile typography
+- [ ] Detailed performance benchmarks and real hardware/WebGL testing
+- [ ] Apply one final design system to the case-study and article templates
+- [ ] Migrate original WordPress pages, articles, media and SEO before a DNS switch
+
+[Design proposal and technical boundaries](IMMERSIVE-STUDIO-REVIEW.md)
+
+**No domain change.** Existing drafts remain available. Prototype content is intentionally marked `noindex`.
