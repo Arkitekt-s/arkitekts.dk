@@ -27,10 +27,19 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - **Five-frame homepage:** `/concepts/frame-five-contact/` — unchanged scene structure.
 - **Bright contact:** `/contact/` — opens from both **Let's talk** links on the five-frame homepage.
 - **Skills:** `/software-skills/` — new bright skills page with category filters and live search.
-- **Profile / Portfolio:** existing WordPress links remain until those pages are migrated.
+- **Profile:** `/profile/` — bright biography and education page, with section navigation.
+- **Portfolio:** existing WordPress link until that page is migrated.
 
 GitHub Pages base path in preview: `https://arkitekt-s.github.io/arkitekts.dk/`.
 All new internal URLs are relative, so moving the site to a custom domain is straightforward.
+
+## Profile page content
+
+Preserves the supplied profile, original published portrait, KEA Computer Science,
+and University of Kent education details, with genuine course links.
+The same fixed header/footer layout is used across the five-frame homepage,
+Contact, Skills, and Profile. JavaScript controls only the mobile menu,
+active section navigation, keyboard focus, and image fallback.
 
 ## Skills page content
 
