@@ -209,3 +209,20 @@ body.frame-one .site-footer{
     filter:none!important;
   }
 }
+
+/* Transparent navigation in every chapter and playback state.
+   Earlier scene styles use higher-specificity selectors. */
+html body.frame-one .site-header,
+html body.frame-one .site-footer,
+html body.frame-one.chapter-two-active .site-header,
+html body.frame-one.chapter-two-active .site-footer,
+html body.frame-one.frame-five-active .site-header,
+html body.frame-one.frame-five-active .site-footer {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
