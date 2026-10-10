@@ -1,0 +1,183 @@
+{
+  "source": "WordPress: arkitekts.dk",
+  "generator": "Arkitekt-s/wordpress-mcp",
+  "note": "Seeded with 11 verified published guides. Sync replaces body_html with approved published WordPress text.",
+  "guides": [
+    {
+      "number": "01",
+      "category": "Databases",
+      "title": "Document Databases: MongoDB, Elasticsearch and Firebase",
+      "slug": "document-databases-mongodb-elasticsearch-and-firebase",
+      "description": "A practical comparison of document storage, full-text search and real-time application data.",
+      "tags": [
+        "MongoDB",
+        "Elasticsearch",
+        "Firebase"
+      ],
+      "source_url": "https://arkitekts.dk/document-databases-mongodb-elasticsearch-and-firebase/",
+      "date": "2026-06-29",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "02",
+      "category": "Backend",
+      "title": "Java & Apache Kafka: Building Scalable Backend Systems",
+      "slug": "java-apache-kafka-building-scalable-backend-systems",
+      "description": "Build scalable backends using Java services and event-driven messaging with Apache Kafka.",
+      "tags": [
+        "Java",
+        "Apache Kafka",
+        "Backend"
+      ],
+      "source_url": "https://arkitekts.dk/java-apache-kafka-building-scalable-backend-systems/",
+      "date": "2026-06-29",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "03",
+      "category": "Linux",
+      "title": "Linux & Red Hat Cheat Sheet HTML Rendered",
+      "slug": "03-linux-red-hat-cheat-sheet-html-rendered",
+      "description": "Linux architecture, Red Hat operations, file systems, commands, networking and security.",
+      "tags": [
+        "Linux",
+        "Red Hat",
+        "Operations"
+      ],
+      "source_url": "https://arkitekts.dk/03-linux-red-hat-cheat-sheet-html-rendered/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "04",
+      "category": "Containers",
+      "title": "Docker Cheat Sheet: Containers, Images and Production Architecture",
+      "slug": "docker-cheat-sheet-containers-images-and-production-architecture-8",
+      "description": "Containers, images, networks, Docker Compose and production security in one guide.",
+      "tags": [
+        "Docker",
+        "Containers",
+        "Compose"
+      ],
+      "source_url": "https://arkitekts.dk/docker-cheat-sheet-containers-images-and-production-architecture-8/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "05",
+      "category": "Automation",
+      "title": "Ansible Enterprise Guide: Automation, Playbooks, Roles and Production Architecture",
+      "slug": "ansible-enterprise-guide-automation-playbooks-roles-and-production-architecture",
+      "description": "Enterprise automation using playbooks, inventories, roles, templates and repeatable operations.",
+      "tags": [
+        "Ansible",
+        "Automation",
+        "YAML"
+      ],
+      "source_url": "https://arkitekts.dk/ansible-enterprise-guide-automation-playbooks-roles-and-production-architecture/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "06",
+      "category": "Orchestration",
+      "title": "Kubernetes Enterprise Guide: Pods, Services, Networking and Production Architecture",
+      "slug": "kubernetes-enterprise-guide-pods-services-networking-and-production-architecture",
+      "description": "Work with Kubernetes clusters, deployments, services, networking, storage and RBAC.",
+      "tags": [
+        "Kubernetes",
+        "K8s",
+        "Infrastructure"
+      ],
+      "source_url": "https://arkitekts.dk/kubernetes-enterprise-guide-pods-services-networking-and-production-architecture/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "07",
+      "category": "Infrastructure as Code",
+      "title": "Terraform Enterprise Guide: Infrastructure as Code, Modules and Production Architecture",
+      "slug": "terraform-enterprise-guide-infrastructure-as-code-modules-and-production-architecture",
+      "description": "Manage infrastructure with Terraform modules, state, providers and safer deployments.",
+      "tags": [
+        "Terraform",
+        "IaC",
+        "Cloud"
+      ],
+      "source_url": "https://arkitekts.dk/terraform-enterprise-guide-infrastructure-as-code-modules-and-production-architecture/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "08",
+      "category": "Version Control",
+      "title": "Git & GitHub Enterprise Guide: Version Control, Branching, CI/CD and Production Workflows",
+      "slug": "git-and-github-enterprise-guide-version-control-branching-ci-cd-and-production-workflows",
+      "description": "Understand Git workflows, collaboration, pull requests and production-ready version control.",
+      "tags": [
+        "Git",
+        "GitHub",
+        "CI/CD"
+      ],
+      "source_url": "https://arkitekts.dk/git-and-github-enterprise-guide-version-control-branching-ci-cd-and-production-workflows/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "09",
+      "category": "CI/CD",
+      "title": "CI/CD Enterprise Guide: GitHub Actions, Jenkins, GitLab CI and Production Pipelines",
+      "slug": "ci-cd-enterprise-guide-github-actions-jenkins-gitlab-ci-and-production-pipelines",
+      "description": "Build reliable deployment pipelines using GitHub Actions, Jenkins and GitLab CI.",
+      "tags": [
+        "GitHub Actions",
+        "Jenkins",
+        "GitLab"
+      ],
+      "source_url": "https://arkitekts.dk/ci-cd-enterprise-guide-github-actions-jenkins-gitlab-ci-and-production-pipelines/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "10",
+      "category": "Kubernetes",
+      "title": "Helm Enterprise Guide: Kubernetes Package Management, Charts and Production Architecture",
+      "slug": "helm-enterprise-guide-kubernetes-package-management-charts-and-production-architecture",
+      "description": "Package Kubernetes applications using Helm charts, values, releases, GitOps and rollbacks.",
+      "tags": [
+        "Helm",
+        "Kubernetes",
+        "Charts"
+      ],
+      "source_url": "https://arkitekts.dk/helm-enterprise-guide-kubernetes-package-management-charts-and-production-architecture/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    },
+    {
+      "number": "11",
+      "category": "Security",
+      "title": "HashiCorp Vault Enterprise Guide: Secrets Management, PKI, Authentication and Production Architecture",
+      "slug": "hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture",
+      "description": "Secrets, identity, dynamic credentials, PKI certificates and Vault security practices.",
+      "tags": [
+        "Vault",
+        "PKI",
+        "Security"
+      ],
+      "source_url": "https://arkitekts.dk/hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture/",
+      "date": "2026-06-30",
+      "status": "published",
+      "body_html": ""
+    }
+  ]
+}
