@@ -177,14 +177,17 @@ with sync_playwright() as p:
         overflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
         if overflow>2:errors.append(f"{name}: horizontal overflow {overflow}")
         if crashes:errors.append(f"{name}: JS runtime errors {crashes}")
-        page.locator("#contact-back").click()
-        page.wait_for_function("parseFloat(document.body.dataset.journeyProgress||4)<3.01",timeout=8000)
+        # Back controls were intentionally removed. Scroll backward to the
+        # gallery instead, which must retain its last-photo position.
+        for _ in range(5):
+            page.mouse.wheel(0,-160)
+        page.wait_for_function("parseFloat(document.body.dataset.journeyProgress||4)<3.02",timeout=8000)
         if float(page.locator("body").get_attribute("data-gallery-index") or 0)<5.7:
             errors.append(f"{name}: returning to the gallery lost the last photo position")
         page.screenshot(path=str(OUT/f"{name}-07-return-gallery.png"),animations="allow")
         records.append({"screen":name,"size":[w,h],"globeDots":page.evaluate("window.soheilGlobe?.dotCount()"),
                         "firstYaw":before,"autoYaw":after,"overflow":overflow,"jsErrors":crashes})
-        print(f"VERIFIED {name} {w}x{h}: five frames, self-hosted 3D globe, Copenhagen, slow rotation, drag, reset, back")
+        print(f"VERIFIED {name} {w}x{h}: five frames, self-hosted 3D globe, Copenhagen, slow rotation, drag, reset, scroll return")
         ctx.close()
     browser.close()
 server.shutdown()
