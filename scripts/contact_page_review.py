@@ -21,6 +21,8 @@ with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
     for name,(w,h) in SIZES.items():
         ctx=browser.new_context(viewport={"width":w,"height":h},device_scale_factor=1)
+        # Headless Chromium requires explicit clipboard permissions in CI.
+        ctx.grant_permissions(["clipboard-read","clipboard-write"],origin=BASE)
         page=ctx.new_page()
         errors=[]
         page.on("pageerror",lambda e:errors.append(str(e)))
@@ -118,6 +120,9 @@ with sync_playwright() as p:
                 )
                 if expected not in page.locator("#copy-status").inner_text():
                     failures.append(f"{name}: copy status did not report actual contact")
+                actual=page.evaluate("navigator.clipboard.readText()")
+                if actual!=expected:
+                    failures.append(f"{name}: clipboard content mismatch: {actual}")
         page.screenshot(path=str(OUT/f"{name}-contact-top.png"),full_page=False,animations="disabled")
         page.locator(".contact-options").scroll_into_view_if_needed()
         page.wait_for_timeout(300)
