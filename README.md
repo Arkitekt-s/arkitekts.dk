@@ -1,3 +1,9 @@
+## Clean Frame 01 + continuous header/footer grid
+
+[**Open the updated two-frame interactive demo**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/)
+
+Removed the visible draft/helper labels from Frame 01. The live film, cursor patterns and scroll zoom remain. Vertical grid lines now run uninterrupted through the header, movie, and footer in both frames. See [PR #8](https://github.com/Arkitekt-s/arkitekts.dk/pull/8) and [design details](design-system/CLEAN-CHROME-V2.md). The frozen original baseline remains available separately.
+
 ## Frame 02 — scroll into the full-screen movie
 
 [**Open the zoom-transition demo**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/)
