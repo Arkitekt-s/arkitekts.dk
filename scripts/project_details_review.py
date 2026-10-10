@@ -51,6 +51,15 @@ with sync_playwright() as p:
         if listing.locator("h1").inner_text().strip(" \n.")!="Basecamp Response Monitor":
             errors.append(f"{name}: clicking portfolio card reached wrong destination")
         listing.close()
+        # Ordinary clicks on the project summary must also open that project.
+        card_click=ctx.new_page()
+        card_click.goto(BASE+"/portfolio/",wait_until="domcontentloaded")
+        card_click.wait_for_function("document.body.dataset.portfolioReady==='true'",timeout=5000)
+        card_click.locator("#camp-booking .project-summary").click()
+        card_click.wait_for_url("**/portfolio/camp-booking/",timeout=6000)
+        if "CAMP Booking System" not in card_click.locator("h1").inner_text():
+            errors.append(f"{name}: clicking project summary did not open its full page")
+        card_click.close()
 
         for i,(slug,title) in enumerate(CASES):
             page=ctx.new_page()
