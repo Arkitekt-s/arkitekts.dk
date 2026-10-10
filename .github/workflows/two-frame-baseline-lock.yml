@@ -1,0 +1,17 @@
+name: Approved Frames 01–02 baseline lock
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  approved-two-frame-lock:
+    name: Preserve approved two-frame cinematic design
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check approved files and frozen reference
+        run: python3 scripts/verify_two_frame_baseline.py

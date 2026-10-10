@@ -1,3 +1,15 @@
+# Current approved website foundation: Frames 01–02
+
+**[Clean two-frame approved baseline V1](APPROVED-TWO-FRAME-V1.md)** is now the master reference for all future designs.
+
+- [Open approved two-frame preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/)
+- [Frozen GitHub snapshot](https://github.com/Arkitekt-s/arkitekts.dk/tree/baseline/two-frames-clean-approved-v1)
+- [Exact locked source/media files](two-frame-clean-approved-v1.json)
+
+The original Frame 01 reference documented below remains preserved, but the newer approved two-frame version takes precedence for future work. **Do not modify either approved snapshot unless the owner requests changes.**
+
+---
+
 # Approved design foundation — SOHEIL Frame 01
 
 **Status: APPROVED AS THE BASE. Do not redesign Frame 01.**
