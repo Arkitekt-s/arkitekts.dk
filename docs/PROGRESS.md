@@ -156,3 +156,21 @@ This is still a **draft prototype**, not the selected final site theme. See [des
 - [ ] Self-host media, then migrate source pages and article templates after the design is approved
 
 [Detailed feature review](STAGE-DECK-V2-REVIEW.md) · [Focused interaction test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/cinema-review.yml)
+
+## Milestone 1h — Frame 01 first-only redesign (2026-10-10)
+
+- [x] Kept the fixed header, fixed footer, dark background and fine grid foundation
+- [x] Rebuilt **only** the first landing frame, preserving the other frames untouched
+- [x] Created three tall original panoramic arches with an independently sourced landscape photo
+- [x] Added subtle idle animation: moving scenery, drifting cloud layers and light haze
+- [x] Added mouse-driven parallax and **press-and-hold zoom into landscape**
+- [x] Added pause-motion, reduced-motion and keyboard support
+- [x] [Pull request #4](https://github.com/Arkitekt-s/arkitekts.dk/pull/4) checked and merged as a standalone preview
+- [x] Chromium browser tests passed at 320px, 390px, 768px, 1440px, including no horizontal overflow and stationary header/footer
+- [ ] **Owner design review:** Approve or request changes to Frame 01 before any further frames
+- [ ] Performance, iOS Safari/Android, and accessibility testing on real devices
+- [ ] Self-host the approved photo asset before eventual DNS cutover
+
+**New isolated first-frame preview:** https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-v3/
+
+The existing root homepage is unchanged. This preview uses `noindex,nofollow`, DNS is unchanged, and Frames 2–4 will not be redesigned until Frame 01 is approved.
