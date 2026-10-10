@@ -10,6 +10,8 @@ Updated: 2026-10-10
 - [x] Added accessible mobile navigation and reduced-motion support
 - [x] Added SVG favicon, local CSS and JavaScript
 - [x] Added GitHub Pages deployment workflow
+- [x] Added automated website validation workflow — first run passed
+- [ ] Enable branch protection requiring pull requests and the `Site integrity` check (must be set by repository owner in Settings)
 - [ ] GitHub Pages requires initial activation: Settings > Pages > Build and deployment > GitHub Actions
 - [ ] Verify successful Actions deployment and HTTPS preview URL
 - [ ] Check actual phone, tablet, desktop and narrow phone devices
