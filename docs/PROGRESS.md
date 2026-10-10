@@ -314,3 +314,25 @@ No changes to the approved two-frame assets, WordPress or DNS. Do not start Fram
 [Interactive preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/) · [Test workflow](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-four-gallery.yml)
 
 WordPress and DNS remain unchanged.
+
+## Milestone 1q — Approved four-frame snapshot and final contact globe (2026-10-10)
+
+- [x] Froze the exact approved four-frame concept at [baseline/four-frame-gallery-approved-v1](https://github.com/Arkitekt-s/arkitekts.dk/tree/baseline/four-frame-gallery-approved-v1) — source commit `d5297daa9e783b3428b4a06a726fd75ed350325c`
+- [x] Added 17-file [source/media fingerprint lock](../design-system/four-frame-gallery-approved-v1.json) and [automated check](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/four-frame-baseline-lock.yml)
+- [x] Built [Frame 05 — final contact and Copenhagen globe](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-five-contact/) as an isolated new folder
+- [x] The same dark site, fixed header/footer and continuous thin grid span all five frames
+- [x] Verified public contact email `sohe@arkitekts.dk` and GitHub link included
+- [x] Self-hosted **3,517 real Earth land dots**, rendered as a rotating 3D spherical globe with directional shading
+- [x] **Copenhagen marker at 55.6761° N, 12.5683° E** moves correctly with globe orientation
+- [x] Globe slowly auto-rotates; mouse/touch drag, arrow keys, Find Copenhagen and reduced-motion alternative work
+- [x] Enter final frame by scrolling down from the **last gallery photo**; Back returns to that last photo
+- [x] Fixed mobile overlap of Back button, globe controls and footer after reviewing device screenshots
+- [x] Passed Chromium tests at 320px, 390px, 768px and 1440px: geometry, geography loading, globe rotation and drag, back navigation, no JS exceptions
+- [x] [PR #14](https://github.com/Arkitekt-s/arkitekts.dk/pull/14) merged; earlier original frame folders untouched
+- [ ] User visually reviews and approves the fifth frame before final design lock
+- [ ] Real Safari, iPhone and Android tests, further accessibility/performance verification
+- [ ] Content/photo migration, cross-page SEO and DNS only after site is fully approved
+
+[Five-frame interactive review](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-five-contact/) · [Design details](FRAME-FIVE-CONTACT-REVIEW.md) · [Globe/browser tests](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-five-review.yml)
+
+Production WordPress and DNS have not changed.
