@@ -171,3 +171,11 @@
  .guides-art-ring.two{animation:none}
  .guide-card,.guide-card-bottom span:last-child{transition:none}
 }
+
+/* Keep search and category controls between the fixed header and footer
+   when visitors scroll into view on short screens. */
+#guides-search,#guides-clear,#guides-reset,
+.guides-filters button,.guide-card-link,.guides-jump{
+ scroll-margin-top:calc(var(--header-h) + 30px);
+ scroll-margin-bottom:calc(var(--footer-h) + 25px);
+}
