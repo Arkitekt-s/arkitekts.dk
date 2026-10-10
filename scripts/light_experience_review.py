@@ -73,6 +73,15 @@ with sync_playwright() as playwright:
                     page.locator("#stage-3").evaluate("(el) => el.scrollIntoView({block: 'center', behavior: 'instant'})")
                     page.wait_for_timeout(700)
                     current = page.locator("[data-stage-index]").inner_text()
+                    # WebGL loads only as the scene approaches the viewport.
+                    # The CSS fallback is valid on devices without working WebGL.
+                    try:
+                        page.locator(".scene-view.webgl-active").wait_for(state="attached",timeout=12000)
+                        webgl = "active"
+                    except Exception:
+                        webgl = "fallback"
+                    print(f"3D scene on {device}: {webgl}")
+                    page.screenshot(path=str(OUT / f"journey-stage3-{device}.png"), animations="disabled")
                     if current != "03 / 04":
                         failures.append(f"{kind}/{device}: scroll scene expected 03 / 04, got {current!r}")
                     btn = page.locator("[data-motion-toggle]")
