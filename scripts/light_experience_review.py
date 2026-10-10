@@ -70,7 +70,7 @@ with sync_playwright() as playwright:
                 if page.locator(".chapter[data-stage]").count() != 4:
                     failures.append(f"{kind}/{device}: expected four chapters")
                 if device in ("phone", "desktop"):
-                    page.locator("#stage-3").scroll_into_view_if_needed()
+                    page.locator("#stage-3").evaluate("(el) => el.scrollIntoView({block: 'center', behavior: 'instant'})")
                     page.wait_for_timeout(700)
                     current = page.locator("[data-stage-index]").inner_text()
                     if current != "03 / 04":
