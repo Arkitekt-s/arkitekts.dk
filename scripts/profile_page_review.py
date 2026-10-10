@@ -54,6 +54,18 @@ with sync_playwright() as p:
             failures.append(f"{name}: Kent programme URL missing")
         if page.locator('.navigation a').all_inner_texts()!=EXPECTED_MENU:
             failures.append(f"{name}: nav wording differs from approved homepage")
+        # Every header must share three internal destinations; S. returns home.
+        nav_links=page.locator(".navigation a")
+        expected_paths=["/profile/","/software-skills/","/contact/"]
+        for index,dest in enumerate(expected_paths):
+            # Contact's own CTA may use an anchor to its contact methods.
+            href=nav_links.nth(index).evaluate("el=>new URL(el.href).pathname")
+            if href!=dest:
+                failures.append(f"{name}: header link {index} points to {href}, not {dest}")
+        home_path=page.locator(".site-header .brand-icon").evaluate("el=>new URL(el.href).pathname")
+        if home_path!="/concepts/frame-five-contact/":
+            failures.append(f"{name}: S. logo does not return home")
+
         if page.locator(".profile-section").count()!=2:
             failures.append(f"{name}: Personal/Education sections missing")
         for destination in ("profile-personal","profile-education"):
@@ -106,6 +118,10 @@ with sync_playwright() as p:
                 failures.append(f"{name}: shared chrome differs: {selector}")
         if not original.locator('a[href="../../profile/"]').count():
             failures.append(f"{name}: homepage PROFILE does not open local Profile")
+        for index,dest in enumerate(["/profile/","/software-skills/","/contact/"]):
+            path=original.locator(".navigation a").nth(index).evaluate("el=>new URL(el.href).pathname")
+            if path!=dest:
+                failures.append(f"{name}: homepage nav {index} points to {path}, not {dest}")
         original.close()
 
         for route in ("contact","software-skills"):
@@ -113,6 +129,18 @@ with sync_playwright() as p:
             sub.goto(BASE+f"/{route}/",wait_until="domcontentloaded")
             if not sub.locator('a[href="../profile/"]').count():
                 failures.append(f"{name}: {route} PROFILE is not linked to Profile")
+            expected_sub=["/profile/","/software-skills/"]
+            for index,dest in enumerate(expected_sub):
+                path=sub.locator(".navigation a").nth(index).evaluate("el=>new URL(el.href).pathname")
+                if path!=dest:
+                    failures.append(f"{name}: {route} nav link {index} should be {dest}, got {path}")
+            contact_href=sub.locator(".navigation .contact").get_attribute("href")
+            if route=="contact":
+                if contact_href!="#contact-methods":
+                    failures.append(f"{name}: Contact's Let's talk should focus contact methods")
+            else:
+                if sub.locator(".navigation .contact").evaluate("el=>new URL(el.href).pathname")!="/contact/":
+                    failures.append(f"{name}: Skills Let's talk does not reach Contact")
             sub.close()
 
         if js_errors:failures.append(f"{name}: JS errors {js_errors}")
