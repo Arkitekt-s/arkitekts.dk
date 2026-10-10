@@ -98,18 +98,20 @@ with sync_playwright() as p:
         yaw_before=float(globe.get_attribute("data-yaw") or 0)
         bbox=globe.bounding_box()
         if bbox:
-            gx=bbox["x"]+bbox["width"]*.45
-            gy=bbox["y"]+bbox["height"]*.45
+            gx=bbox["x"]+bbox["width"]*.75
+            gy=bbox["y"]+bbox["height"]*.46
+            hit=page.evaluate("([x,y]) => document.elementFromPoint(x,y)?.tagName", [gx,gy])
+            if hit != "CANVAS":
+                errors.append(f"{name}: globe pointer hit {hit} instead of canvas")
             page.mouse.move(gx,gy)
             page.mouse.down()
-            # Keep the pointer within the viewport on narrow phones.
-            drag_delta=max(25,min(110,w-gx-16))
-            page.mouse.move(gx+drag_delta,gy-35,steps=12)
+            # Start on the right of the sphere; drag left within the screen.
+            page.mouse.move(gx-90,gy-35,steps=12)
             page.mouse.up()
             page.wait_for_timeout(260)
             yaw_after=float(globe.get_attribute("data-yaw") or 0)
             if abs(yaw_after-yaw_before)<.02:
-                errors.append(f"{name}: globe did not rotate after pointer drag")
+                errors.append(f"{name}: globe did not rotate after pointer drag ({yaw_before} -> {yaw_after}, hit={hit})")
             page.locator("#globe-zoom-in").click(force=True)
             page.wait_for_timeout(230)
             zoom=float(globe.get_attribute("data-zoom") or 0)
