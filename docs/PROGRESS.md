@@ -209,3 +209,20 @@ No WordPress or DNS changes were made. Frame 02, 03 and 04 have not been altered
 **Approved reference:** https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-live/
 
 Note: the reference snapshot and checks preserve/flag Frame 01 changes, but are not the same as enabled GitHub branch-protection rules.
+
+## Milestone 1k — Frame 02 scroll-to-video transition (2026-10-10)
+
+- [x] Built separate [Frame 01 → Frame 02 cinematic preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/)
+- [x] Approved Frame 01, its source assets and its independent snapshot remain unchanged
+- [x] Mouse-wheel/trackpad/touch progressively enlarges the three panoramic windows
+- [x] The moving video fills the entire viewport behind the fixed header and footer
+- [x] Seamless single-video blend fixes vertical seams visible in early mobile screenshots
+- [x] Original headline fades out; new **Curiosity. Code. Delivery.** text appears with staggered animation
+- [x] Scroll up restores the original three-arch design; previous/next buttons and keyboard alternatives provided
+- [x] Tested at 320px, 390px, 768px and 1440px: continuous progress, full-screen movie playback, text, reverse, fixed chrome, no detected JS errors
+- [x] [Pull Request #7](https://github.com/Arkitekt-s/arkitekts.dk/pull/7) merged as isolated concept only
+- [ ] **User review and approval of Frame 02** before locking it and beginning Frame 03
+- [ ] Test actual Safari iPhone, Android phone and accessibility/performance on real devices
+- [ ] Do not change WordPress or DNS until all frames and pages are approved
+
+[Design review](FRAME-TWO-PORTAL-REVIEW.md) · [Frame 02 browser tests](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-two-portal.yml)
