@@ -150,3 +150,31 @@ body.frame-five-active .site-footer{
 /* Preserve Frame 05 copy while making its existing “let’s talk” phrase useful. */
 .contact-lead-link{color:inherit;text-decoration:none;border-bottom:1px solid rgba(235,181,254,.68);transition:color .2s ease,border-color .2s ease}
 .contact-lead-link:hover{color:#fff;border-color:#fff}
+
+
+/* Frame 01 → 02 editorial handoff.
+   Scroll progress owns these properties; old time-based title animations
+   must not keep moving after the user scrolls backwards. Only the final
+   five-frame experience is affected: the locked frame assets stay intact. */
+.frame-stage .hero-text{
+  will-change:opacity,translate,filter;
+}
+.frame-stage #chapter-two{
+  will-change:opacity,translate;
+}
+.frame-stage #chapter-two .chapter-title > span,
+.frame-stage #chapter-two .chapter-description,
+.frame-stage #chapter-two .chapter-link{
+  transition:none!important;
+  will-change:transform,opacity,filter;
+}
+@media(prefers-reduced-motion:reduce){
+  .frame-stage .hero-text,
+  .frame-stage #chapter-two,
+  .frame-stage #chapter-two .chapter-title > span,
+  .frame-stage #chapter-two .chapter-description,
+  .frame-stage #chapter-two .chapter-link{
+    will-change:auto;
+    filter:none!important;
+  }
+}
