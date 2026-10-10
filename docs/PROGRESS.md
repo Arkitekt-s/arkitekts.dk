@@ -118,3 +118,24 @@ Updated: 2026-10-10
 - [ ] Real-device testing, Lighthouse and full accessibility audit
 
 This is still a **draft prototype**, not the selected final site theme. See [design review and source notes](PERSONAL-JOURNEY-REVIEW.md).
+
+## Milestone 1f — Fixed-frame cinematic landing (2026-10-10)
+
+- [x] Implemented permanent fixed header, footer, and background grid matching the reference structure
+- [x] Built frame 01: panoramic photo arches + concise headline
+- [x] Built frame 02: personal photo reel using the real publicly hosted portrait
+- [x] Built frame 03: Work / About / Guides hub
+- [x] Built frame 04: animated mathematical 3D dot globe with contact
+- [x] Implemented mouse-wheel, trackpad, swipe, keyboard, numbered frame controls
+- [x] Verified page does **not** scroll between frames; header/footer remain stationary
+- [x] Corrected headline clipping detected in screenshot review
+- [x] Preloaded the real portrait to avoid a blank photograph in mobile scene transitions
+- [x] Browser checks passed at 320/390/768/1440px, including real portrait loading and JavaScript syntax
+- [x] Reviewed and merged [Pull Request #2](https://github.com/Arkitekt-s/arkitekts.dk/pull/2) as an **isolated concept**; the site's existing homepage is unchanged
+- [ ] User approves the fixed-frame design, copy and visual level
+- [ ] Only then freeze shared tokens/header/footer and create page templates
+- [ ] Save WordPress images locally and migrate original articles/projects
+- [ ] Real-device speed and accessibility audits; no DNS cutover before approval
+
+[Try the new fixed-frame stage deck](https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck/) · [Read the design contract](STAGE-DECK-REVIEW.md)
+
