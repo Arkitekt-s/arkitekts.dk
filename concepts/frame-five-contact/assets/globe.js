@@ -3,8 +3,8 @@
  * Accurate Copenhagen marker: 55.6761 N, 12.5683 E.
  *
  * Each dot is represented on a unit sphere in 3D, yaw and pitch are applied,
- * and only the camera-facing hemisphere is projected to an HTML canvas.
- * Lighting/shadow and longitude parallels make the globe genuinely rotatable.
+ * with both hemispheres projected into a transparent HTML canvas.
+ * Dim far-side points establish depth with no opaque sphere, glow or shadow.
  */
 (() => {
   "use strict";
@@ -79,19 +79,21 @@
     cx=width/2;cy=height/2;radius=Math.min(width,height)*.385;
     shell.dataset.radius=radius.toFixed(1);
   }
-  function line(latlon,constant,opacity){
+  function line(latlon,constant,opacity,hemisphere="front"){
     ctx.beginPath();
     let started=false;
     for(let n=0;n<=240;n++){
       const value=-180+n*1.5;
       const p=latlon==="lat"?toXYZ(value,constant):toXYZ(constant,-90+n*.75);
       const q=projection(p);
-      if(q.front<0.01){started=false;continue;}
+      if((hemisphere==="front"&&q.front<.01)||(hemisphere==="back"&&q.front>-.01)){
+        started=false;continue;
+      }
       if(!started){ctx.moveTo(q.x,q.y);started=true;}
       else ctx.lineTo(q.x,q.y);
     }
     ctx.strokeStyle="rgba(182,107,212,"+opacity+")";
-    ctx.lineWidth=.48;
+    ctx.lineWidth=hemisphere==="back"?.34:.48;
     ctx.stroke();
   }
   function draw(now){
@@ -103,56 +105,43 @@
     document.body.dataset.globePitch=pitch.toFixed(5);
     ctx.clearRect(0,0,width,height);
 
-    // Atmospheric outer glow, balanced so it blends into the dark page.
-    let glow=ctx.createRadialGradient(cx,cy,radius*.58,cx,cy,radius*1.34);
-    glow.addColorStop(0,"rgba(97,18,135,0)");
-    glow.addColorStop(.61,"rgba(158,37,203,.08)");
-    glow.addColorStop(.83,"rgba(131,29,186,.075)");
-    glow.addColorStop(1,"rgba(125,19,166,0)");
-    ctx.fillStyle=glow;
-    ctx.beginPath();ctx.arc(cx,cy,radius*1.35,0,PI*2);ctx.fill();
-
-    ctx.save();
-    ctx.beginPath();ctx.arc(cx,cy,radius,0,PI*2);ctx.clip();
-    const sphere=ctx.createRadialGradient(cx-radius*.21,cy-radius*.24,radius*.12,cx+radius*.2,cy+radius*.05,radius*1.13);
-    sphere.addColorStop(0,"#170a2a");
-    sphere.addColorStop(.40,"#10071c");
-    sphere.addColorStop(.76,"#0c0716");
-    sphere.addColorStop(1,"#06040e");
-    ctx.fillStyle=sphere;ctx.fillRect(cx-radius,cy-radius,radius*2,radius*2);
-
-    // Subtle latitude/longitude lines are projected as actual 3D curves.
-    for(let lat=-75;lat<=75;lat+=15)line("lat",lat,.11);
-    for(let lon=-180;lon<180;lon+=20)line("lon",lon,.09);
-
-    // The land/cloud of dots has independent 3D coordinates and visibility.
+    // True transparent sphere: never paint a disc or any external glow.
+    // Draw the far hemisphere first in a whisper of color. The page remains
+    // visible through the globe, while orientation is clear in 3D.
     const scale=Math.max(.62,radius/230);
-    for(let i=0;i<dots.length;i++){
-      const p=projection(dots[i]);
+    for(let lat=-75;lat<=75;lat+=15)line("lat",lat,.035,"back");
+    for(let lon=-180;lon<180;lon+=20)line("lon",lon,.03,"back");
+    for(let k=0;k<dots.length;k++){
+      const p=projection(dots[k]);
+      if(p.front>=0)continue;
+      const depth=Math.abs(p.front);
+      ctx.fillStyle="rgba(176,126,200,"+(.055+depth*.075).toFixed(3)+")";
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,(.35+.18*depth)*scale,0,PI*2);
+      ctx.fill();
+    }
+
+    // The visible surface uses only fine map points and 3D gridlines.
+    // Without a painted globe interior, the background shows between dots.
+    for(let lat=-75;lat<=75;lat+=15)line("lat",lat,.105);
+    for(let lon=-180;lon<180;lon+=20)line("lon",lon,.085);
+    for(let k=0;k<dots.length;k++){
+      const point=dots[k];
+      const p=projection(point);
       if(p.front<.001)continue;
       const rim=.23+.77*p.front;
-      const nearEurope=Math.abs(dots[i].x)<.55&&dots[i].y>.2;
-      const rr=(.57+Math.pow(p.front,.5)*.53)*scale;
-      const light=(.27+rim*.75).toFixed(3);
+      const nearEurope=Math.abs(point.x)<.55&&point.y>.2;
+      const rr=(.57+Math.sqrt(p.front)*.53)*scale;
+      const alpha=nearEurope ? .30+rim*.66 : Math.max(.16,rim*.77);
       ctx.fillStyle=nearEurope
-        ? "rgba(214,78,255,"+light+")"
-        : "rgba(183,55,237,"+Math.max(.16,rim*.77).toFixed(3)+")";
+        ? "rgba(214,117,255,"+alpha.toFixed(3)+")"
+        : "rgba(183,99,237,"+alpha.toFixed(3)+")";
       ctx.beginPath();ctx.arc(p.x,p.y,rr,0,PI*2);ctx.fill();
     }
 
-    // Gradual unlit hemisphere, entirely inside the spherical silhouette.
-    const shading=ctx.createLinearGradient(cx-radius,cy,cx+radius,cy);
-    shading.addColorStop(0,"rgba(13,6,22,.1)");
-    shading.addColorStop(.48,"rgba(10,5,17,0)");
-    shading.addColorStop(1,"rgba(4,3,11,.59)");
-    ctx.fillStyle=shading;ctx.fillRect(cx-radius,cy-radius,radius*2,radius*2);
-    ctx.restore();
-
-    // A hairline halo catches the edge against the nearly-black page.
-    ctx.strokeStyle="rgba(185,69,232,.23)";
-    ctx.lineWidth=Math.max(.65,.7*scale);
-    ctx.beginPath();ctx.arc(cx,cy,radius,0,PI*2);ctx.stroke();
-
+    // No radial shading, opaque circle, rim halo or perimeter shadow.
+    // This also leaves completely transparent pixels outside the map.
+    
     // Copenhagen is a real projected geolocation, not a hard-coded pixel.
     const city=projection(toXYZ(COPENHAGEN.lon,COPENHAGEN.lat));
     const visible=city.front>.075;

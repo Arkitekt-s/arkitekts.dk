@@ -112,6 +112,43 @@ with sync_playwright() as p:
         if w<=760 and page.locator(".contact-signoff").is_visible():
             errors.append(f"{name}: mobile footer has duplicate crowded signoff")
         page.screenshot(path=str(OUT/f"{name}-05-copenhagen-globe.png"),animations="allow")
+        # Regression: the last gallery gradient and contact gradient must
+        # match exactly. The globe must have no shell halo or opaque canvas fill.
+        transparency=page.evaluate("""() => {
+            const gallery=getComputedStyle(document.querySelector(".frame-four-backdrop"),"::after").backgroundImage;
+            const contact=getComputedStyle(document.querySelector(".frame-five-backdrop")).backgroundImage;
+            const shell=document.querySelector("#globe-shell");
+            const cs=getComputedStyle(shell);
+            const pseudo=getComputedStyle(shell,"::before");
+            const canvas=document.querySelector("#copenhagen-globe");
+            const ctx=canvas.getContext("2d");
+            const w=canvas.width,h=canvas.height;
+            const pixel=(x,y)=>ctx.getImageData(Math.round(x),Math.round(y),1,1).data[3];
+            let opaque=0,count=0;
+            for(let row=-6;row<=6;row++){
+                for(let col=-6;col<=6;col++){
+                    const x=w/2+col*(w*.385*.7/6);
+                    const y=h/2+row*(h*.385*.7/6);
+                    if(Math.hypot(col,row)>6)continue;
+                    if(pixel(x,y)>245)opaque++;
+                    count++;
+                }
+            }
+            return {
+                gradientMatched:gallery===contact,
+                shellTransparent:cs.backgroundColor==="rgba(0, 0, 0, 0)"||cs.backgroundColor==="transparent",
+                pseudoGone:pseudo.content==="none"||pseudo.display==="none",
+                noOutsideGlow:pixel(w*.95,h*.5)===0,
+                opaqueRatio:opaque/count
+            };
+        }""")
+        if not transparency["gradientMatched"]:
+            errors.append(f"{name}: Frame 04 ending and Frame 05 gradient differ")
+        if not transparency["shellTransparent"] or not transparency["pseudoGone"]:
+            errors.append(f"{name}: globe shell still paints a glow or background")
+        if not transparency["noOutsideGlow"] or transparency["opaqueRatio"]>.25:
+            errors.append(f"{name}: globe canvas is not transparent ({transparency})")
+
 
         # Globe must rotate slowly by itself and respond to direct manipulation.
         before=float(page.locator("body").get_attribute("data-globe-yaw") or 0)
