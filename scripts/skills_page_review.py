@@ -16,7 +16,7 @@ BASE=f"http://127.0.0.1:{server.server_port}"
 SIZES={"small-phone":(320,720),"phone":(390,844),"tablet":(768,1024),"desktop":(1440,900)}
 failures=[]
 results=[]
-EXPECTED=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"
+EXPECTED=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
     for name,(w,h) in SIZES.items():
