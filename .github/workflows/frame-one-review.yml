@@ -1,0 +1,42 @@
+name: Frame 01 cinematic review
+
+on:
+  push:
+    paths:
+      - "concepts/frame-one-v3/**"
+      - "scripts/frame_one_review.py"
+      - ".github/workflows/frame-one-review.yml"
+  pull_request:
+    paths:
+      - "concepts/frame-one-v3/**"
+      - "scripts/frame_one_review.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scene:
+    name: Animated panoramic hero
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium browser tests
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Check JavaScript syntax
+        run: node --check concepts/frame-one-v3/assets/frame-one.js
+      - name: Verify first-frame interactions and capture screenshots
+        run: python scripts/frame_one_review.py
+      - name: Save first-frame screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-one-cinematic-screenshots
+          path: screenshots/frame-one-v3/
+          if-no-files-found: ignore
+          retention-days: 14
