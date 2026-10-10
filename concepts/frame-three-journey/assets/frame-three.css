@@ -56,14 +56,11 @@
  transition:transform 570ms cubic-bezier(.14,.76,.16,1.21),opacity .4s ease;
  will-change:transform;
 }
+/* The number stays fully assembled and stationary on scene entry.
+   Only direct pointer interaction with the number changes shard offsets. */
 .chapter-three.is-visible .twenty-piece{
  opacity:1;
- animation:twenty-enter .8s cubic-bezier(.18,.73,.14,1) backwards;
- animation-delay:calc(var(--i)*65ms);
-}
-@keyframes twenty-enter{
- from{opacity:0;transform:translate(var(--intro-x,0px),var(--intro-y,55px)) rotate(var(--intro-rotation,0deg)) scale(.92)}
- to{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}
+ animation:none;
 }
 .twenty-glow{
  position:absolute;inset:12%;z-index:-1;border-radius:50%;pointer-events:none;
@@ -136,3 +133,9 @@ body.frame-three-active .gridlines{opacity:.72}
 @media(max-width:760px){
   .portal-navigation{bottom:calc(var(--footer-h) + 19px)!important;right:5%}
 }
+
+/* Frame 03: disable page-wide mouse traces and parallax visually.
+   The only pointer-responsive artwork is the fixed '20'. */
+body.frame-three-active #pointer-pattern{opacity:0!important}
+body.frame-three-active .twenty-hotspot{transform:none!important}
+body.frame-three-active #twenty-svg{transform:none!important}
