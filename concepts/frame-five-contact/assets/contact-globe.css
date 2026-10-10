@@ -3,10 +3,8 @@
    earlier approved frames. Only this isolated concept is changed. */
 .frame-five-backdrop{
  position:absolute;inset:0;z-index:24;pointer-events:none;
- background:
-  radial-gradient(ellipse 49% 63% at 77% 48%,rgba(84,13,119,.25),transparent 75%),
-  radial-gradient(ellipse 47% 52% at 27% 86%,rgba(60,14,92,.1),transparent 78%),
-  linear-gradient(130deg,#0c0815 1%,#11091b 45%,#080711 100%);
+ /* Match the *finished* Frame 04 gallery exactly: no purple lighting seam. */
+ background:linear-gradient(180deg,#09080e 0%,#07070c 54%,#050509 100%);
  opacity:0;visibility:hidden;will-change:opacity;
 }
 .frame-five-backdrop.is-active{visibility:visible}
@@ -60,15 +58,15 @@
 .globe-shell{
  position:relative;width:min(100%,670px,67vh);aspect-ratio:1;
  margin:0 auto;touch-action:none;cursor:grab;
- background:radial-gradient(circle at 48% 52%,rgba(83,18,119,.16),transparent 68%);
+ background:transparent;box-shadow:none;filter:none;
 }
 .globe-shell.is-dragging{cursor:grabbing}
-.globe-shell:before{
- content:"";position:absolute;inset:3%;border-radius:50%;pointer-events:none;
- background:radial-gradient(circle,rgba(121,24,163,.17) 0%,rgba(108,19,143,.065) 43%,transparent 74%);
- filter:blur(22px)
+/* No pseudo-element glow or shadow is allowed around the transparent sphere. */
+.globe-shell::before{content:none;display:none}
+.globe-canvas{
+ position:absolute;inset:0;width:100%;height:100%;display:block;
+ pointer-events:none;background:transparent;box-shadow:none;filter:none
 }
-.globe-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .globe-location{
  position:absolute;z-index:3;left:50%;top:41%;display:flex;align-items:center;
  gap:12px;white-space:nowrap;pointer-events:none;
