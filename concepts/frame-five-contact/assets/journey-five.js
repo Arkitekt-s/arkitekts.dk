@@ -160,7 +160,7 @@
       arches.forEach(a=>a.style.removeProperty("border-radius"));
     }
     // The old statement leaves before the video finishes expanding.
-    const firstOpacity=1-smooth(normalize(p,.13,.53));
+    const firstOpacity=1-smooth(normalize(p,.45,.89));
     if(hero)hero.style.opacity=String(firstOpacity);
     if(support)support.style.opacity=String(firstOpacity);
     if(eyebrow)eyebrow.style.opacity=String(firstOpacity);
@@ -170,10 +170,10 @@
     if(shade)shade.style.opacity=String(darkness*.93);
     syncFilms(p);
     // The next episode is a genuine full-screen movie with staggered new copy.
-    const textOpacity=smooth(normalize(p,.78,.99));
-    const leaveTwo=smooth(normalize(journey,1.12,1.48));
+    const textOpacity=smooth(normalize(p,.71,1.00));
+    const leaveTwo=smooth(normalize(journey,1.31,1.72));
     chapter.style.opacity=String(textOpacity*(1-leaveTwo));
-    const shouldShow=journey>.81 && journey<1.49;
+    const shouldShow=journey>.70 && journey<1.74;
     if(shouldShow!==lastVisible){
       chapter.classList.toggle("is-visible",shouldShow);
       chapter.inert=!shouldShow;
@@ -182,31 +182,31 @@
     }
     // Frame 03 changes only the editorial composition. The seamless movie,
     // original grid, header and footer remain in place.
-    const leaveThree=smooth(normalize(journey,2.20,2.62));
-    const thirdOpacity=smooth(normalize(journey,1.30,1.84))*(1-leaveThree);
+    const leaveThree=smooth(normalize(journey,2.22,2.64));
+    const thirdOpacity=smooth(normalize(journey,1.28,1.72))*(1-leaveThree);
     third.style.opacity=String(thirdOpacity);
-    const showThird=journey>1.39 && journey<2.56;
+    const showThird=journey>1.26 && journey<2.60;
     if(thirdVisible!==showThird){
       third.classList.toggle("is-visible",showThird);
       third.inert=!showThird;
       third.setAttribute("aria-hidden",String(!showThird));
       thirdVisible=showThird;
-      if(!showThird)resetTwenty();
+      if(!showThird)scatterTen();
     }
     document.body.classList.toggle("frame-three-active",showThird);
     // A bottom-to-top dark wipe covers the moving film, then clears to
     // reveal the image carousel. The chrome remains in its fixed position.
-    const enter=smooth(normalize(journey,2,2.52));
-    const exit=smooth(normalize(journey,2.52,3));
+    const enter=smooth(normalize(journey,2.08,2.52));
+    const exit=smooth(normalize(journey,2.52,2.98));
     const curtainPercent=journey<=2.52?105*(1-enter):-105*exit;
     if(curtain)curtain.style.transform="translate3d(0,"+curtainPercent.toFixed(2)+"%,0)";
-    const cover=smooth(normalize(journey,2.20,2.59));
+    const cover=smooth(normalize(journey,2.19,2.66));
     backdrop.style.opacity=String(cover);
     backdrop.classList.toggle("is-active",journey>2.05);
-    const leaveFourth=smooth(normalize(journey,3.08,3.77));
-    const galleryOpacity=smooth(normalize(journey,2.56,2.95))*(1-leaveFourth);
+    const leaveFourth=smooth(normalize(journey,3.12,3.80));
+    const galleryOpacity=smooth(normalize(journey,2.48,2.91))*(1-leaveFourth);
     fourth.style.opacity=String(galleryOpacity);
-    const showFourth=journey>2.52 && journey<3.75;
+    const showFourth=journey>2.47 && journey<3.81;
     if(fourthVisible!==showFourth){
       fourthVisible=showFourth;
       fourth.classList.toggle("is-visible",showFourth);
@@ -224,12 +224,12 @@
 
     // The final scene rises out of the gallery's dark ending.
     // The backdrop matches the gallery's fully darkened near-black colors.
-    // The approved gallery and all earlier scene sources remain unchanged.
-    const contactFade=smooth(normalize(journey,3.22,3.96));
-    fifthBackdrop.style.opacity=String(smooth(normalize(journey,3.02,3.94)));
-    fifthBackdrop.classList.toggle("is-active",journey>3.01);
+    // Adjacent scenes now crossfade while their backing films stay continuous.
+    const contactFade=smooth(normalize(journey,3.16,3.84));
+    fifthBackdrop.style.opacity=String(smooth(normalize(journey,3.08,3.82)));
+    fifthBackdrop.classList.toggle("is-active",journey>3.07);
     fifth.style.opacity=String(contactFade);
-    const showFifth=journey>3.45;
+    const showFifth=journey>3.15;
     if(fifthVisible!==showFifth){
       fifthVisible=showFifth;
       fifth.classList.toggle("is-visible",showFifth);
@@ -268,7 +268,7 @@
   function frameStep(){
     frame=0;
     if(reduced.matches)position=target;
-    else position+= (target-position)*.28;
+    else position+= (target-position)*.18;
     if(Math.abs(target-position)<.0006)position=target;
     paint();
     if(!reelDragging)galleryPosition+=(galleryTarget-galleryPosition)*(reduced.matches?1:.22);
@@ -359,56 +359,44 @@
   });
   document.getElementById("previous-chapter")?.addEventListener("click",()=>setTarget(position>3.03?3:position>2.75?2:Math.max(0,Math.ceil(target-.12)-1)));
 
-  // The central "20" is original typography split into nine SVG pieces.
-  // The mouse approaches -> parts fan outward in a controlled pattern.
-  // Mouse moves away -> the same pieces return to their exact positions.
-  // Clicking/tapping briefly activates the effect and then restores it.
-  twentyParts.forEach((piece,index)=>{
-    const x=(index%3)-1,y=Math.floor(index/3)-1;
-    piece.style.setProperty("--intro-x",(x*85)+"px");
-    piece.style.setProperty("--intro-y",(y*66)+"px");
-    piece.style.setProperty("--intro-rotation",((x+y)*9)+"deg");
-  });
-  let digitPower=0,digitAutoTimer=0,digitFrame=0;
-  function fanTwenty(power,dx=0,dy=0){
-    digitPower=reduced.matches?0:clamp(power,0,1);
-    twenty.dataset.reacting=String(digitPower>.07);
-    twenty.setAttribute("aria-pressed",String(digitPower>.12));
+  // The scattered nine-piece number joins into a legible 10 on hover.
+  // Leaving the hotspot returns every piece to its separate resting point.
+  let digitAutoTimer=0;
+  function assembleTen(strength){
+    const power=reduced.matches?1:clamp(strength,0,1);
+    twenty.dataset.reacting=String(power>.5);
+    twenty.setAttribute("aria-pressed",String(power>.5));
     const rect=twenty.getBoundingClientRect();
-    const unit=Math.max(10,Math.min(rect.width/12,47));
+    const unit=Math.max(15,Math.min(43,rect.width*.086));
     twentyParts.forEach((piece,index)=>{
       const col=index%3-1,row=Math.floor(index/3)-1;
-      // Each shard departs on its own radial trajectory, then comes back.
-      const ux=col||((index&1)?-.5:.5);
-      const uy=row||((index%2)?-.4:.4);
-      const tx=(ux*unit*1.5-dx*unit*.34)*digitPower;
-      const ty=(uy*unit*1.25-dy*unit*.33)*digitPower;
-      const angle=(col*8-row*6+(index%2?3:-3))*digitPower;
-      piece.style.setProperty("--offset-x",tx.toFixed(2)+"px");
-      piece.style.setProperty("--offset-y",ty.toFixed(2)+"px");
-      piece.style.setProperty("--angle",angle.toFixed(2)+"deg");
+      const dx=(col*1.18+(index%2?.27:-.27))*unit;
+      const dy=(row*.93+(index%3===1?-.22:.22))*unit;
+      const angle=col*9-row*7+(index%2?6:-6);
+      const apart=1-power;
+      piece.style.setProperty("--offset-x",(dx*apart).toFixed(2)+"px");
+      piece.style.setProperty("--offset-y",(dy*apart).toFixed(2)+"px");
+      piece.style.setProperty("--angle",(angle*apart).toFixed(2)+"deg");
     });
   }
-  function resetTwenty(){clearTimeout(digitAutoTimer);fanTwenty(0);}
-  twenty.addEventListener("pointermove",e=>{
-    if(!thirdVisible||reduced.matches||e.pointerType==="touch")return;
-    clearTimeout(digitAutoTimer);
-    const rect=twenty.getBoundingClientRect();
-    const dx=(e.clientX-(rect.left+rect.width/2))/(rect.width/2);
-    const dy=(e.clientY-(rect.top+rect.height/2))/(rect.height/2);
-    const r=Math.hypot(dx*.78,dy*.8);
-    fanTwenty(clamp((1.15-r)*1.34,0,1),dx,dy);
-  },{passive:true});
-  twenty.addEventListener("pointerleave",resetTwenty);
-  twenty.addEventListener("pointercancel",resetTwenty);
-  twenty.addEventListener("blur",resetTwenty);
-  twenty.addEventListener("click",()=>{
-    if(!thirdVisible||reduced.matches)return;
-    fanTwenty(1);
-    clearTimeout(digitAutoTimer);
-    digitAutoTimer=setTimeout(resetTwenty,1000);
+  function scatterTen(){clearTimeout(digitAutoTimer);assembleTen(0);}
+  assembleTen(0);
+  twenty.addEventListener("pointerenter",event=>{
+    if(!thirdVisible||event.pointerType==="touch")return;
+    clearTimeout(digitAutoTimer);assembleTen(1);
   });
-
+  twenty.addEventListener("pointermove",event=>{
+    if(!thirdVisible||event.pointerType==="touch")return;
+    clearTimeout(digitAutoTimer);assembleTen(1);
+  },{passive:true});
+  twenty.addEventListener("pointerleave",scatterTen);
+  twenty.addEventListener("pointercancel",scatterTen);
+  twenty.addEventListener("blur",scatterTen);
+  twenty.addEventListener("click",()=>{
+    if(!thirdVisible)return;
+    clearTimeout(digitAutoTimer);assembleTen(1);
+    digitAutoTimer=setTimeout(scatterTen,1300);
+  });
 
   // Continuous horizontal photo reel. Each image has an independently
   // computed perspective depth. The primary portrait initially faces front.
@@ -448,12 +436,6 @@
     galleryTarget=clamp(Math.round(galleryTarget)+direction,0,photos.length-1);
     schedule();
   }
-  document.getElementById("gallery-back")?.addEventListener("click",()=>setTarget(2));
-  document.getElementById("contact-back")?.addEventListener("click",()=>{
-    galleryTarget=photos.length-1;
-    galleryPosition=photos.length-1;
-    setTarget(3);
-  });
   galleryPrev?.addEventListener("click",()=>moveGallery(-1));
   galleryNext?.addEventListener("click",()=>moveGallery(1));
   if(viewport){

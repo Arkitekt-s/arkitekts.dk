@@ -33,7 +33,7 @@ with sync_playwright() as p:
         response=page.goto(URL,wait_until="domcontentloaded",timeout=30000)
         if response.status!=200:errors.append(f"{name}: HTTP {response.status}")
         if page.locator("#panorama .arch").count()!=3:errors.append(f"{name}: approved arches changed")
-        if page.locator(".twenty-piece").count()!=9:errors.append(f"{name}: approved '20' changed")
+        if page.locator(".twenty-piece").count()!=9:errors.append(f"{name}: number 10 lost a piece")
         if page.locator(".gallery-photo").count()!=7:errors.append(f"{name}: approved gallery missing")
         if page.locator("#frame-five-contact").get_attribute("aria-hidden")!="true":
             errors.append(f"{name}: contact appeared before Frame 05")
@@ -49,12 +49,34 @@ with sync_playwright() as p:
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         if page.locator(".twenty-piece").first.evaluate("e=>getComputedStyle(e).animationName")!="none":
-            errors.append(f"{name}: 20 automatically animates again")
+            errors.append(f"{name}: 10 auto-animates before hover")
+        # Reverse interaction: scattered before hover, assembled on entry,
+        # and scattered again after leaving, on every responsive viewport.
+        ten=page.locator("#twenty-hotspot")
+        pieces=page.locator(".twenty-piece")
+        if any(value.strip()!="10" for value in pieces.locator("text").all_text_contents()):
+            errors.append(f"{name}: number is not 10")
+        first=pieces.first
+        # The pointer may already be inside the hotspot after scrolling
+        # into Frame 03. Move outside to inspect the true resting state.
+        page.mouse.move(1,1)
+        page.wait_for_timeout(50)
+        scatter=first.evaluate("e=>parseFloat(e.style.getPropertyValue('--offset-x'))")
+        ten.hover(force=True)
+        assembled=first.evaluate("e=>parseFloat(e.style.getPropertyValue('--offset-x'))")
+        page.mouse.move(1,1)
+        scattered_again=first.evaluate("e=>parseFloat(e.style.getPropertyValue('--offset-x'))")
+        if abs(scatter)<1 or abs(assembled)>.05 or abs(scattered_again)<1:
+            errors.append(f"{name}: reversed hover failed ({scatter},{assembled},{scattered_again})")
         wheel(page,5);wait(page,2.995)
         gallery=page.locator("#frame-four-gallery")
         if gallery.get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 04 photo gallery missing")
 
+        for selector in (".supporting-line",".chapter-kicker",".chapter-footnote",
+                         ".gallery-kicker","#gallery-back",".gallery-caption","#contact-back"):
+            if page.locator(selector).count():
+                errors.append(f"{name}: unwanted content still present: {selector}")
         # Move through gallery to final photo; same near-black approved ending.
         for _ in range(7):
             btn=page.locator("#gallery-next")
@@ -90,25 +112,6 @@ with sync_playwright() as p:
             errors.append(f"{name}: globe clipped: {rect}")
         if not title or title["x"]<-5 or title["x"]+title["width"]>w+5:
             errors.append(f"{name}: contact headline clipped: {title}")
-        # Layout regression: Back must not cover headline, recenter or footer.
-        def overlaps(a,b):
-            return (a and b and a["x"]<b["x"]+b["width"]
-                    and a["x"]+a["width"]>b["x"]
-                    and a["y"]<b["y"]+b["height"]
-                    and a["y"]+a["height"]>b["y"])
-        back=page.locator("#contact-back").bounding_box()
-        reset_button=page.locator("#globe-recenter").bounding_box()
-        footer_rect=page.locator(".site-footer").bounding_box()
-        # An H2 is a full-width block; its box overlaps the top-right Back
-        # even when the real headline glyphs do not. Check painted text.
-        firstline=page.locator(".contact-heading").evaluate("""e=>{
-            const r=document.createRange();
-            r.selectNodeContents(e.firstChild);
-            const b=r.getBoundingClientRect();
-            return {x:b.x,y:b.y,width:b.width,height:b.height};
-        }""")
-        if overlaps(back,firstline) or overlaps(back,reset_button) or overlaps(back,footer_rect):
-            errors.append(f"{name}: back control overlaps important content")
         if w<=760 and page.locator(".contact-signoff").is_visible():
             errors.append(f"{name}: mobile footer has duplicate crowded signoff")
         page.screenshot(path=str(OUT/f"{name}-05-copenhagen-globe.png"),animations="allow")
@@ -178,14 +181,17 @@ with sync_playwright() as p:
         overflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
         if overflow>2:errors.append(f"{name}: horizontal overflow {overflow}")
         if crashes:errors.append(f"{name}: JS runtime errors {crashes}")
-        page.locator("#contact-back").click()
-        page.wait_for_function("parseFloat(document.body.dataset.journeyProgress||4)<3.01",timeout=8000)
+        # Back controls were intentionally removed. Scroll backward to the
+        # gallery instead, which must retain its last-photo position.
+        for _ in range(5):
+            page.mouse.wheel(0,-160)
+        page.wait_for_function("parseFloat(document.body.dataset.journeyProgress||4)<3.02",timeout=8000)
         if float(page.locator("body").get_attribute("data-gallery-index") or 0)<5.7:
             errors.append(f"{name}: returning to the gallery lost the last photo position")
         page.screenshot(path=str(OUT/f"{name}-07-return-gallery.png"),animations="allow")
         records.append({"screen":name,"size":[w,h],"globeDots":page.evaluate("window.soheilGlobe?.dotCount()"),
                         "firstYaw":before,"autoYaw":after,"overflow":overflow,"jsErrors":crashes})
-        print(f"VERIFIED {name} {w}x{h}: five frames, self-hosted 3D globe, Copenhagen, slow rotation, drag, reset, back")
+        print(f"VERIFIED {name} {w}x{h}: five frames, self-hosted 3D globe, Copenhagen, slow rotation, drag, reset, scroll return")
         ctx.close()
     browser.close()
 server.shutdown()
