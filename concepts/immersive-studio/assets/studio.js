@@ -228,7 +228,7 @@
       if(!sceneVisible || document.hidden)return;
       // Stop unnecessary updates in reduced-motion mode, but still permit step changes.
       if(isStill() && !needsStillFrame && Math.abs(floatStage-frame)<.01)return;
-      let dt=Math.min(.06,(now-then)/1000);then=now;
+      let dt=Math.min(.06,Math.max(0,(now-then)/1000));then=now;
       const target=Math.min(3,Math.max(0,floatStage));
       frame+=(target-frame)*(isStill()?1:Math.min(1,dt*2.2));
       const lo=Math.floor(frame),hi=Math.min(3,lo+1),t=frame-lo;
@@ -246,7 +246,7 @@
         nucleus.rotation.y=time*.15; nucleus.rotation.x=Math.sin(time*.28)*.055;
         crystal.rotation.y=-time*.25;
         core.rotation.set(time*.14,time*.19,0);
-        packets.forEach(({mesh,path,offset})=>mesh.position.copy(path.getPoint((offset+time*.055)%1)));
+        packets.forEach(({mesh,path,offset})=>mesh.position.copy(path.getPoint(((offset+time*.055)%1+1)%1)));
         dust.rotation.y=time*.006;
       }
       renderer.render(scene,camera);
