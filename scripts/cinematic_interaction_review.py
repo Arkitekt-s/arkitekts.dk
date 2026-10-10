@@ -102,7 +102,9 @@ with sync_playwright() as p:
             gy=bbox["y"]+bbox["height"]*.45
             page.mouse.move(gx,gy)
             page.mouse.down()
-            page.mouse.move(gx+110,gy-35,steps=12)
+            # Keep the pointer within the viewport on narrow phones.
+            drag_delta=max(25,min(110,w-gx-16))
+            page.mouse.move(gx+drag_delta,gy-35,steps=12)
             page.mouse.up()
             page.wait_for_timeout(260)
             yaw_after=float(globe.get_attribute("data-yaw") or 0)
