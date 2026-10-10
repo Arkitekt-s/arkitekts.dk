@@ -1,0 +1,46 @@
+name: Skills page review
+on:
+  pull_request:
+    paths:
+      - "software-skills/**"
+      - "contact/index.html"
+      - "scripts/skills_page_review.py"
+      - ".github/workflows/skills-page-review.yml"
+      - "concepts/frame-five-contact/index.html"
+  push:
+    paths:
+      - "software-skills/**"
+      - "contact/index.html"
+      - "scripts/skills_page_review.py"
+      - "concepts/frame-five-contact/index.html"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  skills-page:
+    name: Skills layout, navigation, search and filter
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium and Playwright
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Check interactive JS syntax
+        run: node --check software-skills/skills.js
+      - name: Test responsive Skills and interactive discovery
+        run: python scripts/skills_page_review.py
+      - name: Save responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skills-page-browser-review
+          path: screenshots/skills-page/
+          retention-days: 14
+          if-no-files-found: ignore
