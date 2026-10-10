@@ -20,6 +20,10 @@
   const note=document.getElementById("interaction-note");
   const live=document.getElementById("live-status");
   const tools=document.querySelector(".scene-tools");
+  const film=document.getElementById("portal-film");
+  const windowVideos=[...document.querySelectorAll("#panorama .arch-video")];
+  const pauseControl=document.getElementById("motion-button");
+  let filmStarted=false, windowsPaused=false;
   const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
   if(!stage||!panorama||arches.length!==3||!chapter)return;
 
@@ -59,6 +63,56 @@
     paint();
   }
 
+  function syncFilms(p){
+    if(!film)return;
+    const lead=windowVideos[0];
+    const motionPaused=reduced.matches||document.body.classList.contains("motion-off");
+
+    // When arches are nearly joined, prepare one film with the same source.
+    if(p>.52 && !filmStarted && !motionPaused){
+      filmStarted=true;
+      if(lead && lead.readyState>=2){
+        try{film.currentTime=lead.currentTime;}catch{}
+      }
+      film.play().catch(()=>{filmStarted=false;});
+    }
+    if(p>.52 && !motionPaused && film.paused && !filmStarted){
+      filmStarted=true;
+      film.play().catch(()=>{filmStarted=false;});
+    }
+    if(motionPaused)film.pause();
+
+    const ready=film.readyState>=2;
+    const blend=ready?smooth(normalize(p,.70,.95)):0;
+    film.classList.toggle("is-active",blend>.005);
+    film.style.opacity=String(blend);
+
+    // Once the seamless movie is fully opaque, decode just one stream.
+    // Resume and resync all arches when the user scrolls back.
+    if(p>.995 && ready && !windowsPaused){
+      windowVideos.forEach(video=>video.pause());
+      windowsPaused=true;
+    }else if(p<.975 && windowsPaused){
+      windowVideos.forEach(video=>{
+        try{if(film.readyState>=2)video.currentTime=film.currentTime;}catch{}
+        if(!motionPaused)video.play().catch(()=>{});
+      });
+      windowsPaused=false;
+    }
+    if(p<.46 && filmStarted){
+      film.pause();
+      filmStarted=false;
+    }
+  }
+  pauseControl?.addEventListener("click",()=>{
+    // The frozen Frame 01 handler runs first; then mirror its state.
+    setTimeout(()=>{
+      if(!film)return;
+      if(document.body.classList.contains("motion-off"))film.pause();
+      else if(position>.52)film.play().catch(()=>{});
+    },0);
+  });
+
   function paint(){
     const p=position;
     const grow=smooth(normalize(p,.015,.88));
@@ -95,6 +149,7 @@
     if(live)live.style.opacity=String(firstOpacity);
     const darkness=smooth(normalize(p,.47,.87));
     if(shade)shade.style.opacity=String(darkness*.93);
+    syncFilms(p);
     // The next episode is a genuine full-screen movie with staggered new copy.
     const textOpacity=smooth(normalize(p,.78,.99));
     chapter.style.opacity=String(textOpacity);
