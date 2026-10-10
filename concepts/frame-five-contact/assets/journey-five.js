@@ -263,18 +263,18 @@
     curtainPanels.forEach((panel,index)=>{
       const lag=index*.015;
       const rise=smooth(normalize(journey,2.30+lag,2.55+lag));
-      const reveal=smooth(normalize(journey,2.72+lag,2.89+lag));
+      const reveal=smooth(normalize(journey,2.80+lag,2.96+lag));
       const y=105*(1-rise)-105*reveal;
       panel.style.transform="translate3d(0,"+y.toFixed(2)+"%,0)";
     });
     // The dark gallery backdrop arrives while the video is fully covered.
-    const cover=smooth(normalize(journey,2.58,2.71));
+    const cover=smooth(normalize(journey,2.58,2.72));
     backdrop.style.opacity=String(cover);
     backdrop.classList.toggle("is-active",journey>2.57);
     const leaveFourth=smooth(normalize(journey,3.12,3.80));
-    const galleryOpacity=smooth(normalize(journey,2.69,2.92))*(1-leaveFourth);
+    const galleryOpacity=smooth(normalize(journey,2.57,2.77))*(1-leaveFourth);
     fourth.style.opacity=String(galleryOpacity);
-    const showFourth=journey>2.68 && journey<3.81;
+    const showFourth=journey>2.57 && journey<3.81;
     if(fourthVisible!==showFourth){
       fourthVisible=showFourth;
       fourth.classList.toggle("is-visible",showFourth);
