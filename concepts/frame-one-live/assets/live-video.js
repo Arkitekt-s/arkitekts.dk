@@ -165,8 +165,8 @@
   // Two public-footage sources provide resilience if a CDN has a temporary fault.
   const videos = Array.from(document.querySelectorAll(".arch-video"));
   const liveText = $("#live-status span");
-  const primary = new URL("assets/mountain-loop.mp4", location.href).href;
-  const backup = "https://videos.pexels.com/video-files/2888383/2888383-hd_1280_720_24fps.mp4";
+  const primary = new URL("assets/mountain-loop.webm", location.href).href;
+  const backup = new URL("assets/mountain-loop.mp4", location.href).href;
   let sourceIndex = 0;
   let live = false;
   let movieFailure = false;
