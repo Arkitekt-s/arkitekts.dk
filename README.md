@@ -1,3 +1,13 @@
+## Frame 05 — final contact scene and Copenhagen 3D globe
+
+[**Open the five-frame interactive preview**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-five-contact/)
+
+The previous four frames are [saved unchanged](https://github.com/Arkitekt-s/arkitekts.dk/tree/baseline/four-frame-gallery-approved-v1). Scroll to the last picture in Frame 04, then scroll down again. A dark contact scene appears with Soheil's public email and a slowly rotating geographic globe. The point cloud is self-hosted. **Copenhagen** is highlighted accurately. Drag the globe, use keyboard arrows, or select **Find Copenhagen** to reset.
+
+[Frame 05 review notes](docs/FRAME-FIVE-CONTACT-REVIEW.md) · [Automated device checks](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-five-review.yml) · [Four-frame SHA lock](design-system/four-frame-gallery-approved-v1.json)
+
+**This is a design review preview, not the production website.** WordPress and DNS have not changed.
+
 ## Frame 04 — cinematic personal photo gallery
 
 [**Open the new four-frame interactive preview**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-four-gallery/)
