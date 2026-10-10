@@ -1,0 +1,21 @@
+name: Approved Frame 01 baseline lock
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-baseline:
+    name: Preserve approved cinematic design
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out proposed website
+        uses: actions/checkout@v4
+      - name: Verify approved Frame 01 source and reference branch
+        run: python3 scripts/verify_frame_one_baseline.py
