@@ -324,6 +324,9 @@
       targetYaw=dragYaw-dx*.0075;
       targetPitch=clamp(dragPitch+dy*.006,-1.22,1.22);
       angularVelocity=clamp((targetYaw-last)*36,-2.2,2.2);
+      // Follow the pointer immediately, even on slow mobile devices.
+      yaw=targetYaw;pitch=targetPitch;
+      drawGlobe();
       requestGlobeFrame();
     });
     const stopDrag=e=>{
