@@ -63,3 +63,22 @@ Updated: 2026-10-10
 
 **All browser review checks passed.** Screenshot artifacts remain downloadable from Actions for 14 days. This does not establish WCAG compliance or production-readiness.
 
+
+## Milestone 1c — Light interactive 3D prototype (2026-10-10)
+
+- [x] Reviewed Triptych and AskLex as **inspiration**, without reusing their code or brand assets
+- [x] Built [white Light Journey concept](https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/)
+- [x] Added CSS pointer-responsive 3D hero and genuine WebGL journey scene
+- [x] Connected four engineering-story stages to native browser scrolling
+- [x] Optimized rendering: lazy 3D loading, quality chooser, pause offscreen, reduced-motion fallback
+- [x] Built [case-study template](https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/case-study/) and [technical article template](https://arkitekt-s.github.io/arkitekts.dk/concepts/light-journey/guide/) sharing the same tokens, CSS and JS
+- [x] Fixed content overflow at 320px and 390px
+- [x] Added compact sticky scene for narrow phones
+- [x] Responsive browser checks on homepage + templates (320, 390, 768, 1440px), mobile menu, scene behavior and JS syntax
+- [ ] Confirm visual preference, typography and storytelling with site owner
+- [ ] Independently benchmark mobile Core Web Vitals / Lighthouse
+- [ ] Test hardware-accelerated WebGL on actual iOS/Android devices
+- [ ] Migrate all original WordPress content; **do not change DNS yet**
+
+[Design rules and acceptance targets](LIGHT-JOURNEY-REVIEW.md)
+
