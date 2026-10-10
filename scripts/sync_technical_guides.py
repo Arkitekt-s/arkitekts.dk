@@ -213,7 +213,7 @@ def shell_start(depth,title,description,styles,scripts):
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8f6fb"><meta name="robots" content="noindex,nofollow">
 <meta name="description" content="{e(description)[:240]}"><title>{e(title)} — Soheil Fattahieh</title>
-<link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{root}assets/soheil-favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="{root}contact/contact.css">
 {styles}{scripts}</head><body class="guides-page">
 <a class="skip-link" href="#content">Skip to content</a>
