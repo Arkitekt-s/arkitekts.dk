@@ -6,6 +6,7 @@ on:
       - 'scripts/visual_review.py'
       - 'scripts/light_experience_review.py'
       - 'scripts/immersive_studio_review.py'
+      - 'scripts/personal_journey_review.py'
       - '.github/workflows/visual-review.yml'
   workflow_dispatch:
 permissions:
@@ -29,6 +30,10 @@ jobs:
         run: python scripts/light_experience_review.py
       - name: Review cinematic interactive 3D studio on all screen sizes
         run: python scripts/immersive_studio_review.py
+      - name: Review personal cinematic 3D site
+        run: python scripts/personal_journey_review.py
+      - name: Check personal 3D JavaScript syntax
+        run: node --check concepts/personal-journey/assets/personal.js
       - name: Check cinematic 3D JavaScript syntax
         run: node --check concepts/immersive-studio/assets/studio.js
       - name: Check interactive JavaScript syntax
