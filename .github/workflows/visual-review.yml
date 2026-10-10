@@ -4,6 +4,7 @@ on:
     paths:
       - 'concepts/**'
       - 'scripts/visual_review.py'
+      - 'scripts/light_experience_review.py'
       - '.github/workflows/visual-review.yml'
   workflow_dispatch:
 permissions:
@@ -23,6 +24,10 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Review 4 widths and capture screenshots
         run: python scripts/visual_review.py
+      - name: Review light-theme 3D portfolio and shared templates
+        run: python scripts/light_experience_review.py
+      - name: Check interactive JavaScript syntax
+        run: node --check concepts/light-journey/assets/experience.js
       - name: Save desktop/tablet/mobile screenshots
         if: always()
         uses: actions/upload-artifact@v4
