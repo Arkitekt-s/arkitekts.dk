@@ -1,3 +1,13 @@
+# Current fixed design: approved Frames 01–04
+
+[**Approved four-frame snapshot**](https://github.com/Arkitekt-s/arkitekts.dk/tree/baseline/four-frame-gallery-approved-v1) · [Exact source hashes](four-frame-gallery-approved-v1.json) · [Automated preservation check](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/four-frame-baseline-lock.yml)
+
+The approved moving arches, full-screen video, stationary interactive **20**, and photo gallery with its gradual dark ending form the current website foundation. All four have been saved unchanged.
+
+**Frame 05 is a separate design proposal:** [contact and Copenhagen globe](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-five-contact/), with [review details](../docs/FRAME-FIVE-CONTACT-REVIEW.md). Do not change the four approved original folders while designing or revising Frame 05.
+
+---
+
 # Current approved website foundation: Frames 01–02
 
 **[Clean two-frame approved baseline V1](APPROVED-TWO-FRAME-V1.md)** is now the master reference for all future designs.
