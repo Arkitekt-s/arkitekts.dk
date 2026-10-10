@@ -116,7 +116,7 @@
 
 
   // Gentle pointer perspective for landscape windows and photography reel.
-  const arches=$("#arched-world .arch");
+  const arches=$$("#arched-world .arch");
   const archedWorld=$("#arched-world");
   const reel=$("#photo-reel");
   const orb=$("#work-orbit");
