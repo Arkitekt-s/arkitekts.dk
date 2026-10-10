@@ -67,7 +67,7 @@
   let floatStage=0, sceneVisible=true, lastScrollY=-1;
   function onScroll() {
     const header=$(".site-head");
-    if(header)header.classList.toggle("scrolled",scrollY>Math.max(90,innerHeight*.89));
+    if(header)header.classList.toggle("scrolled",root ? root.getBoundingClientRect().bottom < 92 : scrollY>Math.max(90,innerHeight*.89));
     if (!root) return;
     const r=root.getBoundingClientRect();
     const scrollRange=Math.max(1,root.offsetHeight-innerHeight);
