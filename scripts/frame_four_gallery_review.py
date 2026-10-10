@@ -111,9 +111,11 @@ with sync_playwright() as p:
         viewport=page.locator("#gallery-viewport")
         box=viewport.bounding_box()
         if box:
-            x=w*.63;y=box["y"]+box["height"]*.5
+            x=w*.72;y=box["y"]+box["height"]*.5
+            step=page.locator(".gallery-photo").nth(1).evaluate("e=>e.offsetLeft-e.previousElementSibling.offsetLeft")
+            travel=min(w*.42,step*.80)
             page.mouse.move(x,y);page.mouse.down()
-            page.mouse.move(x-185,y,steps=11)
+            page.mouse.move(x-travel,y,steps=11)
             page.mouse.up()
             page.wait_for_timeout(520)
             dragged=float(page.locator("body").get_attribute("data-gallery-index") or 0)
