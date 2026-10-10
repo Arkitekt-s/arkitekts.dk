@@ -172,3 +172,25 @@ body.frame-four-active .site-header,body.frame-four-active .site-footer{
  .gallery-reel,.gallery-photo,.gallery-kicker{transition:none!important}
  .frame-four-curtain{display:none!important}
 }
+
+/* Frame 04 has its own back/next controls. The previous chapter's rail
+   must not overlap photo navigation, especially on narrow phones. */
+body.frame-four-active .portal-navigation{
+ opacity:0!important;
+ visibility:hidden!important;
+ pointer-events:none!important;
+}
+.gallery-back{
+ position:absolute;top:12%;left:6%;z-index:13;
+ padding:9px 12px;border:1px solid rgba(216,180,233,.36);
+ border-radius:999px;background:#21132b83;color:#e4d1ed;
+ font:750 10px/1 ui-monospace,Consolas,monospace;
+ letter-spacing:.1em;cursor:pointer;
+}
+.gallery-back:hover{background:#5d2279;color:#fff}
+@media(max-width:760px){
+ .gallery-back{top:13%;left:5%;font-size:9px;padding:8px}
+}
+@media(max-width:470px){
+ .gallery-back{top:19%;left:6%;font-size:8px}
+}
