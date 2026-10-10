@@ -275,12 +275,25 @@
     const leaveFourth=smooth(normalize(journey,3.12,3.80));
     const galleryOpacity=smooth(normalize(journey,2.40,2.61))*(1-leaveFourth);
     fourth.style.opacity=String(galleryOpacity);
-    // Clip the entire gallery to the staircase reveal: no photos on the right.
-    // Once complete, restore the normal full-width horizontal photo reel.
-    const galleryReveal=smooth(normalize(journey,2.32,2.77));
-    fourth.style.clipPath=galleryReveal<.999
-      ?"inset(0 "+((1-galleryReveal)*100).toFixed(3)+"% 0 0)"
-      :"none";
+    // Reveal the first photo strictly INSIDE the staircase silhouette.
+    // Every step follows the same panel's upward edge; no rectangular
+    // reveal can expose a photo in the uncovered right-hand video area.
+    if(journey>=2.30 && journey<2.77){
+      const points=["0% 100%"];
+      for(let i=0;i<10;i++){
+        const lag=i*.013;
+        const rise=smooth(normalize(journey,2.30+lag,2.53+lag));
+        const finish=smooth(normalize(journey,2.64,2.77));
+        const top=(105*(1-rise)*(1-finish));
+        const y=Math.min(100,Math.max(0,top)).toFixed(3)+"%";
+        const left=(i*10)+"%",right=((i+1)*10)+"%";
+        points.push(left+" "+y,right+" "+y);
+      }
+      points.push("100% 100%");
+      fourth.style.clipPath="polygon("+points.join(",")+")";
+    }else{
+      fourth.style.clipPath=journey<2.30?"inset(100% 0 0 0)":"none";
+    }
     const reelReady=journey>=2.77;
     fourth.classList.toggle("gallery-reveal-complete",reelReady);
     const showFourth=journey>2.39 && journey<3.81;
