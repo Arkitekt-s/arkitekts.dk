@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160d22">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Three-frame interactive cinematic journey: arched moving landscape, full-screen video story, and an interactive fragmented 20 that reassembles when the mouse moves away.">
+<title>SOHEIL — Three-Frame Cinematic Journey | Design Review</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85">
+<link rel="stylesheet" href="../frame-one-v3/assets/frame-one.css">
+<link rel="stylesheet" href="../frame-one-live/assets/live-video.css">
+<link rel="stylesheet" href="../frame-two-portal/assets/portal.css">
+<link rel="stylesheet" href="assets/frame-three.css">
+<script src="../frame-two-portal/assets/approved-interaction.js" defer></script>
+<script src="assets/journey.js" defer></script>
+</head>
+<body class="frame-one">
+<a class="skip" href="#frame">Skip to the animated landing scene</a>
+<div class="background" aria-hidden="true"></div>
+<div class="gridlines" aria-hidden="true"></div>
+<canvas id="pointer-pattern" class="pointer-pattern" aria-hidden="true"></canvas>
+
+<header class="site-header" aria-label="Fixed site header">
+  <a class="brand-icon" href="./" aria-label="Soheil home">S<span>.</span></a>
+  <span class="site-name" aria-label="Soheil Fattahieh">S O H E I L</span>
+  <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open menu"><span></span><span></span><span></span></button>
+  <nav id="navigation" class="navigation" aria-label="Main navigation">
+    <a href="https://arkitekts.dk/portfolio/">PORTFOLIO</a>
+    <a href="https://arkitekts.dk/profile/">ABOUT</a>
+    <a href="https://arkitekts.dk/">TECHNICAL GUIDES</a>
+    <a href="mailto:sohe@arkitekts.dk?subject=Hello%20Soheil" class="contact">Let's talk</a>
+  </nav>
+</header>
+
+<main id="frame" class="frame-stage" aria-label="Interactive journey between two approved cinematic frames and a new interactive number experience">
+  <div class="scene-eyebrow">SOHEIL FATTAHIEH <span aria-hidden="true">/</span> INFRASTRUCTURE ENGINEER</div>
+
+  <div class="panorama" id="panorama" role="img" aria-label="Three large windows onto an animated mountain landscape, with shifting clouds and depth that responds to your mouse">
+    <div class="arch arch-one"><div class="scenery">
+      <div class="distant-mountains"></div>
+      <video class="arch-video" data-pane="1" autoplay muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+        <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+        <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+      </video>
+      <div class="light-haze"></div>
+      <div class="near-clouds"></div>
+      <div class="foreground-shade"></div>
+    </div><span class="edge-highlight"></span></div>
+    <div class="arch arch-two"><div class="scenery">
+      <div class="distant-mountains"></div>
+      <video class="arch-video" data-pane="2" autoplay muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+        <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+        <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+      </video>
+      <div class="light-haze"></div>
+      <div class="near-clouds"></div>
+      <div class="foreground-shade"></div>
+    </div><span class="edge-highlight"></span></div>
+    <div class="arch arch-three"><div class="scenery">
+      <div class="distant-mountains"></div>
+      <video class="arch-video" data-pane="3" autoplay muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+        <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+        <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+      </video>
+      <div class="light-haze"></div>
+      <div class="near-clouds"></div>
+      <div class="foreground-shade"></div>
+    </div><span class="edge-highlight"></span></div>
+  </div>
+
+  <h1 class="hero-text"><span>I make complex</span><span>systems <em>work</em><b>.</b></span></h1>
+  <p class="supporting-line">HANDS-ON ENGINEERING <span>·</span> AUTOMATION <span>·</span> PRODUCTION DELIVERY</p>
+
+  <!-- Motion remains keyboard-accessible without visible debug or tutorial labels. -->
+  <button type="button" id="motion-button" class="motion-keyboard-control" aria-pressed="false">PAUSE MOTION</button>
+  <video id="portal-film" class="portal-film" muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+    <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+    <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+  </video>
+  <div class="portal-shade" aria-hidden="true"></div>
+  <section class="chapter-two" id="chapter-two" aria-label="Frame two: Engineering story" aria-hidden="true" inert>
+    <p class="chapter-kicker"><span class="chapter-index">02 / 03</span><span class="chapter-rule"></span> BEHIND EVERY WORKING SYSTEM</p>
+    <h2 class="chapter-title"><span>Curiosity.</span><span>Code.</span><span><em>Delivery.</em></span></h2>
+    <p class="chapter-description">I'm Soheil. I build and automate platforms that work in the real world. From Linux and Ansible to Kafka and Elasticsearch.</p>
+    <a class="chapter-link" href="https://arkitekts.dk/portfolio/">Explore my work <span aria-hidden="true">↗</span></a>
+    <p class="chapter-footnote">INFRASTRUCTURE ENGINEERING <span>—</span> COPENHAGEN, DENMARK</p>
+  </section>
+
+  <section id="chapter-three" class="chapter-three" aria-label="Frame three: Interactive engineering typography" aria-hidden="true" inert>
+    <div class="chapter-three-kicker">03 / 03 <span class="kicker-line" aria-hidden="true"></span> THE WORK BEHIND THE SYSTEMS</div>
+    <div class="third-composition">
+      <div class="side-statement side-left"><span>BUILDING</span><span>RELIABLE</span></div>
+      <button id="twenty-hotspot" class="twenty-hotspot" type="button" aria-label="Interactive number 20. Move the pointer over it to separate the pieces, then move away to bring them back. Tap to animate." aria-pressed="false">
+        <svg id="twenty-svg" viewBox="0 0 600 390" role="img" aria-label="White number 20 split into nine reactive pieces" preserveAspectRatio="xMidYMid meet">
+          <defs><clipPath id="clip20-0"><rect x="0" y="0" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-1"><rect x="200" y="0" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-2"><rect x="400" y="0" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-3"><rect x="0" y="130" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-4"><rect x="200" y="130" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-5"><rect x="400" y="130" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-6"><rect x="0" y="260" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-7"><rect x="200" y="260" width="200.5" height="130.5"/></clipPath><clipPath id="clip20-8"><rect x="400" y="260" width="200.5" height="130.5"/></clipPath></defs>
+          <g id="twenty-pieces"><g class="twenty-piece" data-piece="0" style="--i:0;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-0)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="1" style="--i:1;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-1)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="2" style="--i:2;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-2)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="3" style="--i:3;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-3)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="4" style="--i:4;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-4)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="5" style="--i:5;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-5)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="6" style="--i:6;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-6)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="7" style="--i:7;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-7)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g><g class="twenty-piece" data-piece="8" style="--i:8;--offset-x:0px;--offset-y:0px;--angle:0deg" clip-path="url(#clip20-8)"><text x="300" y="308" text-anchor="middle" font-size="330" font-weight="820" letter-spacing="-29" font-family="Inter,Arial,sans-serif" fill="#fff">20</text></g></g>
+        </svg>
+        <span class="twenty-glow" aria-hidden="true"></span>
+      </button>
+      <div class="side-statement side-right"><span>SYSTEMS</span><span>THAT LAST</span></div>
+    </div>
+    <div class="chapter-three-bottom">LINUX <span>·</span> ANSIBLE <span>·</span> KAFKA <span>·</span> ELASTICSEARCH</div>
+  </section>
+  <div class="portal-navigation" aria-label="Story progress">
+    <button type="button" id="previous-chapter" aria-label="Go to the previous frame">↑</button>
+    <div class="portal-steps"><span>01</span><div class="portal-track"><i id="portal-fill"></i></div><span>03</span></div>
+    <button type="button" id="next-chapter" aria-label="Go to the next frame">↓</button>
+  </div>
+  <div class="wheel-hint" id="wheel-hint" aria-live="polite">SCROLL DOWN TO ENTER THE LANDSCAPE <span>↓</span></div>
+</main>
+
+<footer class="site-footer" aria-label="Fixed site footer">
+  <span class="footer-mark">S.</span>
+  <span class="footer-specialties">LINUX <i>·</i> ANSIBLE <i>·</i> ELASTICSEARCH <i>·</i> KAFKA</span>
+  <span class="footer-location">COPENHAGEN · DENMARK</span>
+</footer>
+</body></html>
