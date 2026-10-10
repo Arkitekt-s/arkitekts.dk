@@ -261,6 +261,9 @@
     // Each opaque vertical column rises from the bottom, left to right.
     // All columns reach the top before lifting away to show Frame 04.
     curtainPanels.forEach((panel,index)=>{
+      // Hide the entire staircase outside its transition window.
+      // This also prevents corner remnants over the photo carousel.
+      panel.style.visibility=(journey>=2.29 && journey<3.12)?"visible":"hidden";
       const lag=index*.015;
       const rise=smooth(normalize(journey,2.30+lag,2.55+lag));
       const reveal=smooth(normalize(journey,2.80+lag,2.96+lag));
