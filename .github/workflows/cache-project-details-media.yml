@@ -1,0 +1,39 @@
+name: Cache original project detail gallery images
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/cache_project_details_media.py"
+      - ".github/workflows/cache-project-details-media.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-gallery:
+    name: Save original technical project pictures
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare locally hosted gallery WebP files
+        run: |
+          python -m pip install pillow
+          python scripts/cache_project_details_media.py
+      - name: Commit original image assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add portfolio/assets/web-autocad.webp portfolio/assets/copenhagen-analysis.webp portfolio/assets/copenhagen-influences.webp
+          if ! git diff --cached --quiet; then
+            git commit -m "Cache original engineering and price prediction project pictures"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
