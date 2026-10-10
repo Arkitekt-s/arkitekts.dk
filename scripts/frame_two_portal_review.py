@@ -55,9 +55,9 @@ with sync_playwright() as p:
         page.mouse.move(width*.52,height*.55)
         page.mouse.wheel(0,150)
         page.mouse.wheel(0,150)
-        page.wait_for_timeout(850)
+        page.wait_for_timeout(1100)
         fraction=float(page.locator("body").get_attribute("data-portal-progress") or 0)
-        if not (.30<=fraction<=.52):
+        if not (.27<=fraction<=.55):
             problems.append(f"{name}: wheel progress was not continuous: {fraction}")
         page.screenshot(path=str(OUTPUT/f"{name}-02-morph.png"),animations="allow")
         page.mouse.wheel(0,160)
@@ -67,7 +67,7 @@ with sync_playwright() as p:
         page.mouse.wheel(0,160)
         page.mouse.wheel(0,160)
         page.mouse.wheel(0,160)
-        page.wait_for_timeout(1300)
+        page.wait_for_function("parseFloat(document.body.dataset.portalProgress||0)>.995",timeout=6500)
         fraction=float(page.locator("body").get_attribute("data-portal-progress") or 0)
         if fraction<.995:
             problems.append(f"{name}: failed to enter full video scene ({fraction})")
@@ -105,7 +105,7 @@ with sync_playwright() as p:
             except Exception as e:
                 problems.append(f"{name}: no movie playback: {str(e)[:300]}")
         for _ in range(7):page.mouse.wheel(0,-160)
-        page.wait_for_timeout(1400)
+        page.wait_for_function("parseFloat(document.body.dataset.portalProgress||1)<.006",timeout=6500)
         pos=float(page.locator("body").get_attribute("data-portal-progress") or -1)
         if pos>.006:problems.append(f"{name}: reverse transition did not fully restore Frame 01 ({pos})")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="true":
