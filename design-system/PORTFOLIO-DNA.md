@@ -19,7 +19,7 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - Color: near-black `#17111e`, deep violet `#773c9d`, lilac accent `#a54bd0`.
 - Page atmosphere: thin technical gridlines, layered violet light, minimal translucent surfaces.
 - Interaction: gentle ease-out motion, hover-driven arrows, progressive reveals, pointer parallax.
-- Navigation: same language, keyboard access, clear mobile menu, and reduced-motion support.
+- Navigation: shared three-link header (**PROFILE**, **SKILLS**, **Let's talk**), home-linking S. brand, keyboard access, clear mobile menu, and reduced-motion support.
 - Layout: generous whitespace, large headings, quiet fixed-feeling header/footer.
 
 ## Route map
@@ -28,7 +28,7 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - **Bright contact:** `/contact/` — opens from both **Let's talk** links on the five-frame homepage.
 - **Skills:** `/software-skills/` — new bright skills page with category filters and live search.
 - **Profile:** `/profile/` — bright biography and education page, with section navigation.
-- **Portfolio:** existing WordPress link until that page is migrated.
+- **Portfolio:** not shown in the shared navigation. All three navigation links stay within the GitHub preview.
 
 GitHub Pages base path in preview: `https://arkitekt-s.github.io/arkitekts.dk/`.
 All new internal URLs are relative, so moving the site to a custom domain is straightforward.
