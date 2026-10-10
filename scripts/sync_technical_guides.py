@@ -290,6 +290,14 @@ def toc_html(body):
     seen=set()
     for heading in soup.find_all(["h2","h3"]):
         if len(toc)>=15:break
+        # The WordPress-MCP template often repeats the same anchor ID on a
+        # wrapper <section> AND its heading. Transfer the ID to the heading,
+        # so the article has a single target and navigation remains correct.
+        parent=heading.find_parent("section")
+        if parent is not None and parent.has_attr("id"):
+            original_id=parent.get("id")
+            if not heading.get("id"):heading["id"]=original_id
+            del parent["id"]
         label=heading.get_text(" ",strip=True)
         if not label or len(label)>110:continue
         sid=heading.get("id")
