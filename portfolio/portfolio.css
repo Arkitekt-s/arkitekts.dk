@@ -226,3 +226,25 @@
 .portfolio-filters button,
 .project-details summary,
 #portfolio-reset{scroll-margin-top:calc(var(--header-h) + 30px)}
+
+/* Each project now has a real standalone page.
+   Images, headings and the explicit action are native accessible links. */
+a.project-visual{color:inherit;text-decoration:none;cursor:pointer}
+a.project-visual:hover img{filter:drop-shadow(0 19px 27px rgba(52,23,73,.2));transform:scale(1.018)}
+a.project-visual img{transition:filter .35s ease,transform .35s ease}
+.project-info h3 a{text-decoration:none;color:inherit;transition:color .2s ease}
+.project-info h3 a:hover{color:#7e399e}
+.project-open{display:flex;align-items:center;justify-content:space-between;gap:20px;
+ color:#6a2d87;text-decoration:none;font:790 11px/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.1em;border-top:1px solid rgba(99,62,117,.18);
+ border-bottom:1px solid rgba(99,62,117,.18);padding:17px 0;margin-top:auto;
+ transition:color .2s,padding .2s}
+.project-open:hover{color:#a046be;padding-left:6px}
+.project-open span{font-size:25px;line-height:1}
+.project-details{border-top:0;padding-top:1px;margin-top:9px}
+.project-details summary{font-size:9px;letter-spacing:.14em;color:#9982a3;padding-top:9px}
+.project-open,.project-details summary{scroll-margin-top:calc(var(--header-h) + 24px)}
+.project-card{cursor:pointer}
+.project-card .project-details,.project-card .project-details summary{cursor:default}
+.project-card .project-details summary{cursor:pointer}
+@media(prefers-reduced-motion:reduce){a.project-visual img{transition:none}}
