@@ -36,7 +36,7 @@ with sync_playwright() as p:
         if page.locator(".twenty-piece").count()!=9:failures.append(f"{label}: expected 9 individual number fragments")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="true":
             failures.append(f"{label}: Frame 03 exposed before scroll")
-        if page.locator(".chapter-title").inner_text().replace("\n"," ").find("Curiosity.")<0:
+        if (page.locator(".chapter-title").text_content() or "").find("Curiosity.")<0:
             failures.append(f"{label}: Frame 02 copy changed")
         start_header=page.locator(".site-header").evaluate("e=>e.getBoundingClientRect().top")
         start_footer=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
@@ -93,7 +93,7 @@ with sync_playwright() as p:
                 failures.append(f"{label}: 20 pieces did not scatter ({shifts})")
             page.screenshot(path=str(OUT/f"{label}-04-mouse-fragmented.png"),animations="allow")
             # Reassembly is automatic, exact, repeatable.
-            page.mouse.move(w*.06,h*.36)
+            page.mouse.move(w*.06,15)
             page.wait_for_timeout(900)
             if number.get_attribute("data-reacting")!="false":
                 failures.append(f"{label}: pieces did not return after mouse left")
