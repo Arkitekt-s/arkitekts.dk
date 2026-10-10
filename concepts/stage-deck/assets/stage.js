@@ -100,7 +100,7 @@
     if(Math.abs(dy)>65&&Math.abs(dy)>Math.abs(dx)*1.3)setFrame(active+(dy>0?1:-1));
   },{passive:true});
   const hashMap={"#scene-intro":0,"#scene-human":1,"#scene-work":2,"#scene-contact":3};
-  if(Object.hasOwn(hashMap,location.hash))setFrame(hashMap[location.hash]);
+
 
   // Gentle pointer perspective for landscape windows and photography reel.
   const arches=$$("#arched-world .arch");
@@ -218,4 +218,5 @@
   addEventListener("resize",()=>{if(active===3)resizeGlobe()},{passive:true});
   document.addEventListener("visibilitychange",()=>{if(active===3&&!document.hidden)startGlobe()});
   reduced.addEventListener("change",()=>{if(active===3)drawGlobe()});
+  if(Object.hasOwn(hashMap,location.hash))setFrame(hashMap[location.hash]);
 })();
