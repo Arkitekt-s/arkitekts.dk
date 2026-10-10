@@ -142,6 +142,33 @@ with sync_playwright() as p:
                     natural=img.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight,src:e.getAttribute('src')})")
                     if natural["w"]<200 or natural["h"]<200 or not natural["src"].startswith("../assets/"):
                         errors.append(f"{name}: {slug} local image broken {natural}")
+            if slug=="basecamp-response":
+                original_source="https://arkitekts.dk/portfolio/basecamp-customer-response-monitor/"
+                if page.locator(f'.case-resource-links a[href="{original_source}"]').count()!=1:
+                    errors.append(f"{name}: Basecamp source case study link missing")
+                if page.locator(f'.basecamp-original-story a[href="{original_source}"]').count()!=1:
+                    errors.append(f"{name}: Basecamp original project shortcut missing")
+                if page.locator('.basecamp-cover-link[href="../assets/basecamp-response.webp"]').count()!=1:
+                    errors.append(f"{name}: Original Basecamp application screenshot cannot open full size")
+                if page.locator(".basecamp-sprints>div").count()!=2:
+                    errors.append(f"{name}: Basecamp original Scrum timeline missing")
+                timeline=page.locator(".basecamp-delivery").inner_text()
+                for term in ("15 JUL", "15 SEP", "15 JAN 2024"):
+                    if term not in timeline:errors.append(f"{name}: missing Basecamp milestone {term}")
+                full_text=page.locator("main").inner_text()
+                for term in ("UrgencyBot","Bitbucket","Node.js","Slack","Basecamp"):
+                    if term not in full_text:errors.append(f"{name}: original project detail missing {term}")
+                logo=page.locator(".basecamp-original-brand img")
+                if logo.count()!=1:
+                    errors.append(f"{name}: original TwentyFour logo missing")
+                else:
+                    logo.scroll_into_view_if_needed()
+                    logo.evaluate("e=>e.loading='eager'")
+                    logo.evaluate("e=>e.complete||new Promise(done=>{e.addEventListener('load',done,{once:true});e.addEventListener('error',done,{once:true})})")
+                    value=logo.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight,src:e.getAttribute('src')})")
+                    if value["w"]<400 or value["h"]<400 or value["src"]!="../assets/original/basecamp-response/twentyfour-brand.webp":
+                        errors.append(f"{name}: Original TwentyFour logo failed: {value}")
+                    page.screenshot(path=str(OUT/f"{name}-basecamp-original.png"),animations="disabled")
             original_gallery={"web-development":1,"copenhagen-valuation":2}.get(slug,0)
             gallery=page.locator(".case-gallery img")
             if gallery.count()!=original_gallery:
