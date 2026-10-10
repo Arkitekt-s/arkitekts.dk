@@ -1,0 +1,43 @@
+name: Frame 01 live video and mouse patterns
+
+on:
+  push:
+    paths:
+      - "concepts/frame-one-live/**"
+      - "scripts/frame_one_live_review.py"
+      - ".github/workflows/frame-one-live.yml"
+  pull_request:
+    paths:
+      - "concepts/frame-one-live/**"
+      - "scripts/frame_one_live_review.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-mountain:
+    name: Moving mountain video & interactive mouse field
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Validate video interaction JavaScript
+        run: node --check concepts/frame-one-live/assets/live-video.js
+      - name: Run browser checks at 320, 390, 768, 1440px
+        run: python scripts/frame_one_live_review.py
+      - name: Upload actual screenshots and media checks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-one-live-video-screenshots
+          path: screenshots/frame-one-live/
+          if-no-files-found: ignore
+          retention-days: 14
