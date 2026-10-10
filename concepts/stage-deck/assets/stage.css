@@ -35,6 +35,9 @@ main.stage-deck{position:fixed;top:var(--chrome-h);bottom:var(--foot-h);left:0;r
 .scene.is-current{opacity:1;visibility:visible;pointer-events:auto;transform:translate3d(0,0,0)}
 .scene.is-current .fade-in{animation:sceneArrive .7s both}
 @keyframes sceneArrive{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* Hero uses a centering transform; it must not inherit sceneArrive. */
+.scene.is-current .hero-title.fade-in{animation:headlineReveal .7s both}
+@keyframes headlineReveal{from{opacity:0;transform:translate(-50%,-36%)}to{opacity:1;transform:translate(-50%,-44%)}}
 .scene-inside{position:absolute;inset:0}
 .episode-progress{position:fixed;z-index:75;right:2.15%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:13px;align-items:center}
 .episode-progress button{border:1px solid #b5a5c479;color:#dec9e7;background:#2b1b368c;width:31px;height:31px;border-radius:50%;font-size:9px;font-weight:850;letter-spacing:.04em;transition:background .2s,color .2s,transform .2s}
