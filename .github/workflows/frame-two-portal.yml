@@ -1,0 +1,40 @@
+name: Frame 01 to 02 cinematic transition
+on:
+  push:
+    paths:
+      - "concepts/frame-two-portal/**"
+      - "scripts/frame_two_portal_review.py"
+      - ".github/workflows/frame-two-portal.yml"
+  pull_request:
+    paths:
+      - "concepts/frame-two-portal/**"
+      - "scripts/frame_two_portal_review.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-portal:
+    name: Wheel zoom, full-bleed film and reversible stage
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Validate JavaScript
+        run: node --check concepts/frame-two-portal/assets/portal.js
+      - name: Check cinematic scroll and return at four viewports
+        run: python scripts/frame_two_portal_review.py
+      - name: Save screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-frame-two-portal-screenshots
+          path: screenshots/frame-two-portal/
+          if-no-files-found: ignore
+          retention-days: 14

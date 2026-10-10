@@ -1,0 +1,103 @@
+/* SOHEIL | Frame 02 portal.
+   Extends, but NEVER edits, the user-approved Frame 01 HTML/CSS/JS/media.
+   Wheel / trackpad / swipe gradually transform three video arches into one
+   full-viewport cinematic film. Scroll up reverses every step.
+*/
+:root{--portal-progress:0;--chapter-opacity:0;--chapter-rise:36px;--portal-shadow:0}
+.frame-stage{--native-staging:1;will-change:top,bottom}
+.panorama{will-change:width,height,top,gap,transform;transition:none!important}
+.panorama .arch{will-change:border-radius,transform;transition:transform .22s ease-out,box-shadow .2s linear,border-radius 0s}
+.panorama .scenery{will-change:transform}
+.panorama .arch-video{backface-visibility:hidden}
+.portal-shade{position:absolute;inset:0;z-index:6;background:linear-gradient(100deg,rgba(7,10,24,.9) 0%,rgba(7,10,24,.72) 28%,rgba(7,10,24,.32) 60%,rgba(7,10,24,.17) 100%),linear-gradient(0deg,#0c102259,transparent 40%);opacity:0;pointer-events:none;will-change:opacity}
+.chapter-two{position:absolute;z-index:15;top:50%;left:clamp(26px,7.2vw,145px);width:min(730px,66vw);transform:translateY(-48%);color:#fff;opacity:0;visibility:hidden;pointer-events:none;transition:visibility 0s .15s;isolation:isolate}
+.chapter-two.is-visible{visibility:visible;transition:visibility 0s;pointer-events:auto}
+.chapter-kicker{font:780 11px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.21em;color:#d2dcfb;display:flex;gap:14px;align-items:center;margin:0 0 32px;white-space:nowrap}
+.chapter-index{color:#f4acf5}
+.chapter-rule{display:inline-block;width:26px;height:1px;background:#a6e6f6}
+.chapter-title{font-size:clamp(76px,9.2vw,158px);font-weight:650;line-height:.98;letter-spacing:-.092em;margin:0 0 32px;text-shadow:0 17px 60px #030b17a1}
+.chapter-title span{display:block;opacity:0;transform:translate3d(0,46px,0);filter:blur(12px);transition:transform 880ms cubic-bezier(.17,.78,.12,1),opacity 680ms ease,filter 770ms ease}
+.chapter-title em{font-weight:360;font-family:Georgia,Times,serif;color:#c5fbef;letter-spacing:-.08em}
+.chapter-two.is-visible .chapter-title span{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+.chapter-two.is-visible .chapter-title span:nth-child(2){transition-delay:100ms}
+.chapter-two.is-visible .chapter-title span:nth-child(3){transition-delay:195ms}
+.chapter-description{max-width:540px;font-size:clamp(15px,1.15vw,19px);font-weight:420;line-height:1.8;color:#ecf2ff;margin:0 0 25px;opacity:0;transform:translateY(15px);transition:opacity .65s ease .22s,transform .7s ease .22s}
+.chapter-two.is-visible .chapter-description{opacity:1;transform:translateY(0)}
+.chapter-link{display:inline-flex;gap:34px;align-items:center;min-height:47px;padding:8px 3px;border-bottom:1px solid #b3f7e6;color:#c3ffef;font-size:13px;font-weight:790;letter-spacing:.05em;opacity:0;transform:translateY(12px);transition:opacity .6s ease .37s,transform .6s ease .37s}
+.chapter-two.is-visible .chapter-link{opacity:1;transform:translateY(0)}
+.chapter-link:hover{color:white;border-bottom-color:white}
+.chapter-footnote{position:relative;color:#cadbea;font:750 10px/1.6 ui-monospace,Consolas,monospace;letter-spacing:.2em;margin-top:35px;opacity:0;transition:opacity .65s .4s}
+.chapter-two.is-visible .chapter-footnote{opacity:1}
+.chapter-footnote span{padding-inline:10px;color:#bba1db}
+body.chapter-two-active .hero-text{pointer-events:none}
+body.chapter-two-active .site-header,body.chapter-two-active .site-footer{background:rgba(15,12,28,.32);backdrop-filter:blur(7px)}
+body.chapter-two-active .gridlines{opacity:.35}
+body.chapter-two-active .panorama .scenery{animation:none}
+body.chapter-two-active .light-haze,body.chapter-two-active .near-clouds{opacity:.11}
+.portal-navigation{position:absolute;right:clamp(16px,3.2vw,56px);bottom:clamp(22px,5vh,68px);z-index:28;display:flex;align-items:center;gap:16px;opacity:0;pointer-events:none;transition:opacity .25s}
+.portal-navigation.is-visible{opacity:1;pointer-events:auto}
+.portal-navigation button{border:1px solid #d5b9e677;background:rgba(25,12,39,.63);color:#fff;border-radius:50%;height:37px;width:37px;font-size:20px;font-weight:350;display:grid;place-items:center}
+.portal-navigation button:hover{background:#5b2375}
+.portal-steps{display:flex;gap:11px;align-items:center;font:740 10px/1 ui-monospace,Consolas,monospace;letter-spacing:.09em;color:#eee2f5}
+.portal-track{position:relative;width:90px;height:2px;background:#ffffff52;overflow:hidden}
+.portal-track i{position:absolute;inset:0;background:#c6fff2;transform:scaleX(0);transform-origin:left;will-change:transform}
+.wheel-hint{position:absolute;left:3.1%;bottom:21%;z-index:15;font:800 10px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#eae2f2;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .4s}
+.wheel-hint span{color:#bdffed;margin-left:15px}
+body.chapter-two-active .wheel-hint{left:auto;right:3.1%;bottom:20%;color:#e4dbf2}
+body.chapter-two-active .live-status{opacity:0;pointer-events:none}
+body.chapter-two-active .scene-tools{opacity:.95}
+body.chapter-two-active .interaction-note{opacity:0}
+body.chapter-two-active .corner-coordinate{opacity:0}
+.frame-stage .hero-text,.frame-stage .supporting-line,.frame-stage .scene-eyebrow{will-change:opacity,transform}
+body.portal-zoom .arch{border:0}
+body.portal-zoom .edge-highlight{opacity:0}
+body.portal-zoom .panorama{filter:none}
+@media(max-width:1000px){
+ .chapter-two{left:6%;width:80vw}
+ .chapter-title{font-size:clamp(66px,10vw,113px)}
+ .chapter-kicker{font-size:10px}
+}
+@media(max-width:760px){
+ .chapter-two{left:6%;width:86vw;top:50%;transform:translateY(-49%)}
+ .chapter-kicker{font-size:9px;letter-spacing:.09em;margin-bottom:24px}
+ .chapter-title{font-size:clamp(58px,12vw,94px)}
+ .chapter-description{max-width:470px;font-size:14px}
+ .portal-navigation{bottom:14%;right:6%;gap:8px}
+ .portal-navigation button{height:31px;width:31px}
+ .portal-track{width:50px}
+ .wheel-hint{bottom:18%;left:5%;font-size:9px;letter-spacing:.05em}
+}
+@media(max-width:470px){
+ .chapter-two{left:6%;width:87vw;top:49%}
+ .chapter-kicker{font-size:8px;letter-spacing:.08em;gap:8px}
+ .chapter-rule{width:13px}
+ .chapter-title{font-size:clamp(53px,13.5vw,69px);margin-bottom:21px}
+ .chapter-description{font-size:13px;line-height:1.65}
+ .chapter-link{font-size:12px}
+ .chapter-footnote{font-size:8px;letter-spacing:.07em}
+ .wheel-hint{font-size:8px;bottom:20%}
+ .portal-navigation{bottom:13%}
+}
+@media(max-height:680px){
+ .chapter-title{font-size:clamp(52px,7vw,98px);margin-bottom:15px}
+ .chapter-kicker{margin-bottom:15px}
+ .chapter-description{line-height:1.55;margin-bottom:8px}
+ .chapter-footnote{margin-top:15px}
+}
+@media(prefers-reduced-motion:reduce){
+ .chapter-two,.chapter-title span,.chapter-description,.chapter-link,.chapter-footnote,.portal-navigation{transition:none!important;filter:none!important}
+ .chapter-two.is-visible .chapter-title span{transform:none!important}
+}
+
+/* One decoded full-viewport movie takes over when the arches meet.
+   Its alpha stays zero in the approved first frame. */
+.portal-film{
+  position:absolute;z-index:4;inset:0;width:100%;height:100%;display:block;
+  object-fit:cover;object-position:center center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  filter:saturate(.78) contrast(.98);
+  will-change:opacity;
+}
+.portal-film.is-active{visibility:visible}
+body.chapter-two-active .portal-film{filter:saturate(.84) contrast(1.02)}
+@media(prefers-reduced-motion:reduce){.portal-film{transition:none!important}}

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#160d22">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Interactive two-frame concept: mouse-wheel zooms from the approved three-arch mountain opening into one full-screen moving video with animated engineering story.">
+<title>SOHEIL — Frame 01 → Frame 02 | Cinematic Zoom Preview</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85">
+<link rel="stylesheet" href="../frame-one-v3/assets/frame-one.css">
+<link rel="stylesheet" href="../frame-one-live/assets/live-video.css">
+<link rel="stylesheet" href="assets/portal.css">
+<script src="assets/approved-interaction.js" defer></script>
+<script src="assets/portal.js" defer></script>
+</head>
+<body class="frame-one">
+<a class="skip" href="#frame">Skip to the animated landing scene</a>
+<div class="background" aria-hidden="true"></div>
+<div class="gridlines" aria-hidden="true"></div>
+<canvas id="pointer-pattern" class="pointer-pattern" aria-hidden="true"></canvas>
+
+<header class="site-header" aria-label="Fixed site header">
+  <a class="brand-icon" href="./" aria-label="Soheil home">S<span>.</span></a>
+  <span class="site-name" aria-label="Soheil Fattahieh">S O H E I L</span>
+  <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open menu"><span></span><span></span><span></span></button>
+  <nav id="navigation" class="navigation" aria-label="Main navigation">
+    <a href="https://arkitekts.dk/portfolio/">PORTFOLIO</a>
+    <a href="https://arkitekts.dk/profile/">ABOUT</a>
+    <a href="https://arkitekts.dk/">TECHNICAL GUIDES</a>
+    <a href="mailto:sohe@arkitekts.dk?subject=Hello%20Soheil" class="contact">Let's talk</a>
+  </nav>
+</header>
+
+<main id="frame" class="frame-stage" aria-label="Interactive journey between the approved panoramic first frame and an expanded video chapter">
+  <div class="scene-eyebrow">SOHEIL FATTAHIEH <span aria-hidden="true">/</span> INFRASTRUCTURE ENGINEER</div>
+
+  <div class="panorama" id="panorama" role="img" aria-label="Three large windows onto an animated mountain landscape, with shifting clouds and depth that responds to your mouse">
+    <div class="arch arch-one"><div class="scenery">
+      <div class="distant-mountains"></div>
+      <video class="arch-video" data-pane="1" autoplay muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+        <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+        <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+      </video>
+      <div class="light-haze"></div>
+      <div class="near-clouds"></div>
+      <div class="foreground-shade"></div>
+    </div><span class="edge-highlight"></span></div>
+    <div class="arch arch-two"><div class="scenery">
+      <div class="distant-mountains"></div>
+      <video class="arch-video" data-pane="2" autoplay muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+        <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+        <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+      </video>
+      <div class="light-haze"></div>
+      <div class="near-clouds"></div>
+      <div class="foreground-shade"></div>
+    </div><span class="edge-highlight"></span></div>
+    <div class="arch arch-three"><div class="scenery">
+      <div class="distant-mountains"></div>
+      <video class="arch-video" data-pane="3" autoplay muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+        <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+        <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+      </video>
+      <div class="light-haze"></div>
+      <div class="near-clouds"></div>
+      <div class="foreground-shade"></div>
+    </div><span class="edge-highlight"></span></div>
+  </div>
+
+  <h1 class="hero-text"><span>I make complex</span><span>systems <em>work</em><b>.</b></span></h1>
+  <p class="supporting-line">HANDS-ON ENGINEERING <span>·</span> AUTOMATION <span>·</span> PRODUCTION DELIVERY</p>
+
+  <div class="scene-tools" aria-label="Scene animation controls">
+    <button type="button" id="hold-button" class="hold-control"><i aria-hidden="true"></i><span>PRESS &amp; HOLD TO EXPLORE</span></button>
+    <button type="button" id="motion-button" class="motion-control" aria-pressed="false">PAUSE MOTION</button>
+  </div>
+  <p class="live-status" id="live-status" role="status"><i aria-hidden="true"></i><span>LOADING REAL MOUNTAIN VIDEO…</span></p>
+  <p class="interaction-note" id="interaction-note" aria-live="polite">MOVE THE MOUSE TO SHIFT DEPTH <span>·</span> HOLD TO ENTER THE LANDSCAPE</p>
+  <div class="corner-coordinate" aria-hidden="true">FRAME 01 <span>—</span> CONCEPT LOCK PENDING</div>
+  <video id="portal-film" class="portal-film" muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
+    <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
+    <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">
+  </video>
+  <div class="portal-shade" aria-hidden="true"></div>
+  <section class="chapter-two" id="chapter-two" aria-label="Frame two: Engineering story" aria-hidden="true" inert>
+    <p class="chapter-kicker"><span class="chapter-index">02 / 04</span><span class="chapter-rule"></span> BEHIND EVERY WORKING SYSTEM</p>
+    <h2 class="chapter-title"><span>Curiosity.</span><span>Code.</span><span><em>Delivery.</em></span></h2>
+    <p class="chapter-description">I'm Soheil. I build and automate platforms that work in the real world. From Linux and Ansible to Kafka and Elasticsearch.</p>
+    <a class="chapter-link" href="https://arkitekts.dk/portfolio/">Explore my work <span aria-hidden="true">↗</span></a>
+    <p class="chapter-footnote">INFRASTRUCTURE ENGINEERING <span>—</span> COPENHAGEN, DENMARK</p>
+  </section>
+  <div class="portal-navigation" aria-label="Story progress">
+    <button type="button" id="previous-chapter" aria-label="Return to first frame">↑</button>
+    <div class="portal-steps"><span>01</span><div class="portal-track"><i id="portal-fill"></i></div><span>02</span></div>
+    <button type="button" id="next-chapter" aria-label="Zoom into the next frame">↓</button>
+  </div>
+  <div class="wheel-hint" id="wheel-hint" aria-live="polite">SCROLL DOWN TO ENTER THE LANDSCAPE <span>↓</span></div>
+</main>
+
+<footer class="site-footer" aria-label="Fixed site footer">
+  <span class="footer-mark">S.</span>
+  <span class="footer-specialties">LINUX <i>·</i> ANSIBLE <i>·</i> ELASTICSEARCH <i>·</i> KAFKA</span>
+  <span class="footer-location">COPENHAGEN · DENMARK</span>
+</footer>
+</body></html>
