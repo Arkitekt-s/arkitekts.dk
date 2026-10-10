@@ -73,13 +73,8 @@
   <h1 class="hero-text"><span>I make complex</span><span>systems <em>work</em><b>.</b></span></h1>
   <p class="supporting-line">HANDS-ON ENGINEERING <span>·</span> AUTOMATION <span>·</span> PRODUCTION DELIVERY</p>
 
-  <div class="scene-tools" aria-label="Scene animation controls">
-    <button type="button" id="hold-button" class="hold-control"><i aria-hidden="true"></i><span>PRESS &amp; HOLD TO EXPLORE</span></button>
-    <button type="button" id="motion-button" class="motion-control" aria-pressed="false">PAUSE MOTION</button>
-  </div>
-  <p class="live-status" id="live-status" role="status"><i aria-hidden="true"></i><span>LOADING REAL MOUNTAIN VIDEO…</span></p>
-  <p class="interaction-note" id="interaction-note" aria-live="polite">MOVE THE MOUSE TO SHIFT DEPTH <span>·</span> HOLD TO ENTER THE LANDSCAPE</p>
-  <div class="corner-coordinate" aria-hidden="true">FRAME 01 <span>—</span> CONCEPT LOCK PENDING</div>
+  <!-- Motion remains keyboard-accessible without visible debug or tutorial labels. -->
+  <button type="button" id="motion-button" class="motion-keyboard-control" aria-pressed="false">PAUSE MOTION</button>
   <video id="portal-film" class="portal-film" muted loop playsinline preload="metadata" disablepictureinpicture disableremoteplayback tabindex="-1" aria-hidden="true" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80">
     <source src="../frame-one-live/assets/mountain-loop.webm" type="video/webm">
     <source src="../frame-one-live/assets/mountain-loop.mp4" type="video/mp4">

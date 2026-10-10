@@ -49,6 +49,28 @@ with sync_playwright() as p:
             problems.append(f"{name}: clipped first-frame headline {title}")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="true":
             problems.append(f"{name}: chapter 02 should be hidden initially")
+        # Remove draft/helper UI without changing the cinematic animation.
+        for removed in (".scene-tools",".live-status",".interaction-note",".corner-coordinate"):
+            if page.locator(removed).count():
+                problems.append(f"{name}: unwanted helper still exists: {removed}")
+        if page.locator("#motion-button").count()!=1:
+            problems.append(f"{name}: accessible pause control lost")
+        shell=page.evaluate("""() => {
+            const g=document.querySelector('.gridlines');
+            const h=document.querySelector('.site-header');
+            const f=document.querySelector('.site-footer');
+            const gs=getComputedStyle(g),hs=getComputedStyle(h),fs=getComputedStyle(f);
+            return {gridZ:Number(gs.zIndex),headerZ:Number(hs.zIndex),
+                    footerZ:Number(fs.zIndex),gridTop:g.getBoundingClientRect().top,
+                    gridBottom:g.getBoundingClientRect().bottom,
+                    headerBlur:hs.backdropFilter,footerBlur:fs.backdropFilter};
+        }""")
+        if shell["gridZ"]<=max(shell["headerZ"],shell["footerZ"]):
+            problems.append(f"{name}: grid does not extend visually over header/footer {shell}")
+        if abs(shell["gridTop"])>1 or abs(shell["gridBottom"]-height)>1:
+            problems.append(f"{name}: grid is not continuous across viewport {shell}")
+        if shell["headerBlur"]!="none" or shell["footerBlur"]!="none":
+            problems.append(f"{name}: chrome still blurs vertical grid lines {shell}")
         page.screenshot(path=str(OUTPUT/f"{name}-01-approved-start.png"),animations="allow")
 
         # Hold zoom is not the chapter transition. Wheel continuously grows windows.
@@ -101,6 +123,17 @@ with sync_playwright() as p:
         full_film=page.locator("#portal-film")
         if not full_film.evaluate("e=>e.readyState>=2"):
             problems.append(f"{name}: full-viewport film was not decoded")
+        after_shell=page.evaluate("""()=>{
+            const gs=getComputedStyle(document.querySelector('.gridlines'));
+            const h=getComputedStyle(document.querySelector('.site-header'));
+            const f=getComputedStyle(document.querySelector('.site-footer'));
+            return {gridZ:Number(gs.zIndex),headerZ:Number(h.zIndex),footerZ:Number(f.zIndex),
+                    gridOpacity:Number(gs.opacity),headerBlur:h.backdropFilter,footerBlur:f.backdropFilter};
+        }""")
+        if after_shell["gridZ"]<=max(after_shell["headerZ"],after_shell["footerZ"]) or after_shell["gridOpacity"]<.5:
+            problems.append(f"{name}: grid discontinuous in expanded Frame 02 {after_shell}")
+        if after_shell["headerBlur"]!="none" or after_shell["footerBlur"]!="none":
+            problems.append(f"{name}: header/footer grid blurred in Frame 02 {after_shell}")
         page.screenshot(path=str(OUTPUT/f"{name}-04-expanded-movie.png"),animations="allow")
         # Video should continue playing during transition where possible.
         status=page.locator("body").get_attribute("data-video-status")
