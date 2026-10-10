@@ -31,6 +31,7 @@
     if(event.matches)closeMenu();
   });
 
+  let sectionNavigationLockedUntil=0;
   const links=[...document.querySelectorAll("[data-section-link]")];
   const targets=links.map(link=>document.getElementById(link.dataset.sectionLink)).filter(Boolean);
   function activate(id){
@@ -46,12 +47,15 @@
   links.forEach(link=>link.addEventListener("click",()=>{
     const target=document.getElementById(link.dataset.sectionLink);
     if(!target)return;
+    // Keep the clicked item highlighted while native smooth scrolling runs.
+    sectionNavigationLockedUntil=performance.now()+1500;
     activate(target.id);
     requestAnimationFrame(()=>target.focus({preventScroll:true}));
   }));
   let scheduled=false;
   function updateSection(){
     scheduled=false;
+    if(performance.now()<sectionNavigationLockedUntil)return;
     const threshold=innerHeight*.38;
     let active=targets[0]?.id;
     for(const section of targets){
