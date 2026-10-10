@@ -119,6 +119,20 @@ with sync_playwright() as p:
                     natural=img.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight,src:e.getAttribute('src')})")
                     if natural["w"]<200 or natural["h"]<200 or not natural["src"].startswith("../assets/"):
                         errors.append(f"{name}: {slug} local image broken {natural}")
+            original_gallery={"web-development":1,"copenhagen-valuation":2}.get(slug,0)
+            gallery=page.locator(".case-gallery img")
+            if gallery.count()!=original_gallery:
+                errors.append(f"{name}: {slug} original project gallery mismatch")
+            for gallery_image in gallery.all():
+                gallery_image.scroll_into_view_if_needed(timeout=7000)
+                gallery_image.evaluate("img=>img.loading='eager'")
+                page.wait_for_function(
+                  "()=>[...document.querySelectorAll('.case-gallery img')].every(img=>img.complete)",
+                  timeout=7000
+                )
+                image_info=gallery_image.evaluate("e=>({w:e.naturalWidth,h:e.naturalHeight})")
+                if image_info["w"]<400 or image_info["h"]<300:
+                    errors.append(f"{name}: {slug} original gallery image broken {image_info}")
             page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
             page.screenshot(path=str(OUT/f"{name}-{slug}-top.png"),animations="disabled")
 
