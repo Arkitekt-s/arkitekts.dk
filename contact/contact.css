@@ -178,7 +178,7 @@ body.is-arriving .hero-copy{opacity:1}
  h1{font-size:clamp(73px,15.5vw,125px);margin-bottom:33px}
  .hero-subtitle{font-size:clamp(21px,5vw,28px);max-width:510px}
  .hero-secondary{font-size:13px}
- .hero-graphic{right:-7%;top:112px;height:270px;width:270px;opacity:.21}
+ .hero-graphic{right:0;top:112px;height:270px;width:270px;opacity:.21;transform:none}
  .graphic-core{font-size:80px}
  .social-links{margin-bottom:40px}
  .address{gap:30px;padding-top:17px}
