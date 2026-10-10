@@ -17,11 +17,16 @@ The whole viewport — photograph, grid, header and footer — behaves like one 
 
 ## Footage
 
-Primary: `https://cdn.coverr.co/videos/coverr-cinematic-snowy-mountains-7615/720p.mp4` (Coverr video used in publicly available web examples; use subject to final license verification).
-Backup: `https://videos.pexels.com/video-files/2888383/2888383-hd_1280_720_24fps.mp4` (public video linked in a forum example).
-Poster: Unsplash `photo-1464822759023-fed622ff2c3b`.
+The actual footage is a Pexels mountain/cloud landscape, ID `2888383`, licensed for use on websites under the [Pexels License](https://www.pexels.com/license/). Source reference:
+`https://videos.pexels.com/video-files/2888383/2888383-hd_1280_720_24fps.mp4`.
 
-**Pending:** Confirm the primary and fallback movie files play in a real Chromium run on GitHub Actions, then eventually download and optimize the chosen licensed video to a self-hosted GitHub Pages asset. Do not call a static fallback a live video.
+The clip has been downloaded once by GitHub Actions, reduced to a 12-second 720p loop, and saved as two local media assets:
+- `concepts/frame-one-live/assets/mountain-loop.webm` — VP9 for Chromium/Firefox.
+- `concepts/frame-one-live/assets/mountain-loop.mp4` — H.264 for Safari and other supported browsers.
+
+Both are served directly by GitHub Pages. No third-party video playback service is needed.
+Poster image remains an Unsplash mountain photograph for no-video/reduced-motion modes.
+The layout includes Pexels footage as part of a transformed multimedia website, rather than distributing the standalone video.
 
 ## Verification
 
