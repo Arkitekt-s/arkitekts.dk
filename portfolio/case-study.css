@@ -296,3 +296,41 @@
  .original-pdf-preview>a{width:145px}
 }
 @media(prefers-reduced-motion:reduce){.original-media-photo img{transition:none}}
+
+/* Basecamp / UrgencyBot: restore original case-study artwork and milestones. */
+.basecamp-cover-link{display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;position:relative;z-index:2;cursor:zoom-in}
+.basecamp-cover-link img{transition:transform .23s ease,filter .23s ease}
+.basecamp-cover-link:hover img{transform:scale(1.018);filter:drop-shadow(0 23px 34px rgba(60,34,79,.2))}
+.basecamp-original-identity{display:grid;grid-template-columns:minmax(165px,28%) minmax(0,72%);
+  align-items:center;border:1px solid rgba(116,67,137,.15);background:rgba(255,255,255,.57);margin-top:20px}
+.basecamp-original-brand{min-width:0;min-height:225px;padding:24px;
+  display:grid;place-items:center;background:linear-gradient(138deg,#f3edf8,#ebe3f3);border-right:1px solid rgba(116,67,137,.15)}
+.basecamp-original-brand img{display:block;width:auto;height:clamp(135px,13.7vw,215px);max-width:100%;object-fit:contain;mix-blend-mode:multiply}
+.basecamp-original-story{padding:clamp(25px,3.6vw,49px);min-width:0}
+.basecamp-original-kicker{margin:0 0 16px;font:780 10px/1.5 ui-monospace,Consolas,monospace;
+ letter-spacing:.13em;color:#9265a8}
+.basecamp-original-story h2{font-size:clamp(37px,4.2vw,69px);font-weight:530;letter-spacing:-.077em;line-height:1.03;margin:0 0 15px}
+.basecamp-original-story h2 span{color:#aa75c7}
+.basecamp-original-story>p:not(.basecamp-original-kicker){font-size:clamp(14px,1.2vw,18px);line-height:1.7;color:#6b5b72;max-width:800px;margin:0 0 21px}
+.basecamp-original-story>a{font:780 10px/1.45 ui-monospace,Consolas,monospace;text-decoration:none;color:#70378e;
+ border-bottom:1px solid #a77ab9;padding:0 0 9px;letter-spacing:.1em}
+.basecamp-original-story>a span{margin-left:12px;font-size:19px}
+.basecamp-delivery{margin-top:47px}
+.basecamp-delivery-heading>span{font:790 10px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.12em;color:#966eaa}
+.basecamp-delivery-heading h3{font-size:clamp(30px,3.3vw,51px);letter-spacing:-.064em;font-weight:540;margin:15px 0 24px}
+.basecamp-delivery-heading h3 span{color:#a96bbd}
+.basecamp-sprints{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.basecamp-sprints>div{min-width:0;padding:clamp(19px,2.6vw,31px);background:rgba(237,226,245,.61);border:1px solid rgba(113,71,135,.17)}
+.basecamp-sprints>div>span{font:770 9px/1.6 ui-monospace,Consolas,monospace;letter-spacing:.09em;color:#915dad}
+.basecamp-sprints strong{display:block;font-size:clamp(17px,1.75vw,24px);font-weight:570;letter-spacing:-.035em;margin:17px 0 10px}
+.basecamp-sprints p{font-size:clamp(13px,1.1vw,16px);line-height:1.7;color:#695970;margin:0}
+@media(max-width:760px){
+ .basecamp-original-identity{grid-template-columns:1fr}
+ .basecamp-original-brand{min-height:145px;padding:14px 23px;border-right:0;border-bottom:1px solid rgba(116,67,137,.15)}
+ .basecamp-original-brand img{height:134px}
+ .basecamp-original-story{padding:28px}
+ .basecamp-sprints{grid-template-columns:1fr}
+ .basecamp-sprints>div{padding:23px}
+ .basecamp-original-story h2{font-size:42px}
+}
+@media(prefers-reduced-motion:reduce){.basecamp-cover-link img{transition:none}}

@@ -99,3 +99,15 @@ screenshots and the complete ten-page research-group PDF. The original document
 can be read or downloaded directly without relying on WordPress. A Full-Stack
 application screenshot was also restored. Company, school and software logos
 are intentionally excluded from the photo galleries.
+
+## Basecamp Response Monitor original case-study migration
+
+The original `https://arkitekts.dk/portfolio/basecamp-customer-response-monitor/`
+case is restored under `portfolio/basecamp-response/` with its original
+Basecamp application screenshot and TwentyFour company artwork.
+The original company identity is intentionally shown as a logo,
+not disguised as a project screenshot. Its optimized local copy
+is stored at `portfolio/assets/original/basecamp-response/twentyfour-brand.webp`.
+The project text includes the original UrgencyBot name, integration tools,
+two Scrum sprints (July–September 2023 and September 2023–January 2024),
+and a link back to the source page.

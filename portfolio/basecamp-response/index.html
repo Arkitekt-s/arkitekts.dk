@@ -38,7 +38,7 @@
       <p class="case-eyebrow"><i></i> PROJECT 04 <span>—</span> INTEGRATION &amp; AUTOMATION</p>
       <h1 id="case-title">Basecamp Response Monitor<span class="case-dot">.</span></h1>
       <p class="case-lead">Helping teams respond to customer messages before they get missed.</p>
-      <p class="case-deck">At TwentyFour, I worked on a monitoring application that checked Basecamp project conversations and sent Slack alerts when a customer message needed a response.</p>
+      <p class="case-deck">At TwentyFour, I led the development of a Basecamp monitoring application. It detects unanswered customer messages and alerts the team through Slack.</p>
       <div class="case-hero-actions">
         <a href="#overview" class="case-scroll">EXPLORE THE CASE <span aria-hidden="true">↓</span></a>
         <button type="button" class="case-copy" id="case-copy" aria-label="Copy link to this project">COPY PROJECT LINK <span aria-hidden="true">↗</span></button>
@@ -48,9 +48,22 @@
     <div class="case-hero-number" aria-hidden="true">04<span> / 06</span></div>
   </section>
   <figure class="case-cover case-cover-image">
-    <img src="../assets/basecamp-response.webp" alt="Basecamp response monitor project screenshot displayed on a laptop" width="830" height="500" decoding="async" fetchpriority="high">
-    <figcaption><span>INTEGRATION &amp; AUTOMATION</span><span>2023–2024 <i>·</i> COPENHAGEN, DENMARK</span></figcaption>
+    <a class="basecamp-cover-link" href="../assets/basecamp-response.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the original Basecamp Response Monitor application screenshot">
+      <img src="../assets/basecamp-response.webp" alt="Original Basecamp monitoring application, displayed inside a laptop with a purple messages interface" width="830" height="500" decoding="async" fetchpriority="high">
+    </a>
+    <figcaption><span>ORIGINAL APPLICATION SCREENSHOT · OPEN FULL SIZE ↗</span><span>2023–2024 <i>·</i> COPENHAGEN, DENMARK</span></figcaption>
   </figure>
+  <section class="basecamp-original-identity" aria-label="Original project and company">
+    <div class="basecamp-original-brand">
+      <img src="../assets/original/basecamp-response/twentyfour-brand.webp" alt="Original TwentyFour company logo from the Basecamp project" width="550" height="775" loading="lazy" decoding="async">
+    </div>
+    <div class="basecamp-original-story">
+      <p class="basecamp-original-kicker">TWENTYFOUR · CUSTOMER SERVICE AUTOMATION</p>
+      <h2>UrgencyBot<span>.</span></h2>
+      <p>My Basecamp-to-Slack response monitor. Built to identify unanswered customer messages and make follow-up easier across multiple projects.</p>
+      <a href="https://arkitekts.dk/portfolio/basecamp-customer-response-monitor/" target="_blank" rel="noopener noreferrer">VIEW ORIGINAL PROJECT <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
   <div class="case-facts" aria-label="Project figures"><div><b>2</b><span>PROJECT PHASES</span></div><div><b>BASECAMP</b><span>MESSAGE SOURCE</span></div><div><b>SLACK</b><span>ALERT CHANNEL</span></div></div>
       <nav class="case-chapters" aria-label="On this project page">
     <a href="#overview">01 <span>OVERVIEW</span></a>
@@ -61,22 +74,29 @@
   <section id="overview" class="case-section" tabindex="-1" aria-labelledby="overview-heading">
     <div class="case-section-aside"><span>01 / OVERVIEW</span><span class="case-aside-cross" aria-hidden="true">+</span></div>
     <div class="case-section-main"><p class="case-mini">THE PROJECT</p><h2 id="overview-heading">Understand the <em>challenge.</em></h2>
-      <p class="case-main-paragraph">A team working across many client projects can miss a conversation. The goal was to identify messages waiting for replies and notify the right people without constant manual checking.</p>
+      <p class="case-main-paragraph">A team supporting many Basecamp projects can miss customer messages. I designed UrgencyBot to monitor conversations and identify unanswered requests. It notifies the team through Slack, grouped by project and customer, so the right message receives attention.</p>
       <div class="case-focus"><span>THE MAIN FOCUS</span><p>A useful, event-driven connection between customer messages and internal team alerts.</p></div>
     </div>
   </section>
   <section id="approach" class="case-section" tabindex="-1" aria-labelledby="approach-heading">
     <div class="case-section-aside"><span>02 / EXECUTION</span><span class="case-aside-cross" aria-hidden="true">+</span></div>
     <div class="case-section-main"><p class="case-mini">HOW I APPROACHED IT</p><h2 id="approach-heading">From idea to <em>execution.</em></h2>
-      <ol class="case-steps"><li class="case-step"><span>01</span><div><h3>Monitor conversations</h3><p>Tracked activity across multiple Basecamp projects and customer contexts.</p></div></li><li class="case-step"><span>02</span><div><h3>Automate follow-up</h3><p>Used API integration and webhooks to route relevant unanswered-message alerts into Slack.</p></div></li><li class="case-step"><span>03</span><div><h3>Deliver securely</h3><p>Worked with token-based authentication, two-factor authentication, a Node.js backend and CI/CD practices.</p></div></li></ol>
-      <div class="case-stack"><p>TOOLS &amp; TECHNOLOGIES</p><ul><li>Node.js</li><li>TypeScript</li><li>Slack Bolt</li><li>REST APIs</li><li>Webhooks</li><li>MongoDB</li><li>Docker</li><li>CI/CD</li></ul></div>
+      <ol class="case-steps"><li class="case-step"><span>01</span><div><h3>Identify unanswered messages</h3><p>Monitored Basecamp messages across multiple client projects and identified conversations needing a response.</p></div></li><li class="case-step"><span>02</span><div><h3>Send useful Slack alerts</h3><p>Connected Basecamp and Slack using REST APIs and webhooks. Alerts were organized by project and customer for quick follow-up.</p></div></li><li class="case-step"><span>03</span><div><h3>Build and deliver the application</h3><p>Led frontend and backend work using Node.js and an event-driven microservice approach. Used token authentication, two-factor authentication, CI/CD and weekly Scrum increments.</p></div></li></ol>
+      <div class="case-stack"><p>TOOLS &amp; TECHNOLOGIES</p><ul><li>Node.js</li><li>TypeScript</li><li>Slack Bolt</li><li>REST APIs</li><li>Webhooks</li><li>MongoDB</li><li>Docker</li><li>Bitbucket</li><li>CI/CD</li></ul></div>
+      <div class="basecamp-delivery">
+        <div class="basecamp-delivery-heading"><span>PROJECT DELIVERY</span><h3>Two Scrum sprints<span>.</span></h3></div>
+        <div class="basecamp-sprints">
+          <div><span>SPRINT 01 · 15 JUL — 15 SEP 2023</span><strong>Discovery and foundation</strong><p>Analysed the business needs, designed the application, started frontend and backend work, and created Slack webhooks. Delivered working weekly increments.</p></div>
+          <div><span>SPRINT 02 · 15 SEP 2023 — 15 JAN 2024</span><strong>Integration and delivery</strong><p>Completed the interface and backend, integrated the required features, and prepared a working customer-response monitoring system.</p></div>
+        </div>
+      </div>
     </div>
   </section>
   <section id="result" class="case-section" tabindex="-1" aria-labelledby="result-heading">
     <div class="case-section-aside"><span>03 / OUTCOME</span><span class="case-aside-cross" aria-hidden="true">+</span></div>
     <div class="case-section-main"><p class="case-mini">WHAT IT SHOWS</p><h2 id="result-heading">What the work <em>delivered.</em></h2>
-      <p class="case-main-paragraph">The original case study describes delivery through two Scrum phases, from July 2023 to January 2024. The goal was timely follow-up, with clearer customer communication and fewer missed interactions.</p>
-      <div class="case-note"><span>PROJECT NOTE</span><p>The project's original name also appears as UrgencyBot in the WordPress description.</p></div>
+      <p class="case-main-paragraph">I delivered a functional system by January 15, 2024, following two Scrum sprints. The project combined Basecamp monitoring, Slack notifications and secure, event-driven backend integration. It was built to reduce missed customer messages and help TwentyFour follow up faster.</p>
+      <div class="case-note"><span>PROJECT NOTE</span><p>UrgencyBot is the project's original application name. Its development timeline, original screenshot and technical approach come from the WordPress case study.</p></div>
     </div>
   </section>
   <section id="resources" class="case-section case-resources" tabindex="-1" aria-labelledby="resources-heading">
