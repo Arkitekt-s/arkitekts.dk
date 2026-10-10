@@ -1,0 +1,46 @@
+name: Technical Guides browser review
+on:
+  pull_request:
+    paths:
+      - "technical-guides/**"
+      - "scripts/technical_guides_review.py"
+      - ".github/workflows/technical-guides-review.yml"
+      - "contact/contact.css"
+  push:
+    paths:
+      - "technical-guides/**"
+      - "scripts/technical_guides_review.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guides-review:
+    name: Full guide articles, links, responsive layout and real search
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Chromium and browser testing tools
+        run: |
+          python -m pip install playwright==1.56.0 beautifulsoup4==4.14.2
+          python -m playwright install --with-deps chromium
+      - name: Syntax-check real guide interactions
+        run: |
+          node --check technical-guides/guides.js
+          node --check technical-guides/article.js
+          python -m py_compile scripts/sync_technical_guides.py
+      - name: Test all published guide pages on four viewports
+        run: python scripts/technical_guides_review.py
+      - name: Save visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-ai-guide-screenshots
+          path: screenshots/ai-technical-guides/
+          retention-days: 14
+          if-no-files-found: ignore
