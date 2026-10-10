@@ -26,10 +26,18 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 
 - **Five-frame homepage:** `/concepts/frame-five-contact/` — unchanged scene structure.
 - **Bright contact:** `/contact/` — opens from both **Let's talk** links on the five-frame homepage.
-- **Profile / Skills:** existing WordPress links used until those new pages are migrated.
+- **Skills:** `/software-skills/` — new bright skills page with category filters and live search.
+- **Profile / Portfolio:** existing WordPress links remain until those pages are migrated.
 
 GitHub Pages base path in preview: `https://arkitekt-s.github.io/arkitekts.dk/`.
 All new internal URLs are relative, so moving the site to a custom domain is straightforward.
+
+## Skills page content
+
+Uses the supplied 37 technologies and capabilities, organised into Platforms and Execution.
+The fixed three-column header/footer are the same as Contact and the homepage; only light/dark color treatment differs.
+JavaScript implements accessible mobile navigation, category filters, real search, result counts and reset.
+The Skills preview is also `noindex,nofollow` until the final domain migration.
 
 ## Contact page content
 
