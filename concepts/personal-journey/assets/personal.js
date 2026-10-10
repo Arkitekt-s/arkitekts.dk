@@ -10,8 +10,8 @@
   const root = $(".experience");
   const canvas = $("#world");
   const panels = $$(".story-panel");
-  const indicators = $(".timeline-bars i");
-  const episodeNav = $(".stage-index button[data-episode]");
+  const indicators = Array.from(document.querySelectorAll(".timeline-bars i"));
+  const episodeNav = Array.from(document.querySelectorAll(".stage-index button[data-episode]"));
   const counter = $("[data-current-stage]");
   const motionControl = $("#motion");
   const quality = $("#quality");
