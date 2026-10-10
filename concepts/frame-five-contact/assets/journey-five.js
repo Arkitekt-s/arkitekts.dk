@@ -13,6 +13,9 @@
   const support=document.querySelector(".supporting-line");
   const eyebrow=document.querySelector(".scene-eyebrow");
   const chapter=document.querySelector("#chapter-two");
+  const chapterTitleLines=[...document.querySelectorAll("#chapter-two .chapter-title > span")];
+  const chapterDescription=chapter?.querySelector(".chapter-description");
+  const chapterLink=chapter?.querySelector(".chapter-link");
   const third=document.querySelector("#chapter-three");
   const fourth=document.getElementById("frame-four-gallery");
   const fifth=document.getElementById("frame-five-contact");
@@ -162,21 +165,48 @@
     }else{
       arches.forEach(a=>a.style.removeProperty("border-radius"));
     }
-    // The old statement leaves before the video finishes expanding.
-    const firstOpacity=1-smooth(normalize(p,.45,.89));
-    if(hero)hero.style.opacity=String(firstOpacity);
+    // One uninterrupted, reversible scroll transition from 01 to 02.
+    // The outgoing sentence starts drifting up before the arches finish
+    // opening. Every value is derived from scroll progress, not a timer.
+    const introExit=smooth(normalize(p,.22,.83));
+    const firstOpacity=1-introExit;
+    if(hero){
+      hero.style.opacity=String(firstOpacity);
+      hero.style.translate="0 "+(-22*introExit).toFixed(2)+"px";
+      hero.style.filter=reduced.matches?"none":"blur("+(4.5*introExit).toFixed(2)+"px)";
+    }
     if(support)support.style.opacity=String(firstOpacity);
-    if(eyebrow)eyebrow.style.opacity=String(firstOpacity);
+    if(eyebrow)eyebrow.style.opacity=String(1-smooth(normalize(p,.31,.85)));
     if(note)note.style.opacity=String(firstOpacity);
     if(live)live.style.opacity=String(firstOpacity);
     const darkness=smooth(normalize(p,.47,.87));
     if(shade)shade.style.opacity=String(darkness*.93);
     syncFilms(p);
-    // The next episode is a genuine full-screen movie with staggered new copy.
-    const textOpacity=smooth(normalize(p,.71,1.00));
+
+    // Crossfade the incoming line-by-line story into the outgoing sentence.
+    // Text drifts upward and becomes sharp; scrolling back reverses it.
+    const textOpacity=smooth(normalize(p,.55,.95));
     const leaveTwo=smooth(normalize(journey,1.31,1.72));
     chapter.style.opacity=String(textOpacity*(1-leaveTwo));
-    const shouldShow=journey>.70 && journey<1.74;
+    chapter.style.translate="0 "+(22*(1-textOpacity)).toFixed(2)+"px";
+    chapterTitleLines.forEach((line,index)=>{
+      const wordEnter=smooth(normalize(p,.54+index*.055,.84+index*.045));
+      line.style.opacity=String(wordEnter);
+      line.style.transform="translate3d(0,"+(28*(1-wordEnter)).toFixed(2)+"px,0)";
+      line.style.filter=reduced.matches?"none":"blur("+(7*(1-wordEnter)).toFixed(2)+"px)";
+    });
+    const descriptionEnter=smooth(normalize(p,.70,.97));
+    if(chapterDescription){
+      chapterDescription.style.opacity=String(descriptionEnter);
+      chapterDescription.style.transform="translate3d(0,"+(17*(1-descriptionEnter)).toFixed(2)+"px,0)";
+    }
+    const linkEnter=smooth(normalize(p,.76,1.00));
+    if(chapterLink){
+      chapterLink.style.opacity=String(linkEnter);
+      chapterLink.style.transform="translate3d(0,"+(13*(1-linkEnter)).toFixed(2)+"px,0)";
+    }
+    const shouldShow=journey>.54 && journey<1.74;
+    chapter.style.pointerEvents=journey>.88&&journey<1.65?"auto":"none";
     if(shouldShow!==lastVisible){
       chapter.classList.toggle("is-visible",shouldShow);
       chapter.inert=!shouldShow;
