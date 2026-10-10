@@ -138,7 +138,7 @@ footer a{font-weight:800;color:var(--accent)}
 .chooser .intro h1{font-size:clamp(56px,8vw,110px);max-width:940px;margin:20px 0 25px}
 .chooser .intro h1 em{font-style:normal;color:#91def2}
 .chooser .intro p:not(.eyebrow){color:#b0c6d5;font-size:17px;max-width:680px}
-.chooser .choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding-bottom:110px}
+.chooser .choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding-bottom:110px}
 .chooser .choice{border:1px solid #334d5d;background:#101f2c;overflow:hidden;transition:transform .2s,border-color .2s}
 .chooser .choice:hover{transform:translateY(-6px);border-color:#9de5fe}
 .chooser .mini{height:280px;padding:25px;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:space-between}
@@ -146,6 +146,9 @@ footer a{font-weight:800;color:var(--accent)}
 .chooser .mini.atlas-mini{background:linear-gradient(130deg,#0c2538,#091a25);color:#a7e0ef}
 .chooser .mini.nordic-mini{background:#eff4ed;color:#154b4f}
 .chooser .mini.signal-mini{background:linear-gradient(130deg,#0e1720,#183238);color:#b6f26f}
+.chooser .mini.light-mini{background:linear-gradient(125deg,#f9fcfb,#d6e7eb);color:#1c5c9a}
+.chooser .mini.light-mini strong{font-weight:650}
+.chooser .mini.light-mini i{font-style:normal;color:#0b7f89}
 .chooser .mini .mini-logo{font-size:12px;font-weight:900;letter-spacing:.13em}
 .chooser .mini strong{font-size:clamp(33px,3.3vw,50px);letter-spacing:-.075em;line-height:1.05;z-index:1}
 .chooser .mini.nordic-mini strong{font-family:Georgia,serif;font-weight:normal;letter-spacing:-.055em}
