@@ -109,3 +109,11 @@ body[data-episode="3"] .control-hint span{color:#a1e6e1}
  #transition-portal{display:none!important}
  .reel,.arch,.cinema-work,.scene-0 .arch-layout,.hero-title{animation:none!important;transition:none!important}
 }
+
+/* On narrow phones, contact text overlaps the globe visually.
+   Let pointer events pass through the text container to the canvas,
+   while preserving the real links as clickable. */
+@media(max-width:760px){
+  .scene-3 .contact-copy{pointer-events:none}
+  .scene-3 .contact-copy a{pointer-events:auto}
+}
