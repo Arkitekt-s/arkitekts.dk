@@ -44,7 +44,8 @@
     if (!root) return;
     const max=Math.max(1,root.offsetHeight-innerHeight);
     const normalized=Math.min(.97,(i+.32)/4);
-    scrollTo({top:root.offsetTop+normalized*max,behavior:reduce.matches?"instant":"smooth"});
+    changeStage(i);
+    scrollTo({top:root.offsetTop+normalized*max,behavior:"instant"});
   };
   episodeNav.forEach((button,i)=>button.addEventListener("click",()=>jumpToEpisode(i)));
   $("[data-next-episode]")?.addEventListener("click",()=>{
