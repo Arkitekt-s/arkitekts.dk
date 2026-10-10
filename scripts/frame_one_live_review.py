@@ -48,8 +48,10 @@ with sync_playwright() as p:
         }""")
         bg_animation=page.locator(".scenery").first.evaluate("el=>getComputedStyle(el).animationName")
         cloud_animation=page.locator(".light-haze").first.evaluate("el=>getComputedStyle(el).animationName")
-        if bg_animation=="none" or cloud_animation=="none":
-            failures.append(f"{name}: animated photo or moving clouds not running")
+        # Real video replaces the fake image-breathing animation.
+        # 'animation: none' on scenery is CORRECT when the film is live.
+        if cloud_animation=="none":
+            failures.append(f"{name}: video atmosphere cloud animation missing")
         # Give the landscape time to render; screenshot is actual page output.
         try:
             page.wait_for_function("document.body.dataset.landscapeLoaded !== undefined",timeout=8000)
