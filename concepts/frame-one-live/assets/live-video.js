@@ -163,7 +163,7 @@
 
   // All three arches show synchronized sections of one genuinely moving movie.
   // Two public-footage sources provide resilience if a CDN has a temporary fault.
-  const videos = $(".arch-video");
+  const videos = Array.from(document.querySelectorAll(".arch-video"));
   const liveText = $("#live-status span");
   const primary = "https://cdn.coverr.co/videos/coverr-cinematic-snowy-mountains-7615/720p.mp4";
   const backup = "https://videos.pexels.com/video-files/2888383/2888383-hd_1280_720_24fps.mp4";
