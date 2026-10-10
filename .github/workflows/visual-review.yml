@@ -1,0 +1,33 @@
+name: Responsive visual review
+on:
+  push:
+    paths:
+      - 'concepts/**'
+      - 'scripts/visual_review.py'
+      - '.github/workflows/visual-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-review:
+    name: Responsive browser checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright and browser
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Review 4 widths and capture screenshots
+        run: python scripts/visual_review.py
+      - name: Save desktop/tablet/mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: concept-responsive-screenshots
+          path: screenshots/
+          if-no-files-found: ignore
+          retention-days: 14
