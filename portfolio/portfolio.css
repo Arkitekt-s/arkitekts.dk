@@ -218,3 +218,11 @@
  .portfolio-art-ring.inner{animation:none}
  .project-card,.project-details summary span{transition:none}
 }
+
+/* Fixed shared header must never cover search, filters or project controls. */
+.portfolio-toolbar,
+#portfolio-search,
+#portfolio-clear,
+.portfolio-filters button,
+.project-details summary,
+#portfolio-reset{scroll-margin-top:calc(var(--header-h) + 30px)}
