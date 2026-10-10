@@ -1,6 +1,6 @@
 # arkitekts.dk — Premium GitHub migration
 
-**Status:** First GitHub Pages preview in progress. The WordPress website and DNS remain unchanged.
+**Status:** Homepage code is committed. GitHub Pages requires initial enablement in Settings → Pages. WordPress and DNS remain unchanged.
 
 ## Preview
 [Free GitHub Pages preview](https://arkitekt-s.github.io/arkitekts.dk/) — available after the Pages workflow succeeds and Pages is enabled.
@@ -10,8 +10,8 @@
 | --- | --- |
 | Premium homepage design | ✅ Built and locally checked |
 | Responsive phone/tablet/desktop layout | ✅ Implemented; real-device review pending |
-| Source code & tracking on GitHub | 🚧 Upload in progress |
-| GitHub Pages deployment | ⏳ Not verified |
+| Source code & tracking on GitHub | ✅ Uploaded |
+| GitHub Pages deployment | ⚠️ Blocked until Pages is enabled |
 | Full WordPress posts / images migration | ⏳ Not started |
 | SEO, old URL retention, redirects | ⏳ Not started |
 | DNS cutover | 🔒 Do not change |
