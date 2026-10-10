@@ -34,6 +34,12 @@ with sync_playwright() as p:
         if page.locator(".scene.is-current").get_attribute("data-scene")!="0":
             errors.append(f"{name}: initial frame not 0")
         if page.locator("h1").count()!=1:errors.append(f"{name}: expected one H1")
+        headline=page.locator(".hero-title").evaluate("""el => {
+            const r=el.getBoundingClientRect();
+            return {left:r.left,right:r.right,overflow:[...el.querySelectorAll('span')].some(s=>s.scrollWidth>s.clientWidth+2)};
+        }""")
+        if headline["left"]<-2 or headline["right"]>w+2 or headline["overflow"]:
+            errors.append(f"{name}: clipped hero headline {headline}")
         overflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
         if overflow>2:errors.append(f"{name}: horizontal overflow {overflow}px")
         start=page.evaluate("""() => {
