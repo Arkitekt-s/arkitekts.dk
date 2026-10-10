@@ -11,6 +11,7 @@
   const status=document.getElementById("copy-status");
   const reduced=matchMedia("(prefers-reduced-motion: reduce)");
   if(!nav||!toggle)return;
+  document.body.dataset.contactReady="true";
 
   function closeMenu(){
     nav.classList.remove("open");
