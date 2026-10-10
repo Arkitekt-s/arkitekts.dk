@@ -29,16 +29,15 @@
 .frame-four-gallery.is-visible{visibility:visible;pointer-events:auto}
 .frame-four-curtain{
  position:absolute;inset:-2px 0;z-index:35;pointer-events:none;
- transform:translate3d(0,105%,0);will-change:transform;
- background:linear-gradient(
-  0deg,
-  rgba(13,8,22,.99) 0%,
-  rgba(17,9,29,.98) 56%,
-  rgba(33,16,47,.96) 82%,
-  rgba(60,26,75,.75) 94%,
-  rgba(65,29,77,0) 100%
- );
- box-shadow:0 -30px 86px rgba(13,4,22,.55);
+ overflow:hidden;
+}
+.frame-four-curtain-panel{
+ position:absolute;top:0;bottom:0;
+ left:calc(var(--panel-index) * 10%);
+ width:calc(10% + 1px);
+ transform:translate3d(0,105%,0);
+ will-change:transform;
+ background:linear-gradient(180deg,#100b1c,#160e23 75%,#120b1d);
 }
 .gallery-kicker{
  position:absolute;top:12%;left:50%;transform:translate(-50%,20px);
