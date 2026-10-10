@@ -46,7 +46,7 @@ def read(page):
 def step(page,n):
     for _ in range(n):
         page.mouse.wheel(0,160)
-    expected=n*.2025316456
+    expected=n*(160/1030)
     return expected
 
 def wait_for(page,expected):
@@ -77,13 +77,13 @@ with sync_playwright() as p:
             issues.append(f"{name}: Frame 05 altered")
         page.screenshot(path=str(OUT/f"{name}-01-original.png"),animations="disabled")
         page.mouse.move(w*.53,h*.48)
-        step(page,2);wait_for(page,2*.2025316456)
+        step(page,3);wait_for(page,3*(160/1030))
         early=read(page)
         if not .46<early["first"]<.92:
             issues.append(f"{name}: headline should be fading, not cutting out: {early}")
         if early["incoming"]>.04:
             issues.append(f"{name}: next text arrives before first scene opens: {early}")
-        step(page,1);wait_for(page,3*.2025316456)
+        step(page,1);wait_for(page,4*(160/1030))
         middle=read(page)
         if not 0<middle["first"]<early["first"]:
             issues.append(f"{name}: original headline does not keep fading: {middle}")
@@ -94,14 +94,14 @@ with sync_playwright() as p:
         if middle["accessible"]!="false":
             issues.append(f"{name}: incoming text inaccessible while fading: {middle}")
         page.screenshot(path=str(OUT/f"{name}-02-overlap.png"),animations="disabled")
-        step(page,1);wait_for(page,4*.2025316456)
+        step(page,1);wait_for(page,5*(160/1030))
         late=read(page)
         if late["first"]>=middle["first"] or late["incoming"]<=middle["incoming"]:
             issues.append(f"{name}: crossfade is not moving in opposite directions: {late}")
         if not late["firstLine"]>late["thirdLine"]:
             issues.append(f"{name}: lines do not appear with scroll-based staggering: {late}")
         page.screenshot(path=str(OUT/f"{name}-03-blend.png"),animations="disabled")
-        step(page,1);wait_for(page,5*.2025316456)
+        step(page,2);wait_for(page,7*(160/1030))
         full=read(page)
         if full["first"]>.01 or full["incoming"]<.94:
             issues.append(f"{name}: Frame 02 still shows first headline: {full}")
@@ -114,13 +114,13 @@ with sync_playwright() as p:
         page.screenshot(path=str(OUT/f"{name}-04-full-frame-two.png"),animations="disabled")
 
         # Reverse exactly: the new text fades out; original words return.
-        for _ in range(2):
+        for _ in range(3):
             page.mouse.wheel(0,-160)
-        wait_for(page,3*.2025316456)
+        wait_for(page,4*(160/1030))
         back=read(page)
         if not back["first"]>full["first"]+.15 or not back["incoming"]<full["incoming"]-.15:
             issues.append(f"{name}: reverse crossfade is not symmetric: {back}")
-        for _ in range(3):
+        for _ in range(4):
             page.mouse.wheel(0,-160)
         wait_for(page,0)
         restored=read(page)
