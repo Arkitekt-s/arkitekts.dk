@@ -1,3 +1,13 @@
+## Frame 02 — scroll into the full-screen movie
+
+[**Open the zoom-transition demo**](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/)
+
+**Frame 01 remains frozen and unchanged.** Scroll down to enlarge the original moving mountain arches into a continuous full-screen movie; new text enters after the zoom. Scroll up to reverse the same journey. The fixed header and footer remain visible. Tested at 320, 390, 768 and 1440px.
+
+[GitHub design PR #7](https://github.com/Arkitekt-s/arkitekts.dk/pull/7) · [Detailed interaction plan](docs/FRAME-TWO-PORTAL-REVIEW.md) · [Automated tests](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-two-portal.yml)
+
+This is a review preview, not yet approved as final Frame 02. Production homepage, WordPress and DNS stay unchanged.
+
 # arkitekts.dk — Premium GitHub migration
 
 **Status:** Homepage code is committed. GitHub Pages requires initial enablement in Settings → Pages. WordPress and DNS remain unchanged.
