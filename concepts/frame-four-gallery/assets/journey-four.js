@@ -404,6 +404,12 @@
       item.style.setProperty("--card-opacity",Math.max(.37,1-abs*.17).toFixed(3));
       item.classList.toggle("is-current",index===focused);
     });
+    // As the reel approaches its last two photographs, fade only the
+    // background from the original atmospheric purple to near-black.
+    // Reversing the wheel lightens it along the same path.
+    const endDarkness=smooth(normalize(positionIndex,photos.length-3,photos.length-1));
+    backdrop.style.setProperty("--gallery-end-darkness",endDarkness.toFixed(4));
+    document.body.dataset.galleryDarkness=endDarkness.toFixed(4);
     if(count)count.textContent=String(focused+1).padStart(2,"0");
     if(galleryPrev)galleryPrev.disabled=galleryTarget<=0;
     if(galleryNext)galleryNext.disabled=galleryTarget>=photos.length-1;
