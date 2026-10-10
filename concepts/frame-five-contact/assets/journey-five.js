@@ -263,10 +263,10 @@
     curtainPanels.forEach((panel,index)=>{
       // Hide the entire staircase outside its transition window.
       // This also prevents corner remnants over the photo carousel.
-      panel.style.visibility=(journey>=2.29 && journey<3.12)?"visible":"hidden";
+      panel.style.visibility=(journey>=2.29 && journey<2.92 && galleryTarget<.01 && galleryPosition<.01)?"visible":"hidden";
       const lag=index*.015;
       const rise=smooth(normalize(journey,2.30+lag,2.55+lag));
-      const reveal=smooth(normalize(journey,2.80+lag,2.96+lag));
+      const reveal=smooth(normalize(journey,2.70+lag,2.78+lag));
       const y=105*(1-rise)-105*reveal;
       panel.style.transform="translate3d(0,"+y.toFixed(2)+"%,0)";
     });
