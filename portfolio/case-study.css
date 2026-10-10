@@ -226,3 +226,6 @@
  .case-related a,.case-resource-links a{transition:none}
  .case-cover img{transform:none}
 }
+
+/* Keep chapter links accessible below the fixed site header. */
+.case-chapters a,.case-hero-actions a,.case-copy,.case-return,.case-resource-links a,.case-related a{scroll-margin-top:calc(var(--header-h) + 28px)}
