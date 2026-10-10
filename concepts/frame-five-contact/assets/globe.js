@@ -11,7 +11,6 @@
   const shell=document.querySelector("#globe-shell");
   const canvas=document.querySelector("#copenhagen-globe");
   const label=document.querySelector("#globe-location");
-  const recenter=document.querySelector("#globe-recenter");
   if(!shell||!canvas||!label)return;
   const ctx=canvas.getContext("2d",{alpha:true});
   if(!ctx)return;
@@ -76,7 +75,7 @@
       canvas.height=Math.round(height*dpr);
       ctx.setTransform(dpr,0,0,dpr,0,0);
     }
-    cx=width/2;cy=height/2;radius=Math.min(width,height)*.385;
+    cx=width/2;cy=height/2;radius=Math.min(width,height)*.418;
     shell.dataset.radius=radius.toFixed(1);
   }
   function line(latlon,constant,opacity,hemisphere="front"){
@@ -164,7 +163,7 @@
     active=document.body.classList.contains("frame-five-active")&&!document.hidden;
     if(active){
       if(!dragging && !reduced.matches && t>idleResume)
-        yaw+=elapsed*.000014; // one slow revolution in ~7.5 minutes
+        yaw+=elapsed*.0000175; // ~25% faster: one revolution in ~6 minutes
       if(frames%2===0 || dragging)draw(t);
     }
     frames++;
@@ -211,11 +210,6 @@
     e.stopPropagation();e.preventDefault();
     yaw+=horizontal;pitch=clamp(pitch+vertical,-1.22,1.22);
     idleResume=performance.now()+4500;
-  });
-  recenter?.addEventListener("click",()=>{
-    yaw=initialYaw;pitch=initialPitch;
-    idleResume=performance.now()+3800;
-    document.body.dataset.globeYaw=yaw.toFixed(5);
   });
   const observer=typeof ResizeObserver!=="undefined"?new ResizeObserver(size):null;
   observer?.observe(shell);
