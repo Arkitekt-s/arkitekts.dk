@@ -229,3 +229,26 @@
 
 /* Keep chapter links accessible below the fixed site header. */
 .case-chapters a,.case-hero-actions a,.case-copy,.case-return,.case-resource-links a,.case-related a{scroll-margin-top:calc(var(--header-h) + 28px)}
+
+/* Authentic supplementary images from the original WordPress case studies. */
+.case-gallery{padding:49px 0 60px;border-bottom:1px solid var(--line)}
+.case-gallery-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.case-gallery-heading>span{font:760 10px/1.5 ui-monospace,Consolas,monospace;letter-spacing:.12em;color:#997cad}
+.case-gallery-heading h2{font-size:clamp(32px,3.7vw,59px);font-weight:520;letter-spacing:-.07em;margin:0}
+.case-gallery-heading h2 em{font:400 1em Georgia,Times,serif;color:#80419d}
+.case-gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,350px),1fr));gap:16px}
+.case-gallery-grid figure{margin:0;min-width:0;background:rgba(249,246,252,.64);border:1px solid rgba(104,64,122,.16)}
+.case-gallery-grid figure>a{display:flex;align-items:center;justify-content:center;min-height:240px;height:clamp(235px,35vw,390px);
+  background:linear-gradient(143deg,#f4eff8,#efe7f4);overflow:hidden;cursor:zoom-in}
+.case-gallery-grid img{max-width:100%;max-height:100%;object-fit:contain;transition:transform .3s ease}
+.case-gallery-grid a:hover img{transform:scale(1.035)}
+.case-gallery-grid figcaption{padding:17px 21px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+ color:#796483;font-size:13px;line-height:1.5}
+.case-gallery-grid figcaption span{font-size:21px;color:#9856b4}
+@media(max-width:760px){
+ .case-gallery{padding:39px 0 47px}
+ .case-gallery-heading h2{font-size:37px}
+ .case-gallery-grid figure>a{height:280px;min-height:0}
+}
+@media(max-width:470px){.case-gallery-grid figure>a{height:240px}}
+@media(prefers-reduced-motion:reduce){.case-gallery-grid img{transition:none}}
