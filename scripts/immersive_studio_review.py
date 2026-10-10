@@ -40,7 +40,12 @@ with sync_playwright() as p:
             failures.append(f"{device}: missing 3D canvas")
         if page.locator("#content .about-panel").count()!=3:
             failures.append(f"{device}: missing content cards")
-        # Test stable HTML/CSS immediately, before optional 3D requests.
+        # Capture WebGL if available, otherwise preserve the CSS illustration.
+        try:
+            page.wait_for_function("document.documentElement.classList.contains('webgl-ready')",timeout=5000)
+        except Exception:
+            pass
+        page.wait_for_timeout(250)
         page.screenshot(path=str(OUT/f"{device}-hero.png"),animations="disabled")
         if width<=740:
             toggle=page.locator("#menu-button")
