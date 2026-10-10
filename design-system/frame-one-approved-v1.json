@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "frame-one-live-v1",
+  "status": "user-approved",
+  "approved_on": "2026-10-10",
+  "reference_commit": "2a0ff2aa875c2f8b0ac8f3dbd177227d4fccbbcf",
+  "reference_branch": "baseline/frame-one-live-approved-v1",
+  "preview": "https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-live/",
+  "lock_policy": "Future frames must inherit the approved design. Do not change these source assets without renewed approval and a documented new version.",
+  "locked_blobs": {
+    "concepts/frame-one-live/index.html": "c71013c4325a97f372d91bcd2ccfd87d8b741a9f",
+    "concepts/frame-one-live/assets/live-video.css": "a1ad5bf8f1570962ed3519153e942ea676c24c64",
+    "concepts/frame-one-live/assets/live-video.js": "3dde9418015573aaea5e885aa694f08971891ed4",
+    "concepts/frame-one-live/assets/mountain-loop.mp4": "e51067dbc4954a83aeb0c1dc3237e8ba247eb978",
+    "concepts/frame-one-live/assets/mountain-loop.webm": "0f200df24692441cc78e644ea7722515c22eb271",
+    "concepts/frame-one-v3/assets/frame-one.css": "df1008cf9e5367dd72034b2c14c81fac22beb9cc",
+    "assets/favicon.svg": "b2085afade7f61e7a346277ebe03866b291a4f5a"
+  }
+}
