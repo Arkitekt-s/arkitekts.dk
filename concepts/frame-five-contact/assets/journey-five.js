@@ -275,6 +275,14 @@
     const leaveFourth=smooth(normalize(journey,3.12,3.80));
     const galleryOpacity=smooth(normalize(journey,2.40,2.61))*(1-leaveFourth);
     fourth.style.opacity=String(galleryOpacity);
+    // Clip the entire gallery to the staircase reveal: no photos on the right.
+    // Once complete, restore the normal full-width horizontal photo reel.
+    const galleryReveal=smooth(normalize(journey,2.32,2.77));
+    fourth.style.clipPath=galleryReveal<.999
+      ?"inset(0 "+((1-galleryReveal)*100).toFixed(3)+"% 0 0)"
+      :"none";
+    const reelReady=journey>=2.77;
+    fourth.classList.toggle("gallery-reveal-complete",reelReady);
     const showFourth=journey>2.39 && journey<3.81;
     if(fourthVisible!==showFourth){
       fourthVisible=showFourth;
