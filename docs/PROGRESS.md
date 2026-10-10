@@ -226,3 +226,21 @@ Note: the reference snapshot and checks preserve/flag Frame 01 changes, but are 
 - [ ] Do not change WordPress or DNS until all frames and pages are approved
 
 [Design review](FRAME-TWO-PORTAL-REVIEW.md) · [Frame 02 browser tests](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-two-portal.yml)
+
+## Milestone 1l — Clean chrome across Frames 01–02 (2026-10-10)
+
+- [x] Simplified Frame 01 in the two-frame preview: no visible live-footage, press-and-hold, pause-motion, mouse tutorial or pending-design labels
+- [x] Preserved the main hero text, real moving video, parallax and press-and-hold effects
+- [x] Kept a discreet **keyboard-focus pause control** for accessibility
+- [x] Continuous fine vertical grid now spans header, moving scene and footer
+- [x] Removed header/footer backdrop blur which interrupted the vertical grid lines
+- [x] Preserved the same grid when Frame 02 video expands behind the fixed header/footer
+- [x] Verified grid layer extends across both frames and cannot intercept pointer interactions
+- [x] Browser tests passed at 320/390/768/1440px, including zoom in and reverse, no JS exceptions
+- [x] Merged [PR #8](https://github.com/Arkitekt-s/arkitekts.dk/pull/8) into the review preview
+- [ ] User visually approves the cleaner appearance on real devices
+- [ ] Continue later frames only after user approves the updated template
+
+[Updated preview](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-two-portal/) · [Clean chrome rules](../design-system/CLEAN-CHROME-V2.md)
+
+The saved approved Frame 01 snapshot is unchanged; these adjustments belong to the combined two-frame working preview. No DNS or WordPress changes.
