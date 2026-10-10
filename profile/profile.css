@@ -189,3 +189,72 @@
  .portrait-ring-two{animation:none}
  .education-card,.profile-index-links a{transition:none}
 }
+
+/* ───────────────────────────────────────────────────────────────────
+   PORTRAIT V2: the published "transparent" image had baked-in squares.
+   The new self-hosted WebP has true alpha. The person must never be
+   cropped by a circular frame, and on phones the portrait is a proper
+   readable content element rather than a faint text watermark.
+   ─────────────────────────────────────────────────────────────────── */
+.profile-hero{grid-template-columns:minmax(0,61%) minmax(0,39%);column-gap:clamp(14px,2vw,38px)}
+.profile-portrait{
+  border-radius:0;
+  overflow:visible;
+  transform:none;
+  height:clamp(380px,42vw,600px);
+  min-height:0;
+  width:100%;
+  max-width:580px;
+  margin:0 auto;
+  justify-content:center;
+  align-items:flex-end;
+  background:transparent;
+}
+.profile-portrait:after{
+  content:"";pointer-events:none;position:absolute;z-index:1;
+  bottom:1%;left:3%;right:3%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(132,79,161,.23) 30%,rgba(132,79,161,.23) 70%,transparent);
+}
+.profile-portrait .portrait-glow{
+  inset:14% -1% 5%;
+  border-radius:50%;
+  background:radial-gradient(ellipse 58% 56% at 50% 53%,
+    rgba(212,168,234,.38),rgba(233,209,245,.19) 65%,transparent 98%);
+}
+.profile-portrait .portrait-ring-one{width:86%;top:10%;left:7%;box-shadow:none}
+.profile-portrait .portrait-ring-two{width:65%;top:20%;left:17.5%}
+.profile-portrait img{
+  position:absolute;z-index:3;
+  bottom:4%;left:50%;transform:translateX(-50%);
+  width:118%;max-width:none;height:auto;max-height:90%;
+  object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 22px 21px rgba(39,17,55,.12));
+}
+.profile-portrait .portrait-label{
+  z-index:5;bottom:2%;right:-1%;padding:9px 12px;
+  background:rgba(252,249,255,.93);
+  box-shadow:0 6px 20px rgba(64,29,82,.08);
+}
+@media(max-width:950px){
+  .profile-hero{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .profile-intro{width:100%}
+  .profile-portrait{
+    position:relative;top:auto;right:auto;left:auto;
+    width:min(100%,550px);max-width:550px;
+    height:clamp(300px,58vw,475px);min-height:0;
+    opacity:1;pointer-events:auto;
+    margin:22px auto 0;transform:none;
+  }
+  .profile-portrait img{width:112%;max-height:95%;bottom:2%}
+  .profile-portrait .portrait-label{display:block;right:2%;bottom:1%}
+}
+@media(max-width:760px){
+  .profile-portrait{width:min(100%,460px);height:clamp(250px,74vw,385px);margin:18px auto 0;opacity:1}
+  .profile-portrait img{width:110%;max-height:94%}
+  .profile-portrait .portrait-label{right:2%;bottom:1%;font-size:8px;padding:8px 9px}
+}
+@media(max-width:470px){
+  .profile-portrait{width:100%;height:clamp(240px,79vw,330px);top:auto;right:auto;opacity:1}
+  .profile-portrait img{width:106%;max-height:94%}
+  .portrait-ring-two{border-color:rgba(149,95,178,.24)}
+}
