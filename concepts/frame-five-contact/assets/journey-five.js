@@ -24,6 +24,14 @@
   const fifthBackdrop=document.querySelector(".frame-five-backdrop");
   const backdrop=document.querySelector(".frame-four-backdrop");
   const curtain=document.getElementById("frame-four-curtain");
+  // Staggered full-height panels replace the single flat wipe.
+  const curtainPanels=curtain?Array.from({length:10},(_,i)=>{
+    const panel=document.createElement("span");
+    panel.className="frame-four-curtain-panel";
+    panel.style.setProperty("--panel-index",String(i));
+    curtain.appendChild(panel);
+    return panel;
+  }):[];
   const viewport=document.getElementById("gallery-viewport");
   const reel=document.getElementById("gallery-reel");
   const photos=[...document.querySelectorAll(".gallery-photo")];
@@ -252,8 +260,14 @@
     // reveal the image carousel. The chrome remains in its fixed position.
     const enter=smooth(normalize(journey,2.08,2.52));
     const exit=smooth(normalize(journey,2.52,2.98));
-    const curtainPercent=journey<=2.52?105*(1-enter):-105*exit;
-    if(curtain)curtain.style.transform="translate3d(0,"+curtainPercent.toFixed(2)+"%,0)";
+    // Each vertical strip rises in turn, fills the screen, then clears.
+    curtainPanels.forEach((panel,index)=>{
+      const lag=index*.023;
+      const fill=smooth(normalize(journey,2.08+lag,2.34+lag));
+      const clear=smooth(normalize(journey,2.55+lag,2.77+lag));
+      const y=journey<2.55+lag?105*(1-fill):-105*clear;
+      panel.style.transform="translate3d(0,"+y.toFixed(2)+"%,0)";
+    });
     const cover=smooth(normalize(journey,2.19,2.66));
     backdrop.style.opacity=String(cover);
     backdrop.classList.toggle("is-active",journey>2.05);
