@@ -51,11 +51,11 @@
   let initial={w:0,h:0,top:0,gap:0,head:0,foot:0};
   let touchY=null;
   let lastVisible=false, thirdVisible=false, fourthVisible=false, fifthVisible=false, galleryVisited=false;
-  let galleryTarget=2,galleryPosition=2,galleryPointer=0,galleryPointerTarget=0;
+  let galleryTarget=0,galleryPosition=0,galleryPointer=0,galleryPointerTarget=0;
   let reelDragging=false,downX=0,downIndex=0,galleryStep=320;
   // A single downward gesture in Frame 04 completes the photo journey
   // before revealing Frame 05. Reversible by scrolling upward.
-  let galleryAutoExit=false,galleryExitReadyAt=0;
+  let galleryAutoExit=false,galleryExitReadyAt=0,galleryNextPhotoAt=0;
   let filmSuspendedForGallery=false;
   let lastRendered=0;
 
@@ -217,8 +217,9 @@
       fourth.setAttribute("aria-hidden",String(!showFourth));
       if(showFourth && !galleryVisited){
         galleryVisited=true;
-        galleryTarget=2;
-        galleryPosition=2;
+        // Every new entry starts at photo 01, never the middle portrait.
+        galleryTarget=0;
+        galleryPosition=0;
         galleryPointer=galleryPointerTarget=0;
       }
     }
@@ -278,15 +279,26 @@
     if(Math.abs(galleryPosition-galleryTarget)<.003)galleryPosition=galleryTarget;
     galleryPointer+=(galleryPointerTarget-galleryPointer)*(reduced.matches?1:.12);
     if(Math.abs(galleryPointer-galleryPointerTarget)<.05)galleryPointer=galleryPointerTarget;
-    if(galleryAutoExit && !reelDragging && galleryPosition>=photos.length-1-.025){
-      // Hold the LAST photo in view long enough to read it, with the
-      // gallery ending dark, BEFORE starting the Frame 05 crossfade.
-      if(!galleryExitReadyAt)galleryExitReadyAt=performance.now()+(reduced.matches?0:750);
-      else if(performance.now()>=galleryExitReadyAt){
-        galleryAutoExit=false;
-        galleryExitReadyAt=0;
-        document.body.dataset.galleryAutoExit="complete";
-        setTarget(4);
+    if(galleryAutoExit && !reelDragging){
+      const now=performance.now();
+      // Centre every photograph in sequence; never jump from 01 to 07.
+      if(galleryTarget<photos.length-1){
+        if(now>=galleryNextPhotoAt && Math.abs(galleryPosition-galleryTarget)<.035){
+          galleryTarget+=1;
+          galleryNextPhotoAt=now+(reduced.matches?0:310);
+          document.body.dataset.galleryAutoPhoto=String(galleryTarget+1).padStart(2,"0");
+        }
+      }else if(galleryPosition>=photos.length-1-.025){
+        // Hold the final photograph against the dark background before
+        // entering Frame 05, preserving the approved crossfade.
+        if(!galleryExitReadyAt)galleryExitReadyAt=now+(reduced.matches?0:750);
+        else if(now>=galleryExitReadyAt){
+          galleryAutoExit=false;
+          galleryExitReadyAt=0;
+          galleryNextPhotoAt=0;
+          document.body.dataset.galleryAutoExit="complete";
+          setTarget(4);
+        }
       }
     }
     if(position!==target || galleryPosition!==galleryTarget ||
@@ -305,6 +317,7 @@
     if(!galleryAutoExit)return;
     galleryAutoExit=false;
     galleryExitReadyAt=0;
+    galleryNextPhotoAt=0;
     galleryTarget=clamp(Math.round(galleryPosition),0,photos.length-1);
     document.body.dataset.galleryAutoExit="cancelled";
     schedule();
@@ -313,9 +326,11 @@
     if(galleryAutoExit)return;
     galleryAutoExit=true;
     galleryExitReadyAt=0;
-    setTarget(3); // Keep Frame 04 fully visible until its final image arrives.
-    galleryTarget=photos.length-1;
+    galleryNextPhotoAt=performance.now()+(reduced.matches?0:450);
+    setTarget(3); // Keep Frame 04 fully visible until the final photo arrives.
+    // Auto-progress from the currently focused photo, one at a time.
     galleryPointerTarget=0;
+    document.body.dataset.galleryAutoPhoto=String(Math.round(galleryPosition)+1).padStart(2,"0");
     document.body.dataset.galleryAutoExit="moving";
     schedule();
   }
