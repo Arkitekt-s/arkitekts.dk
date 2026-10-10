@@ -5,6 +5,21 @@
 ## Preview
 [Free GitHub Pages preview](https://arkitekt-s.github.io/arkitekts.dk/) — available after the Pages workflow succeeds and Pages is enabled.
 
+
+## Choose your design
+
+Three deployed concept previews are available before the WordPress migration. They do **not** replace the current homepage:
+
+- [Compare all three](https://arkitekt-s.github.io/arkitekts.dk/concepts/)
+- [01 · Atlas — Precision](https://arkitekt-s.github.io/arkitekts.dk/concepts/atlas/)
+- [02 · Nordic — Executive](https://arkitekt-s.github.io/arkitekts.dk/concepts/nordic/)
+- [03 · Signal — Mission Control](https://arkitekt-s.github.io/arkitekts.dk/concepts/signal/)
+- [Design review notes](docs/DESIGN-CONCEPTS.md)
+
+**Verified:** GitHub Pages deployment and website validation completed successfully on 2026-10-10.
+**Not yet verified:** real mobile browser usability, Core Web Vitals and full WordPress content parity.
+**Safety:** All previews intentionally use `noindex,nofollow`. Do not change the domain DNS yet.
+
 ## Progress
 | Step | Status |
 | --- | --- |
