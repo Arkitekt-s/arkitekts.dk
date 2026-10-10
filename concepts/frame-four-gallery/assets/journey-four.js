@@ -413,6 +413,7 @@
     galleryTarget=clamp(Math.round(galleryTarget)+direction,0,photos.length-1);
     schedule();
   }
+  document.getElementById("gallery-back")?.addEventListener("click",()=>setTarget(2));
   galleryPrev?.addEventListener("click",()=>moveGallery(-1));
   galleryNext?.addEventListener("click",()=>moveGallery(1));
   if(viewport){
