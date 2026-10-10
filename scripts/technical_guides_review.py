@@ -18,8 +18,8 @@ server=ThreadingHTTPServer(("127.0.0.1",0),partial(SimpleHTTPRequestHandler,dire
 Thread(target=server.serve_forever,daemon=True).start()
 BASE=f"http://127.0.0.1:{server.server_port}"
 VIEWPORTS={"small-phone":(320,720),"phone":(390,844),"tablet":(768,1024),"desktop":(1440,900)}
-EXPECTED=["PORTFOLIO","PROFILE","SKILLS","GUIDES","Let's talk"]
-DESTS=["/portfolio/","/profile/","/software-skills/","/technical-guides/","/contact/"]
+EXPECTED=["PROFILE","PORTFOLIO","SKILLS","GUIDES","Let's talk"]
+DESTS=["/profile/","/portfolio/","/software-skills/","/technical-guides/","/contact/"]
 issues=[]
 record=[]
 if len(CAT)<11:issues.append("Published guide catalog unexpectedly has fewer than 11 titles.")

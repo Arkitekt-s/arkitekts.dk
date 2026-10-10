@@ -19,7 +19,7 @@ between light and dark designs. Keep the WordPress live site and DNS unchanged u
 - Color: near-black `#17111e`, deep violet `#773c9d`, lilac accent `#a54bd0`.
 - Page atmosphere: thin technical gridlines, layered violet light, minimal translucent surfaces.
 - Interaction: gentle ease-out motion, hover-driven arrows, progressive reveals, pointer parallax.
-- Navigation: shared five-link header (**PORTFOLIO**, **PROFILE**, **SKILLS**, **GUIDES**, **Let's talk**), home-linking S. brand, keyboard access, clear mobile menu, and reduced-motion support.
+- Navigation: shared five-link header (**PROFILE**, **PORTFOLIO**, **SKILLS**, **GUIDES**, **Let's talk**), home-linking S. brand, keyboard access, clear mobile menu, and reduced-motion support.
 - Layout: generous whitespace, large headings, quiet fixed-feeling header/footer.
 
 ## Route map
@@ -111,3 +111,14 @@ is stored at `portfolio/assets/original/basecamp-response/twentyfour-brand.webp`
 The project text includes the original UrgencyBot name, integration tools,
 two Scrum sprints (July–September 2023 and September 2023–January 2024),
 and a link back to the source page.
+
+## Canonical five-page numbering and logo
+
+Navigation order and the section number in each page header must agree:
+**01 Profile · 02 Portfolio · 03 Skills · 04 Guides · 05 Let's talk**.
+Project numbers (01–06) and technical-guide article numbers (01–11) are separate.
+The exact approved S. logo is kept in `assets/soheil-logo.svg` for light pages,
+`assets/soheil-logo-inverse.svg` for the cinematic dark homepage, with one
+layout in `assets/shared-brand.css`. Both header and footer reuse it.
+The WordPress AI guide generator in `scripts/sync_technical_guides.py`
+must use the same order so hourly regeneration preserves navigation.
