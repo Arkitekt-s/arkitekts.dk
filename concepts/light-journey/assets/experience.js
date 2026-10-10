@@ -228,9 +228,28 @@
     document.addEventListener("visibilitychange",()=>{if(!document.hidden)schedule();});
     schedule();
   }
-  if (canvas) {
-    if ("requestIdleCallback" in window) requestIdleCallback(()=>initScene(),{timeout:1700});
-    else setTimeout(initScene,200);
+  // Start WebGL only shortly before the 3D panel enters view.
+  // On reduced-motion devices keep the CSS fallback until motion is requested.
+  if (canvas && view) {
+    let sceneStarted = false;
+    const startScene = () => {
+      if (sceneStarted || isReduced()) return;
+      sceneStarted = true;
+      initScene();
+    };
+    if ("IntersectionObserver" in window) {
+      const loader = new IntersectionObserver(entries => {
+        if (entries.some(e => e.isIntersecting)) {
+          startScene();
+          if (sceneStarted) loader.disconnect();
+        }
+      }, { rootMargin: "280px 0px", threshold: 0 });
+      loader.observe(view);
+    } else {
+      startScene();
+    }
+    toggleMotion?.addEventListener("click", () => { if (!isReduced()) startScene(); });
+    motionPreference.addEventListener("change", () => { if (!isReduced()) startScene(); });
   }
 
   // Useful for technical articles: copy the example code without hidden tracking.
