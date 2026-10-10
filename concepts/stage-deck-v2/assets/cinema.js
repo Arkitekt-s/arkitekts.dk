@@ -306,7 +306,7 @@
     lastTick=performance.now();requestGlobeFrame();
   }
   function resetCopenhagen(){
-    targetYaw=CPH.lon;targetPitch=.17;targetZoom=1;angularVelocity=0;startGlobe();
+    targetYaw=CPH.lon;targetPitch=.17;targetZoom=1;angularVelocity=0;yaw=targetYaw;pitch=targetPitch;globeZoom=1;drawGlobe();startGlobe();
   }
   if(canvas){
     canvas.addEventListener("pointerdown",e=>{
@@ -337,7 +337,7 @@
     canvas.addEventListener("wheel",e=>{
       e.preventDefault();e.stopPropagation();
       targetZoom=clamp(targetZoom+(e.deltaY<0?.11:-.11),.7,1.48);
-      startGlobe();
+      globeZoom=targetZoom;drawGlobe();startGlobe();
     },{passive:false});
     canvas.addEventListener("touchend",e=>e.stopPropagation(),{passive:true});
     canvas.addEventListener("keydown",e=>{
@@ -351,8 +351,8 @@
       if(e.key==="-"){e.preventDefault();e.stopPropagation();targetZoom=clamp(targetZoom-.12,.7,1.48);startGlobe();}
     });
   }
-  $("#globe-zoom-in")?.addEventListener("click",()=>{targetZoom=clamp(targetZoom+.16,.7,1.48);startGlobe()});
-  $("#globe-zoom-out")?.addEventListener("click",()=>{targetZoom=clamp(targetZoom-.16,.7,1.48);startGlobe()});
+  $("#globe-zoom-in")?.addEventListener("click",()=>{targetZoom=clamp(targetZoom+.16,.7,1.48);globeZoom=targetZoom;drawGlobe();startGlobe()});
+  $("#globe-zoom-out")?.addEventListener("click",()=>{targetZoom=clamp(targetZoom-.16,.7,1.48);globeZoom=targetZoom;drawGlobe();startGlobe()});
   $("#globe-home")?.addEventListener("click",resetCopenhagen);
   addEventListener("resize",()=>{if(active===3)resizeGlobe()},{passive:true});
   document.addEventListener("visibilitychange",()=>{if(active===3&&!document.hidden)startGlobe()});
