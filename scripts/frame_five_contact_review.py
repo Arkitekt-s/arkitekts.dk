@@ -113,8 +113,17 @@ with sync_playwright() as p:
             errors.append(f"{name}: globe clipped: {rect}")
         if not title or title["x"]<-5 or title["x"]+title["width"]>w+5:
             errors.append(f"{name}: contact headline clipped: {title}")
-        if w<=760 and page.locator(".contact-signoff").is_visible():
-            errors.append(f"{name}: mobile footer has duplicate crowded signoff")
+        for selector in (".contact-eyebrow","#globe-recenter",".contact-signoff"):
+            if page.locator(selector).count():
+                errors.append(f"{name}: removed Frame 05 content still exists: {selector}")
+        if rect:
+            radius=float(page.locator("#globe-shell").get_attribute("data-radius") or 0)
+            if radius < rect["width"]*.412:
+                errors.append(f"{name}: globe drawing radius did not increase")
+            if name=="desktop" and rect["width"]<620:
+                errors.append(f"{name}: desktop globe too small: {rect['width']}")
+            if name=="tablet" and rect["width"]<490:
+                errors.append(f"{name}: tablet globe too small: {rect['width']}")
         page.screenshot(path=str(OUT/f"{name}-05-copenhagen-globe.png"),animations="allow")
         # Regression: the last gallery gradient and contact gradient must
         # match exactly. The globe must have no shell halo or opaque canvas fill.
@@ -158,7 +167,7 @@ with sync_playwright() as p:
         before=float(page.locator("body").get_attribute("data-globe-yaw") or 0)
         page.wait_for_timeout(950)
         after=float(page.locator("body").get_attribute("data-globe-yaw") or 0)
-        if abs(after-before)<.003:errors.append(f"{name}: globe not auto-rotating ({before}->{after})")
+        if abs(after-before)<.009:errors.append(f"{name}: globe rotation is too slow ({before}->{after})")
         if rect:
             x=rect["x"]+rect["width"]*.48
             y=rect["y"]+rect["height"]*.51
@@ -169,7 +178,8 @@ with sync_playwright() as p:
             moved=float(page.locator("body").get_attribute("data-globe-yaw") or 0)
             if abs(moved-after)<.22:errors.append(f"{name}: dragging globe did not change orientation ({after}->{moved})")
             page.screenshot(path=str(OUT/f"{name}-06-globe-dragged.png"),animations="allow")
-            page.locator("#globe-recenter").click()
+            # Preserve internal centering without exposing a visible button.
+            page.evaluate("window.soheilGlobe.center()")
             page.wait_for_timeout(80)
             reset=float(page.locator("body").get_attribute("data-globe-yaw") or 0)
             if abs(reset+12.5683*3.141592653589793/180)>.04:
