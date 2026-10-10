@@ -30,6 +30,14 @@ Six deployed concept previews are available before the WordPress migration. They
 
 
 
+## Frame 01 — moving footage and reactive mouse patterns
+
+**[Open the live first-frame design](https://arkitekt-s.github.io/arkitekts.dk/concepts/frame-one-live/)**
+
+Three arches now play real, optimized mountain footage (self-hosted WebM/MP4). Move the mouse to create luminous pathways and a responsive grid. Press and hold to zoom. The header and footer remain fixed within one continuous cinematic composition. The first frame is the **only** page being redesigned and awaits owner approval.
+
+[Review PR #5](https://github.com/Arkitekt-s/arkitekts.dk/pull/5) · [Video and mouse test results](https://github.com/Arkitekt-s/arkitekts.dk/actions/workflows/frame-one-live.yml) · [Design and media notes](docs/FRAME-ONE-LIVE-REVIEW.md)
+
 ## Cinematic Interaction V2 — new landing prototype
 
 [**Open the interactive landing draft**](https://arkitekt-s.github.io/arkitekts.dk/concepts/stage-deck-v2/) · [Review PR #3](https://github.com/Arkitekt-s/arkitekts.dk/pull/3) · [Design notes](docs/STAGE-DECK-V2-REVIEW.md)
