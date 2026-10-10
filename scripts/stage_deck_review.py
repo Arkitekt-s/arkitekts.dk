@@ -53,6 +53,13 @@ with sync_playwright() as p:
         page.wait_for_timeout(250)
         if page.locator(".scene.is-current").get_attribute("data-scene")!="1":
             errors.append(f"{name}: wheel failed to advance from intro to photo frame")
+        try:
+            page.wait_for_function(
+                "document.querySelector('.reel-card:first-child img').naturalWidth > 0",
+                timeout=8500,
+            )
+        except Exception:
+            errors.append(f"{name}: portrait image failed to load")
         page.screenshot(path=str(SHOTS/f"{name}-02-photos.png"),animations="disabled")
         # Explicit frame button is fast and accessible even while wheel is locked.
         page.locator(".episode-progress [data-jump='2']").click()
