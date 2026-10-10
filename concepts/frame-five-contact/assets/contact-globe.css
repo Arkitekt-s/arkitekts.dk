@@ -15,18 +15,18 @@
 .frame-five-contact.is-visible{visibility:visible;pointer-events:auto}
 .contact-layout{
  position:absolute;inset:0;display:grid;
- grid-template-columns:minmax(300px,44%) minmax(0,56%);
+ grid-template-columns:minmax(300px,43%) minmax(0,57%);
  align-items:center;
- padding:5% clamp(32px,5.8vw,112px) 7%;
+ padding:5% clamp(28px,4.5vw,84px) 7%;
  gap:clamp(12px,2.5vw,50px);
 }
 .contact-details{position:relative;z-index:5;transform:translateY(22px);opacity:0;transition:transform .92s cubic-bezier(.16,.78,.17,1),opacity .85s ease}
 .frame-five-contact.is-visible .contact-details{transform:translateY(0);opacity:1}
-.contact-eyebrow,.globe-caption{
+.globe-caption{
  font:770 10px/1.6 ui-monospace,Consolas,monospace;
  letter-spacing:.22em;color:#dcb3ec;margin:0 0 32px;
 }
-.contact-eyebrow span{padding:0 8px;color:#ac49d3}
+
 .contact-heading{
  font-size:clamp(62px,6.45vw,118px);line-height:.99;
  font-weight:560;letter-spacing:-.084em;margin:0 0 31px;
@@ -49,14 +49,14 @@
 .contact-github:hover{color:#fff}
 .contact-github span{padding-left:17px;color:#dd8cf3}
 .globe-column{
- position:relative;width:100%;max-width:780px;justify-self:center;
+ position:relative;width:100%;max-width:810px;justify-self:center;
  display:flex;flex-direction:column;align-items:center;justify-content:center;
  margin-top:-20px;
 }
 .globe-caption{margin:0 0 9px;align-self:center;color:#b99dcb;font-size:9px}
 .globe-caption span{color:#eaadfa;margin:0 8px}
 .globe-shell{
- position:relative;width:min(100%,670px,67vh);aspect-ratio:1;
+ position:relative;width:min(100%,740px,74vh);aspect-ratio:1;
  margin:0 auto;touch-action:none;cursor:grab;
  background:transparent;box-shadow:none;filter:none;
 }
@@ -76,29 +76,10 @@
 }
 .globe-location i{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px rgba(234,136,254,.22),0 0 19px #e8b0ff;flex-shrink:0}
 .globe-tools{display:flex;align-items:center;justify-content:center;gap:30px;white-space:nowrap}
-.globe-tools button{
- border:1px solid rgba(207,142,231,.35);border-radius:30px;
- background:rgba(24,11,35,.5);color:#e3caee;
- padding:10px 15px;cursor:pointer;
- font:760 10px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.10em;
-}
-.globe-tools button:hover{border-color:#e9affb;background:#4b1b61}
-.globe-tools button span{font-size:18px;vertical-align:-2px;color:#ebadf9;margin-right:6px}
+
 .globe-tools #globe-state{font:670 10px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.07em;color:#a894b5}
 .globe-tools #globe-state span{color:#d6a4ea;padding:0 7px}
-.contact-back{
- position:absolute;z-index:30;left:clamp(32px,5.8vw,112px);bottom:clamp(18px,4.2vh,49px);
- border:1px solid rgba(225,160,244,.35);background:rgba(27,11,41,.37);
- color:#dcc3e5;border-radius:30px;
- padding:11px 16px;font:740 10px/1.2 ui-monospace,Consolas,monospace;
- letter-spacing:.1em;cursor:pointer;
-}
-.contact-back:hover{background:#53236c}
-.contact-signoff{
- position:absolute;right:clamp(32px,5.8vw,112px);bottom:clamp(22px,4.6vh,55px);
- margin:0;color:#95849f;
- font:750 10px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.18em;
-}
+
 body.frame-five-active .gridlines{opacity:.59}
 body.frame-five-active #pointer-pattern{opacity:0!important}
 body.frame-five-active .portal-navigation{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
@@ -107,15 +88,15 @@ body.frame-five-active .site-footer{
  background:rgba(11,7,20,.32);backdrop-filter:none;-webkit-backdrop-filter:none;
 }
 @media(max-width:1120px){
- .contact-layout{grid-template-columns:minmax(270px,44%) minmax(0,56%);padding:6% 5% 8%;gap:14px}
+ .contact-layout{grid-template-columns:minmax(270px,43%) minmax(0,57%);padding:6% 5% 8%;gap:14px}
  .contact-heading{font-size:clamp(58px,7vw,90px)}
- .globe-shell{width:min(100%,560px,57vh)}
- .contact-signoff{right:5%}.contact-back{left:5%}
+ .globe-shell{width:min(100%,620px,66vh)}
+ 
 }
 @media(max-width:760px){
  .contact-layout{display:flex;flex-direction:column;align-items:stretch;justify-content:center;padding:8% 6% 13%;gap:0}
  .contact-details{text-align:left}
- .contact-eyebrow{font-size:9px;margin-bottom:13px}
+ 
  .contact-heading{font-size:clamp(48px,8.7vw,72px);line-height:1.0;margin-bottom:14px}
  .contact-lead{font-size:13px;line-height:1.5;margin-bottom:14px;max-width:540px}
  .contact-links{flex-direction:row;align-items:center;gap:22px}
@@ -127,81 +108,34 @@ body.frame-five-active .site-footer{
  .contact-github span{padding-left:4px}
  .globe-column{margin-top:6px}
  .globe-caption{font-size:8px;margin:0}
- .globe-shell{width:min(78vw,50vh,450px)}
+ .globe-shell{width:min(86vw,56vh,510px)}
  .globe-tools{gap:15px}
- .globe-tools button{font-size:8px;padding:7px 11px}
+ 
  .globe-tools #globe-state{font-size:8px}
- .contact-back{left:6%;bottom:3.2%;font-size:9px;padding:8px 12px}
- .contact-signoff{right:6%;bottom:3.6%;font-size:8px;letter-spacing:.06em}
+ 
 }
 @media(max-width:470px){
  .contact-layout{padding:9% 6% 15%;gap:0}
- .contact-eyebrow{font-size:8px;margin-bottom:9px}
+ 
  .contact-heading{font-size:clamp(45px,10.4vw,60px);margin-bottom:10px}
  .contact-lead{font-size:12px;margin-bottom:10px}
  .contact-links{gap:16px}
  .contact-email strong{font-size:17px}
  .contact-github{font-size:8px}
- .globe-shell{width:min(86vw,41vh)}
+ .globe-shell{width:min(91vw,47vh)}
  .globe-location{font-size:7px;gap:8px}
  .globe-location i{width:6px;height:6px}
  .globe-caption{font-size:7px}
  .globe-tools{gap:8px}
  .globe-tools #globe-state{font-size:7px}
- .globe-tools button{padding:7px;font-size:7px}
- .contact-back{bottom:2.8%;font-size:8px;padding:7px}
- .contact-signoff{bottom:3%;font-size:7px;max-width:52%;text-align:right}
+ 
 }
 @media(max-height:680px) and (min-width:761px){
- .globe-shell{width:min(100%,530px,68vh)}
+ .globe-shell{width:min(100%,590px,73vh)}
  .contact-heading{font-size:clamp(58px,6vw,84px)}
  .contact-lead{margin-bottom:17px}
- .contact-eyebrow{margin-bottom:17px}
+ 
 }
 @media(prefers-reduced-motion:reduce){
  .contact-details,.globe-shell{transition:none!important}
-}
-
-/* Protect controls from the permanent footer hit area on short screens. */
-.contact-back{
- bottom:calc(var(--footer-h,80px) + 15px);
-}
-.contact-signoff{
- bottom:calc(var(--footer-h,80px) + 20px);
-}
-@media(max-width:760px){
- .contact-back{bottom:calc(var(--footer-h,65px) + 10px)}
- .contact-signoff{bottom:calc(var(--footer-h,65px) + 13px)}
-}
-@media(max-width:470px){
- .contact-back{bottom:calc(var(--footer-h,65px) + 7px)}
- .contact-signoff{bottom:calc(var(--footer-h,65px) + 10px)}
-}
-
-/* Place Back above the content, not over the interactive globe's controls. */
-.contact-back{
- top:calc(var(--header-h,100px) + 14px);
- bottom:auto;
-}
-.contact-signoff{pointer-events:none}
-@media(max-width:760px){
- .contact-back{top:calc(var(--header-h,73px) + 9px);bottom:auto}
-}
-@media(max-width:470px){
- .contact-back{top:calc(var(--header-h,73px) + 8px);bottom:auto}
-}
-
-/* Final position: top-right of the scene, away from the heading and globe.
-   Prevents overlapping the 05 / 05 label, the footer and globe controls. */
-.contact-back{
- left:auto;right:clamp(32px,5.8vw,112px);
- top:calc(var(--header-h,100px) + 15px);
- bottom:auto;
-}
-@media(max-width:760px){
- .contact-back{left:auto;right:5%;top:calc(var(--header-h,73px) + 9px);bottom:auto}
- .contact-signoff{display:none}
-}
-@media(max-width:470px){
- .contact-back{left:auto;right:5%;top:calc(var(--header-h,73px) + 8px);bottom:auto;font-size:8px;padding:7px 9px}
 }
