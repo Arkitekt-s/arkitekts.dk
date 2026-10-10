@@ -51,11 +51,12 @@ with sync_playwright() as p:
             failures.append(f"{name}: expected five actual screenshot images")
         if page.locator(".app-mockup").count()!=1:
             failures.append(f"{name}: missing conceptual grocery app illustration")
-        page.wait_for_function(
-            "[...document.querySelectorAll('.project-card img')].every(el=>el.complete)",
-            timeout=9000
-        )
+        # Real screenshots are lazy-loaded, so scroll each into view before
+        # verifying local image availability. A first-screen wait is insufficient.
         for img in page.locator(".project-card img").all():
+            img.scroll_into_view_if_needed(timeout=7000)
+            img.evaluate("img=>img.loading='eager'")
+            img.evaluate("img=>img.complete||new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});})")
             details=img.evaluate("e=>({src:e.getAttribute('src'),w:e.naturalWidth,h:e.naturalHeight})")
             if not details["src"].startswith("assets/") or details["w"]<200 or details["h"]<200:
                 failures.append(f"{name}: self-hosted screenshot unavailable {details}")
