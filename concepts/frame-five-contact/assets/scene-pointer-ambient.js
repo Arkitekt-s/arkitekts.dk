@@ -14,6 +14,11 @@
   const dot=document.createElement("span");
   dot.className="paint-cursor";
   dot.setAttribute("aria-hidden","true");
+  // Separate shell and core so the position follows the mouse instantly,
+  // while only the white core enlarges smoothly as text comes close.
+  const dotCore=document.createElement("span");
+  dotCore.className="paint-cursor-core";
+  dot.append(dotCore);
   document.body.append(dot);
 
   const MAX_LENGTH=310;       // A short flexible ribbon, not a painted screen.
@@ -23,6 +28,37 @@
   let width=0,height=0,scale=1;
   let nodes=[],pending=0,lastMove=-Infinity,lastPoint=null;
   let enabled=false,inside=false,sequence=0;
+  let textRects=[],lastTextScan=-Infinity,scanScene="";
+
+  // Triptych-like white cursor: a small point over empty space, expanding
+  // around actual readable content. Only inspect visible text in 01–03.
+  function updateTextRects(now){
+    const scene=document.body.dataset.currentFrame || "1";
+    if(scene===scanScene && now-lastTextScan<130)return;
+    scanScene=scene;
+    lastTextScan=now;
+    const shared=".site-header .site-name, .navigation a, .site-header .brand-icon";
+    const sceneText=scene==="1"
+      ?".hero-text span, .hero-text em, .scene-eyebrow span"
+      :scene==="2"
+        ?".chapter-title span, .chapter-description, .chapter-link"
+        :"#chapter-three .side-statement span, #twenty-hotspot";
+    textRects=[...document.querySelectorAll(shared+", "+sceneText)]
+      .filter(element=>element.getClientRects().length)
+      .map(element=>element.getBoundingClientRect())
+      .filter(rect=>rect.width>0 && rect.height>0);
+  }
+  function textProximity(x,y,now){
+    updateTextRects(now);
+    let nearest=Infinity;
+    for(const rect of textRects){
+      const dx=Math.max(rect.left-x,0,x-rect.right);
+      const dy=Math.max(rect.top-y,0,y-rect.bottom);
+      nearest=Math.min(nearest,Math.hypot(dx,dy));
+    }
+    // At 50px the cursor begins to grow; on text it becomes ~30px.
+    return clamp(1-nearest/58,0,1);
+  }
 
   function active(){
     const scene=document.body.dataset.currentFrame;
@@ -51,7 +87,9 @@
     if(next!==enabled){
       enabled=next;
       document.body.classList.toggle("paint-cursor-active",enabled);
+      lastTextScan=-Infinity;
       if(!enabled)clear();
+      else dotCore.style.setProperty("--cursor-scale","1");
     }
     dot.classList.toggle("is-visible",enabled&&inside);
   }
@@ -204,16 +242,20 @@
     if(event.pointerType!=="mouse" && event.pointerType!=="pen")return;
     const x=event.clientX,y=event.clientY;
     inside=true;
-    // Track the pointer without painting in scenes 04–05. This also keeps
-    // its position correct when the visitor scrolls back into scene 03.
-    dot.style.transform="translate3d("+(x-5.5).toFixed(1)+"px,"+
-      (y-5.5).toFixed(1)+"px,0)";
+    // Track without drawing in scenes 04–05, where the normal cursor
+    // returns. The custom core is always bright white, never magenta.
+    dot.style.transform="translate3d("+x.toFixed(1)+"px,"+
+      y.toFixed(1)+"px,0)";
     if(!active()){
       dot.classList.remove("is-visible");
       return;
     }
+    const now=performance.now();
+    const near=textProximity(x,y,now);
+    const size=1+2.45*near*near*(3-2*near);
+    dotCore.style.setProperty("--cursor-scale",size.toFixed(3));
     dot.classList.add("is-visible");
-    record(x,y,performance.now());
+    record(x,y,now);
   },{passive:true});
   document.addEventListener("mouseout",event=>{
     if(!event.relatedTarget){
@@ -224,7 +266,7 @@
     inside=false;dot.classList.remove("is-visible");clear();
   });
   addEventListener("resize",()=>{
-    resize();clear();
+    resize();clear();lastTextScan=-Infinity;
   },{passive:true});
   document.addEventListener("visibilitychange",()=>{
     if(document.hidden)clear();
