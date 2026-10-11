@@ -113,17 +113,24 @@
     if(!film)return;
     const lead=windowVideos[0];
     const motionPaused=reduced.matches||document.body.classList.contains("motion-off");
+    // Alternative artwork uses its own video + poster above the arch layer.
+    // Never let the default AI film bleed through the selected movie.
+    const alternateArt=panorama.dataset.artScene && panorama.dataset.artScene!=="0";
+    if(alternateArt && filmStarted){
+      film.pause();
+      filmStarted=false;
+    }
 
     // Option A: start the full-screen film before the dissolve becomes visible.
     // This keeps the same movie playing behind the arches at every scroll speed.
-    if(p>.26 && !filmStarted && !motionPaused){
+    if(!alternateArt && p>.26 && !filmStarted && !motionPaused){
       filmStarted=true;
       if(lead && lead.readyState>=2){
         try{film.currentTime=lead.currentTime;}catch{}
       }
       film.play().catch(()=>{filmStarted=false;});
     }
-    if(p>.26 && !motionPaused && film.paused && !filmStarted){
+    if(!alternateArt && p>.26 && !motionPaused && film.paused && !filmStarted){
       filmStarted=true;
       film.play().catch(()=>{filmStarted=false;});
     }
@@ -132,14 +139,14 @@
     const ready=film.readyState>=2;
     // The video tag's matching poster is the fallback if the stream is slow.
     // Never show a blank frame while waiting for a remote video download.
-    const blend=smooth(normalize(p,.42,.89));
+    const blend=alternateArt?0:smooth(normalize(p,.42,.89));
     film.classList.toggle("is-active",blend>.002);
     film.style.opacity=String(blend);
 
     // Only pause the three arch streams after their image is fully covered
     // in Section 02. On reverse, restart/resync while still hidden behind
     // the opaque portal film; no visible playback jump at the seam.
-    if(position>1.025 && ready && !windowsPaused){
+    if(!alternateArt && position>1.025 && ready && !windowsPaused){
       windowVideos.forEach(video=>video.pause());
       windowsPaused=true;
     }else if(position<.83 && windowsPaused){
@@ -187,7 +194,9 @@
     // Option A: GPU-composited, modest depth push, NOT a width/height
     // resize of three 4K video decoders on every animation frame.
     const grow=smooth(normalize(p,.08,.78));
-    const dissolve=smooth(normalize(p,.42,.89));
+    const alternateArt=panorama.dataset.artScene && panorama.dataset.artScene!=="0";
+    const alternateReady=panorama.dataset.artMediaReady==="true";
+    const dissolve=smooth(normalize(p,.42,.89)) * (!alternateArt||alternateReady?1:0);
     const fillScreen=smooth(normalize(p,.12,.97));
     const head=Math.max(0,initial.head*(1-fillScreen));
     const foot=Math.max(0,initial.foot*(1-fillScreen));
