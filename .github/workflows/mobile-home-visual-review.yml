@@ -1,0 +1,38 @@
+name: Homepage mobile design quality
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'concepts/frame-five-contact/assets/mobile-home.css'
+      - 'concepts/frame-four-gallery/assets/photo-gallery.css'
+      - 'concepts/frame-five-contact/assets/contact-globe.css'
+      - 'scripts/mobile_home_visual_review.py'
+      - '.github/workflows/mobile-home-visual-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visual:
+    name: Screenshot all five scenes on small and large phones
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chromium
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Review all five mobile homepage scenes
+        run: python scripts/mobile_home_visual_review.py
+      - name: Keep mobile screenshots and layout results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-home-five-scene-design
+          path: screenshots/homepage-mobile-art-direction/
+          retention-days: 14
+          if-no-files-found: ignore
