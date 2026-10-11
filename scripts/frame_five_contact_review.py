@@ -51,11 +51,29 @@ with sync_playwright() as p:
             errors.append(f"{name}: cursor-light canvas missing")
         scene=page.locator("#panorama")
         initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
+        # Verify the trail actually paints visible color, not merely
+        # toggling a hidden canvas. Colors should vary by screen position.
+        def glow_pixel(x,y):
+            return page.evaluate("""([x,y]) => {
+                const c=document.getElementById('pointer-pattern');
+                const d=c.getContext('2d');
+                return Array.from(d.getImageData(
+                    Math.min(c.width-1,Math.round(x*c.width/innerWidth)),
+                    Math.min(c.height-1,Math.round(y*c.height/innerHeight)),1,1).data);
+            }""",[x,y])
         page.mouse.move(w*.2,h*.4,steps=6)
+        page.wait_for_timeout(220)
+        left_color=glow_pixel(w*.2,h*.4)
         page.mouse.move(w*.75,h*.52,steps=6)
         page.wait_for_function(
             "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
             timeout=3500)
+        page.wait_for_timeout(260)
+        right_color=glow_pixel(w*.75,h*.52)
+        if left_color[3]<35 or right_color[3]<35:
+            errors.append(f"{name}: cursor color is too faint ({left_color},{right_color})")
+        if sum(abs(a-b) for a,b in zip(left_color[:3],right_color[:3]))<35:
+            errors.append(f"{name}: cursor hue does not change across scene ({left_color},{right_color})")
         page.mouse.down()
         page.wait_for_timeout(120)
         if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
