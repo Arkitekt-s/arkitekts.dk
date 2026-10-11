@@ -38,6 +38,11 @@
       fallback:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"
     }
   ];
+  // Fresh, independent choice for every homepage load. We deliberately do
+  // not store the choice: reloading can select any of the three movies.
+  // Once chosen, the same film stays active through sections 01, 02 and 03.
+  const initialScene=Math.floor(Math.random()*films.length);
+  document.body.dataset.initialHomepageFilm=String(initialScene);
   const player=document.createElement("video");
   player.id="hold-scene-film";
   player.className="hold-scene-film";
@@ -275,6 +280,13 @@
     const version=selectionVersion;
     panorama.dataset.artScene=String(scene);
     document.body.dataset.frameOneArt=String(scene);
+    // The baseline video must not play behind the selected alternative.
+    // Resume the shared original film if the user manually cycles to 01.
+    for(const base of originalMovies){
+      if(scene!==0){base.pause();continue;}
+      if(!reduced.matches && !document.body.classList.contains("motion-off"))
+        base.play().catch(()=>{});
+    }
     status();
     lastOpacity=-1;lastVisible=false;
     if(scene===0){
@@ -468,5 +480,5 @@
   }).observe(document.body,{attributes:true,attributeFilter:[
     "data-current-frame","data-portal-progress","data-journey-progress","class"
   ]});
-  resize();setScene(0);clearWipe();
+  resize();setScene(initialScene);clearWipe();
 })();
