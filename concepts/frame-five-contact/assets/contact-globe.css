@@ -375,11 +375,23 @@ body.frame-one #pointer-pattern{
   opacity:0;
   transition:opacity .20s ease-out;
 }
+/* No paint trail in any frame. Silver Glass uses only the white
+   cursor and the glass lens placed inside Frame 01's arches. */
 body.frame-one:not([data-current-frame]) #pointer-pattern,
-body.frame-one[data-current-frame="1"] #pointer-pattern,
+body.frame-one[data-current-frame="1"] #pointer-pattern{
+  opacity:0;
+}
 body.frame-one[data-current-frame="2"] #pointer-pattern,
-body.frame-one[data-current-frame="3"] #pointer-pattern{
-  opacity:1;
+body.frame-one[data-current-frame="3"] #pointer-pattern,
+body.frame-one[data-current-frame="4"] #pointer-pattern,
+body.frame-one[data-current-frame="5"] #pointer-pattern{
+  opacity:0!important;
+}
+body.frame-one[data-current-frame="2"] .paint-cursor,
+body.frame-one[data-current-frame="3"] .paint-cursor,
+body.frame-one[data-current-frame="4"] .paint-cursor,
+body.frame-one[data-current-frame="5"] .paint-cursor{
+  display:none!important;
 }
 @media(prefers-reduced-motion:reduce){
   body.frame-one #pointer-pattern,

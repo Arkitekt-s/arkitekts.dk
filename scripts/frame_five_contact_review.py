@@ -45,8 +45,7 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # Scene 01 uses Silver Glass; scenes 02–03 retain a violet ribbon.
-        # Scenes 04–05 keep the native cursor.
+        # Only Scene 01 uses Silver Glass. Scenes 02–05 use native cursors.
         # Mouse movement must never tilt, zoom or hold the landscape.
         if page.locator("#pointer-pattern").count()!=1:
             errors.append(f"{name}: cursor-light canvas missing")
@@ -158,24 +157,28 @@ with sync_playwright() as p:
             errors.append(f"{name}: section 01 arrow cue did not disappear in section 02")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 02 copy not visible")
+        # Frames 02–05 must use the browser's normal pointer.
         page.mouse.move(w*.42,h*.37,steps=5)
-        page.wait_for_function(
-            "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
-            timeout=2500)
+        page.wait_for_timeout(120)
+        if page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
+            errors.append(f"{name}: Silver Glass cursor persists in Frame 02")
+        if page.locator(".paint-cursor").evaluate("e=>getComputedStyle(e).display")!="none":
+            errors.append(f"{name}: custom cursor visible in Frame 02")
+        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
+            errors.append(f"{name}: painter effect persists in Frame 02")
         wheel(page,7);wait(page,1.995)
         if page.locator("#portal-current").inner_text().strip()!="03":
             errors.append(f"{name}: section counter did not reach 03")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)
-        page.wait_for_function(
-            "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
-            timeout=2500)
-        if not page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
-            errors.append(f"{name}: painter cursor missing in Frame 03")
-        ambient_opacity=page.locator("#pointer-pattern").evaluate("e=>parseFloat(getComputedStyle(e).opacity)")
-        if ambient_opacity<.95:
-            errors.append(f"{name}: painterly trail hidden in Frame 03")
+        page.wait_for_timeout(120)
+        if page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
+            errors.append(f"{name}: Silver Glass cursor persists in Frame 03")
+        if page.locator(".paint-cursor").evaluate("e=>getComputedStyle(e).display")!="none":
+            errors.append(f"{name}: custom cursor visible in Frame 03")
+        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
+            errors.append(f"{name}: painter effect persists in Frame 03")
         if page.locator(".twenty-piece").first.evaluate("e=>getComputedStyle(e).animationName")!="none":
             errors.append(f"{name}: 10 auto-animates before hover")
         # Reverse interaction: scattered before hover, assembled on entry,
