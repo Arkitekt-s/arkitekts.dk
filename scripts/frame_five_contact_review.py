@@ -45,14 +45,17 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # Frame 01 is now visual-only. Moving and holding the mouse cannot
-        # tilt the picture, shift scenery or activate the old zoom effect.
-        if page.locator("#pointer-pattern").count():
-            errors.append(f"{name}: obsolete pointer canvas remains on homepage")
+        # The first two scenes have a restrained cursor-lit grid.
+        # Mouse motion must never tilt, zoom, or press-hold the landscape.
+        if page.locator("#pointer-pattern").count()!=1:
+            errors.append(f"{name}: cursor-light canvas missing")
         scene=page.locator("#panorama")
         initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         page.mouse.move(w*.2,h*.4,steps=6)
         page.mouse.move(w*.75,h*.52,steps=6)
+        page.wait_for_function(
+            "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
+            timeout=3500)
         page.mouse.down()
         page.wait_for_timeout(120)
         if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
@@ -70,11 +73,22 @@ with sync_playwright() as p:
             errors.append(f"{name}: section 01 arrow cue did not disappear in section 02")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 02 copy not visible")
+        page.mouse.move(w*.42,h*.37,steps=5)
+        page.wait_for_function(
+            "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
+            timeout=2500)
         wheel(page,7);wait(page,1.995)
         if page.locator("#portal-current").inner_text().strip()!="03":
             errors.append(f"{name}: section counter did not reach 03")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
+        page.mouse.move(w*.68,h*.44,steps=5)
+        page.wait_for_timeout(400)
+        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
+            errors.append(f"{name}: ambient pointer did not stop in Frame 03")
+        ambient_opacity=page.locator("#pointer-pattern").evaluate("e=>parseFloat(getComputedStyle(e).opacity)")
+        if ambient_opacity>.01:
+            errors.append(f"{name}: cursor glow remains visible after Frame 02")
         if page.locator(".twenty-piece").first.evaluate("e=>getComputedStyle(e).animationName")!="none":
             errors.append(f"{name}: 10 auto-animates before hover")
         # Reverse interaction: scattered before hover, assembled on entry,
