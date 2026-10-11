@@ -385,3 +385,20 @@ body.frame-one[data-current-frame="3"] #pointer-pattern{
   body.frame-one #pointer-pattern,
   body.frame-one .paint-cursor{display:none!important}
 }
+
+
+/* Pointer-proximity arch response on the cinematic homepage only.
+   Move just the arch masks by a few pixels, never the panorama container,
+   page heading, or scroll timeline. JS eases values with a gentle spring. */
+body.frame-one .panorama .arch{
+  transform:translate3d(var(--arch-x,0px),var(--arch-y,0px),0) rotate(var(--arch-turn,0deg));
+  transition:border-radius 0s,box-shadow .18s ease-out;
+  box-shadow:0 32px 70px #08031373,
+    0 0 var(--arch-glow,0px) rgba(193,108,237,.36);
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .panorama .arch{
+    transform:none!important;
+    box-shadow:0 32px 70px #08031373;
+  }
+}
