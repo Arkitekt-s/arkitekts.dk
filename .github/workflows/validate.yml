@@ -19,5 +19,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Check relative links, anchors and responsive styles
         run: python3 scripts/check_site.py
+      - name: Check Danish SEO, canonical URLs and sitemap
+        run: python3 scripts/check_danish_seo.py
       - name: Check JavaScript syntax
         run: node --check assets/app.js
