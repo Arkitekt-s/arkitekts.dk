@@ -82,7 +82,6 @@
 
 body.frame-five-active .gridlines{opacity:.59}
 body.frame-five-active #pointer-pattern{opacity:0!important}
-body.frame-five-active .portal-navigation{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 /* Keep the cinematic scene visible through the fixed navigation bars. */
 body.frame-one .site-header,
 body.frame-one .site-footer{
@@ -302,3 +301,7 @@ body.frame-one.frame-three-active .portal-shade{
 body.frame-one .site-header .site-name{color:#fef8ff;transition:color .22s ease}
 body.frame-one:not([data-current-frame]) .site-header .site-name,
 body.frame-one[data-current-frame="1"] .site-header .site-name{color:#ba00dc}
+
+/* Keep section controls visible, including the last scene. */
+body.frame-one .portal-steps #portal-current{display:inline-block;min-width:2ch;font-variant-numeric:tabular-nums}
+body.frame-one .portal-navigation button:disabled{opacity:.38;cursor:default}
