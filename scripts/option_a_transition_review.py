@@ -72,6 +72,9 @@ with sync_playwright() as play:
     for name,(width,height) in SIZES.items():
         ctx=browser.new_context(viewport={"width":width,"height":height},device_scale_factor=1)
         page=ctx.new_page()
+        # Pin the original clip in this legacy transition test.
+        # All three random choices have separate end-to-end coverage.
+        page.add_init_script("Math.random = () => 0.05")
         errors=[]
         page.on("pageerror",lambda e:errors.append(str(e)))
         response=page.goto(URL,wait_until="domcontentloaded",timeout=30000)
