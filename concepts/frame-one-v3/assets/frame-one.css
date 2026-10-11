@@ -125,3 +125,23 @@ body.motion-off .panorama,body.motion-off .hero-text,body.motion-off .arch{trans
  *,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
  .panorama,.arch,.scenery,.hero-text{will-change:auto!important}
 }
+
+/* Tablet navigation: switch from cramped small desktop links to a
+   legible touch-friendly dropdown without changing the cinematic stage. */
+@media(min-width:761px) and (max-width:1024px){
+ :root{--header-h:78px}
+ .site-header{grid-template-columns:1fr 1fr auto;gap:8px;padding-inline:4.5%}
+ .site-header .site-name{font-size:11px;letter-spacing:.2em;padding:0}
+ .site-header .menu-button{display:flex;justify-self:end;width:44px;height:44px}
+ .site-header .navigation{
+  display:none;position:absolute;top:var(--header-h);left:0;right:0;
+  flex-direction:column;align-items:stretch;gap:0;
+  max-height:calc(100dvh - var(--header-h) - 24px);overflow-y:auto;
+  padding:13px 5% 23px;background:#1b0d28f4;
+  border-bottom:1px solid #995da188;
+  box-shadow:0 20px 50px #07020cc9
+ }
+ .site-header .navigation.open{display:flex}
+ .site-header .navigation a:not(.contact){font-size:14px;letter-spacing:.08em;padding:14px 8px}
+ .site-header .navigation .contact{font-size:14px;text-align:center;margin-top:8px;padding:13px 18px}
+}
