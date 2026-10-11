@@ -297,3 +297,6 @@ body.frame-one.frame-three-active .portal-shade{
   background:linear-gradient(0deg,rgba(8,10,29,.36),rgba(17,6,28,.12) 50%,rgba(7,6,23,.23));
   opacity:var(--third-shade-opacity,0);
 }
+
+/* Homepage only: SOHEIL wordmark uses the Let's talk button's magenta. */
+body.frame-one .site-header .site-name{color:#ba00dc}
