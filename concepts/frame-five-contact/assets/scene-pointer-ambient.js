@@ -1,135 +1,200 @@
-/* Homepage sections 01 and 02: colorful cinematic cursor light.
- * Inspired by luminous interactive studios, without copying their code.
- * Creates vivid ambient color along the mouse's path, fading naturally.
- * Crucially: never moves the picture, text, film or grid; no press/hold.
+/* Homepage scenes 01–03: flowing painter's brush and the S. logo square.
+ * Leave scenes 04–05 and every other website page with the default cursor.
+ * The landscape, content and camera do not respond to mouse buttons or hold.
  */
 (() => {
   "use strict";
   const canvas=document.getElementById("pointer-pattern");
   if(!canvas || !matchMedia("(hover: hover) and (pointer: fine)").matches)return;
-  const ctx=canvas.getContext("2d",{alpha:true});
-  if(!ctx)return;
-  const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-  const lifespan=1250;
-  const palette=[
-    [170,78,249],  // Violet on the left
-    [249,76,184],  // Magenta/pink in the center
-    [67,205,245]   // Cyan on the right
+  const context=canvas.getContext("2d",{alpha:true});
+  if(!context)return;
+  const prefersReduced=matchMedia("(prefers-reduced-motion: reduce)");
+  const dot=document.createElement("span");
+  dot.className="paint-cursor";
+  dot.setAttribute("aria-hidden","true");
+  document.body.append(dot);
+
+  const colors=[
+    [170,78,249],   // violet, left side
+    [249,76,184],   // magenta, middle
+    [67,205,245]    // cyan, right side
   ];
+  const fadeTime=2200;
+  const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
   let width=0,height=0,dpr=1;
-  let px=-1000,py=-1000,tx=-1000,ty=-1000;
-  let trail=[],lastMove=-Infinity,lastSample=-Infinity,frameId=0;
-  const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
-  const active=()=>{
-    const scene=document.body.dataset.currentFrame;
-    return (!scene||scene==="1"||scene==="2")&&!reduced.matches;
+  let marks=[],lastMove=-Infinity,lastPoint=null,frameId=0;
+  let pointerInside=false,enabled=false;
+  let pointerX=0,pointerY=0;
+
+  const sceneEnabled=()=>{
+    const id=document.body.dataset.currentFrame;
+    return (!id || id==="1" || id==="2" || id==="3")
+       && !prefersReduced.matches;
   };
-  function tint(x){
-    const t=clamp(x/Math.max(1,width),0,1)*2;
-    const i=t<1?0:1;
-    const f=t-i;
-    return palette[i].map((v,k)=>Math.round(v+(palette[i+1][k]-v)*f));
-  }
-  const rgba=(rgb,alpha)=>"rgba("+rgb[0]+","+rgb[1]+","+rgb[2]+","+clamp(alpha,0,1).toFixed(3)+")";
+  const colorAt=x=>{
+    const scaled=clamp(x/Math.max(width,1),0,1)*2;
+    const i=Math.min(1,Math.floor(scaled));
+    const f=scaled-i;
+    return colors[i].map((v,k)=>Math.round(v+(colors[i+1][k]-v)*f));
+  };
+  const color=(rgb,alpha)=>"rgba("+rgb.join(",")+","+clamp(alpha,0,1).toFixed(3)+")";
+
   function resize(){
-    width=innerWidth;height=innerHeight;
+    width=innerWidth;
+    height=innerHeight;
     dpr=Math.min(devicePixelRatio||1,1.25);
     canvas.width=Math.round(width*dpr);
     canvas.height=Math.round(height*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    ctx.clearRect(0,0,width,height);
+    context.setTransform(dpr,0,0,dpr,0,0);
+    context.clearRect(0,0,width,height);
   }
-  function reset(){
+  function erase(){
     if(frameId)cancelAnimationFrame(frameId);
     frameId=0;
-    trail=[];
-    px=py=tx=ty=-1000;
+    marks=[];
+    lastPoint=null;
     lastMove=-Infinity;
     canvas.dataset.ambientActive="false";
-    ctx.clearRect(0,0,width,height);
+    context.clearRect(0,0,width,height);
   }
-  function blob(x,y,radius,color,alpha){
-    if(alpha<.004)return;
-    const gradient=ctx.createRadialGradient(x,y,0,x,y,radius);
-    gradient.addColorStop(0,rgba(color,alpha));
-    gradient.addColorStop(.35,rgba(color,alpha*.62));
-    gradient.addColorStop(.72,rgba(color,alpha*.20));
-    gradient.addColorStop(1,rgba(color,0));
-    ctx.fillStyle=gradient;
-    ctx.fillRect(x-radius,y-radius,2*radius,2*radius);
+  function syncScene(){
+    const shouldEnable=sceneEnabled();
+    if(enabled!==shouldEnable){
+      enabled=shouldEnable;
+      document.body.classList.toggle("paint-cursor-active",enabled);
+      if(!enabled)erase();
+    }
+    dot.classList.toggle("is-visible",enabled && pointerInside);
+    if(enabled && marks.length)request();
   }
+
+  // Draw continuous wet-paint ribbons. Every segment keeps its own color
+  // and timestamp, so the color remains on the path and fades in place.
+  // Layered rounded strokes create a soft edge and a richer paint center.
+  function stroke(a,b,rgb,life){
+    context.lineCap="round";
+    context.lineJoin="round";
+    const v=Math.pow(life,1.45);
+    context.beginPath();
+    context.moveTo(a.x,a.y);
+    context.lineTo(b.x,b.y);
+    context.lineWidth=90;
+    context.strokeStyle=color(rgb,.060*v);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(a.x,a.y);
+    context.lineTo(b.x,b.y);
+    context.lineWidth=47;
+    context.strokeStyle=color(rgb,.20*v);
+    context.stroke();
+
+    context.beginPath();
+    context.moveTo(a.x,a.y);
+    context.lineTo(b.x,b.y);
+    context.lineWidth=26;
+    context.strokeStyle=color(rgb,.35*v);
+    context.stroke();
+
+    // Small pigment flecks follow the actual mouse path.
+    // They are decorative, but deterministic rather than jittering.
+    if(b.index%5===0){
+      const side=b.index%2?1:-1;
+      const dx=b.x-a.x,dy=b.y-a.y;
+      const length=Math.max(1,Math.hypot(dx,dy));
+      const fx=b.x-side*dy/length*22;
+      const fy=b.y+side*dx/length*22;
+      context.beginPath();
+      context.arc(fx,fy,2.8,0,Math.PI*2);
+      context.fillStyle=color(rgb,.34*v);
+      context.fill();
+    }
+  }
+
   function draw(now){
     frameId=0;
-    if(!active()||document.hidden){reset();return;}
-    trail=trail.filter(p=>now-p.time<lifespan);
-    const rest=now-lastMove;
-    const alive=trail.length||rest<1050;
-    if(!alive){reset();return;}
-    // Color blooms persist briefly along the path instead of fading instantly.
-    ctx.clearRect(0,0,width,height);
-    for(let i=0;i<trail.length;i++){
-      const mark=trail[i];
-      const life=clamp(1-(now-mark.time)/lifespan,0,1);
-      const fade=life*life;
-      const radius=104+30*(1-life);
-      blob(mark.x,mark.y,radius,mark.color,.21*fade);
+    if(!sceneEnabled() || document.hidden){erase();return;}
+    marks=marks.filter(m=>now-m.time<fadeTime);
+    context.clearRect(0,0,width,height);
+    if(!marks.length){
+      canvas.dataset.ambientActive="false";
+      return;
     }
-    if(tx>=0){
-      px+=(tx-px)*.22;
-      py+=(ty-py)*.22;
-      const live=clamp((1120-rest)/540,0,1);
-      const color=tint(px);
-      const companion=tint(clamp(px+width*.26,0,width));
-      // Broad atmospheric color and an inner responsive halo.
-      blob(px-34,py+15,218,color,.23*live);
-      blob(px+37,py-19,145,companion,.20*live);
-      blob(px,py,82,color,.34*live);
-      // Fine luminous accent keeps motion clearly visible on dark scenes.
-      blob(px,py,24,[255,226,251],.15*live);
+    for(let i=0;i<marks.length;i++){
+      const mark=marks[i];
+      const previous=marks[i-1]||mark;
+      const life=clamp(1-(now-mark.time)/fadeTime,0,1);
+      stroke(previous,mark,mark.rgb,life);
     }
     canvas.dataset.ambientActive="true";
-    frameId=requestAnimationFrame(draw);
+    request();
   }
-  const request=()=>{if(!frameId)frameId=requestAnimationFrame(draw);};
-  function record(x,y,now){
-    const last=trail[trail.length-1];
-    const dist=last?Math.hypot(x-last.x,y-last.y):999;
-    if(dist<11 && now-lastSample<28)return;
-    // Fast cursor movement paints short, continuous clouds, not sparse dots.
-    if(last && dist>44 && dist<550){
-      const steps=Math.min(7,Math.floor(dist/38));
-      for(let i=1;i<steps;i++){
-        const f=i/steps;
-        const nx=last.x+(x-last.x)*f,ny=last.y+(y-last.y)*f;
-        trail.push({x:nx,y:ny,time:now,color:tint(nx)});
+  function request(){
+    if(!frameId)frameId=requestAnimationFrame(draw);
+  }
+  let markIndex=0;
+  function addMark(x,y,now){
+    marks.push({x,y,time:now,rgb:colorAt(x),index:markIndex++});
+    if(marks.length>105)marks.splice(0,marks.length-105);
+  }
+  function paintMovement(x,y,now){
+    // Interpolate between pointer events: fast gestures paint connected lines.
+    // Never draw a long diagonal when the cursor jumps back into the page.
+    if(!lastPoint || now-lastMove>280 ||
+       Math.hypot(x-lastPoint.x,y-lastPoint.y)>Math.max(220,width*.40)){
+      marks=[];
+      addMark(x,y,now);
+    }else{
+      const dx=x-lastPoint.x,dy=y-lastPoint.y;
+      const length=Math.hypot(dx,dy);
+      const steps=Math.min(22,Math.max(1,Math.ceil(length/12)));
+      for(let n=1;n<=steps;n++){
+        const ratio=n/steps;
+        addMark(lastPoint.x+dx*ratio,lastPoint.y+dy*ratio,now);
       }
     }
-    trail.push({x,y,time:now,color:tint(x)});
-    if(trail.length>18)trail.splice(0,trail.length-18);
-    lastSample=now;
-  }
-  addEventListener("pointermove",event=>{
-    if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
-    if(!active())return;
-    const now=performance.now();
-    const x=event.clientX,y=event.clientY;
-    if(px<0||now-lastMove>lifespan || Math.hypot(x-tx,y-ty)>width*.67){
-      // No color streak across the screen when the mouse re-enters.
-      px=x;py=y;trail=[];lastSample=-Infinity;
-    }
-    tx=x;ty=y;
+    lastPoint={x,y};
     lastMove=now;
-    record(x,y,now);
     request();
+  }
+
+  addEventListener("pointermove",event=>{
+    if(event.pointerType!=="mouse" && event.pointerType!=="pen")return;
+    if(!sceneEnabled())return;
+    pointerInside=true;
+    pointerX=event.clientX;
+    pointerY=event.clientY;
+    dot.style.transform="translate3d("+(pointerX-5.5).toFixed(1)+"px,"+
+      (pointerY-5.5).toFixed(1)+"px,0)";
+    dot.classList.add("is-visible");
+    paintMovement(pointerX,pointerY,performance.now());
   },{passive:true});
-  addEventListener("resize",()=>{resize();reset();},{passive:true});
-  reduced.addEventListener("change",()=>{if(reduced.matches)reset();});
-  document.addEventListener("visibilitychange",()=>{if(document.hidden)reset();});
-  // The story changes sections without a page reload.
-  // Clear lingering glow immediately when leaving scene 02.
-  new MutationObserver(()=>{
-    if(!active())reset();
-  }).observe(document.body,{attributes:true,attributeFilter:["data-current-frame"]});
+  document.addEventListener("mouseout",event=>{
+    if(!event.relatedTarget){
+      pointerInside=false;
+      dot.classList.remove("is-visible");
+    }
+  },{passive:true});
+  addEventListener("blur",()=>{
+    pointerInside=false;
+    dot.classList.remove("is-visible");
+    erase();
+  });
+  addEventListener("resize",()=>{
+    resize();
+    erase();
+  },{passive:true});
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden)erase();
+  });
+  prefersReduced.addEventListener("change",syncScene);
+
+  // The section counter updates while scrolling. The browser cursor must
+  // return immediately in scenes 04 and 05, and on all other pages.
+  new MutationObserver(syncScene).observe(document.body,{
+    attributes:true,attributeFilter:["data-current-frame"]
+  });
   canvas.dataset.ambientActive="false";
   resize();
+  syncScene();
 })();
