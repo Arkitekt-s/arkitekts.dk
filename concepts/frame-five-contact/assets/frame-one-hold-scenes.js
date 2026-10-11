@@ -7,7 +7,7 @@
  * are untouched. Alternate clips licensed by Pexels (free video license):
  * https://www.pexels.com/video/an-artist-s-animation-of-artificial-intelligence-ai-this-video-represents-how-ai-powered-tools-can-support-us-and-save-time-it-was-created-by-martina-stiftinger-as-part-of-the-visualis-18069232/
  * https://www.pexels.com/video/an-artist-s-illustration-of-artificial-intelligence-ai-this-image-explores-ai-generated-media-can-be-watermarked-it-was-created-by-zunc-studio-as-part-of-the-visualising-ai-project-lau-25744122/
- * https://www.pexels.com/video/dark-room-coding-on-multiple-monitors-34160292/
+ * https://www.pexels.com/video/an-artist-s-animation-of-artificial-intelligence-ai-this-visual-depicts-the-process-used-by-text-to-image-diffusion-models-it-was-created-by-artist-linus-zoll-as-part-of-the-visualisin-18069165/
  */
 (() => {
   "use strict";
@@ -31,11 +31,11 @@
       fallback:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85"
     },
     {
-      name:"Dark Coding Workspace",
-      url:"https://videos.pexels.com/video-files/34160292/14482688_1920_1080_25fps.mp4",
-      backup:"https://videos.pexels.com/video-files/34160292/14482688_3840_2160_25fps.mp4",
-      poster:"https://images.pexels.com/videos/34160292/backend-code-coding-computer-34160292.jpeg?auto=compress&w=1600",
-      fallback:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=85"
+      name:"Visualising AI · Text-to-image Diffusion · Linus Zoll",
+      // Official Pexels download for video 18069165 (square 2160p, 24fps).
+      url:"https://videos.pexels.com/video-files/18069165/18069165-uhd_2160_2160_24fps.mp4",
+      poster:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600",
+      fallback:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"
     }
   ];
   const player=document.createElement("video");
@@ -306,7 +306,7 @@
   player.addEventListener("error",()=>{
     if(scene===0)return;
     const cfg=films[scene];
-    if(!usedBackup){
+    if(!usedBackup && cfg.backup && cfg.backup!==cfg.url){
       // The source's Pexels download redirect confirms this UHD file.
       usedBackup=true;
       player.src=cfg.backup;
