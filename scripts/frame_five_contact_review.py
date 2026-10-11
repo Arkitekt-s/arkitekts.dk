@@ -104,6 +104,25 @@ with sync_playwright() as p:
         if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
             errors.append(f"{name}: press and hold still zooms the landscape")
         page.mouse.up()
+        # Desktop: each real press-and-hold triggers exactly ONE new art world.
+        # 00 mountain → 01 tidal ink → 02 liquid aurora → 00 mountain.
+        # The liquid wipe must finish before another hold is counted.
+        if name=="desktop":
+            control=page.locator("#hold-scene-control")
+            if control.count()!=1:
+                errors.append("desktop: press-and-hold scene control missing")
+            else:
+                for expected in (1,2,0):
+                    page.mouse.move(w*.62,h*.63)
+                    page.mouse.down()
+                    page.wait_for_timeout(410)
+                    page.mouse.up()
+                    page.wait_for_function(
+                        "(v)=>document.getElementById('panorama')?.dataset.artScene===String(v)",
+                        arg=expected, timeout=2500)
+                    page.wait_for_timeout(1000)
+                    if page.locator("#panorama .hold-scene-paint").count()!=3:
+                        errors.append("desktop: animated artwork not present in all three arches")
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")

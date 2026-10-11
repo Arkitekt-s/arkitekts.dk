@@ -522,3 +522,109 @@ body.motion-off .panorama .arch .arch-color-lens{
 @media(prefers-reduced-motion:reduce){
   body.frame-one .panorama .arch .arch-color-lens{display:none!important}
 }
+
+
+/* Frame 01 — three press-and-hold worlds.
+   The permanent arches and their Silver Glass / elastic edge remain intact.
+   Alternate artwork is a shared live-painted image sliced across all 3 arches. */
+body.frame-one #panorama .arch .hold-scene-paint{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  z-index:3;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  user-select:none;
+  transition:opacity .42s ease,visibility .42s;
+  filter:saturate(1.11) contrast(1.03);
+}
+body.frame-one #panorama[data-art-scene="1"] .arch .hold-scene-paint,
+body.frame-one #panorama[data-art-scene="2"] .arch .hold-scene-paint{
+  opacity:1;
+  visibility:visible;
+}
+body.frame-one .frame-stage .hold-scene-wipe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:29;
+  visibility:hidden;
+  filter:saturate(1.09);
+}
+/* A quiet, functional cue; existing title, navigation and pagination remain. */
+body.frame-one .frame-stage .hold-scene-control{
+  position:absolute;
+  left:3.1%;
+  bottom:12.8%;
+  z-index:31;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(235,195,254,.39);
+  background:rgba(31,11,45,.57);
+  color:rgba(255,244,255,.94);
+  border-radius:30px;
+  padding:10px 15px;
+  font:720 10px/1.4 ui-monospace,Consolas,monospace;
+  letter-spacing:.10em;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  cursor:pointer;
+  opacity:.88;
+  transition:opacity .23s,background .23s,border-color .23s;
+}
+body.frame-one .frame-stage .hold-scene-control::before{
+  content:"";
+  width:6px;height:6px;
+  flex:none;
+  border-radius:50%;
+  background:#f1c4ff;
+  box-shadow:0 0 0 4px rgba(234,167,255,.12);
+}
+body.frame-one .frame-stage .hold-scene-control:hover,
+body.frame-one .frame-stage .hold-scene-control:focus-visible{
+  background:rgba(74,28,92,.90);
+  border-color:rgba(241,195,255,.72);
+  opacity:1;
+}
+body.frame-one .frame-stage .hold-scene-hint{
+  position:absolute;
+  z-index:13;
+  bottom:9.2%;
+  left:3.1%;
+  color:rgba(231,203,240,.75);
+  font:620 8px/1.5 ui-monospace,Consolas,monospace;
+  letter-spacing:.11em;
+  pointer-events:none;
+}
+body.frame-one[data-current-frame="2"] .hold-scene-control,
+body.frame-one[data-current-frame="3"] .hold-scene-control,
+body.frame-one[data-current-frame="4"] .hold-scene-control,
+body.frame-one[data-current-frame="5"] .hold-scene-control,
+body.frame-one[data-current-frame="2"] .hold-scene-hint,
+body.frame-one[data-current-frame="3"] .hold-scene-hint,
+body.frame-one[data-current-frame="4"] .hold-scene-hint,
+body.frame-one[data-current-frame="5"] .hold-scene-hint,
+body.frame-one.chapter-two-active .hold-scene-control,
+body.frame-one.chapter-two-active .hold-scene-hint{
+  visibility:hidden;
+  pointer-events:none;
+}
+@media(max-width:760px){
+  body.frame-one .frame-stage .hold-scene-control{
+    left:5%;bottom:12.8%;font-size:9px;padding:8px 11px;
+  }
+  body.frame-one .frame-stage .hold-scene-hint{left:5%;bottom:9.3%;font-size:7px}
+}
+@media(max-width:470px){
+  body.frame-one .frame-stage .hold-scene-control{bottom:13%;font-size:8px}
+  body.frame-one .frame-stage .hold-scene-hint{bottom:10%;font-size:6.6px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one #panorama .arch .hold-scene-paint{transition:none}
+}
