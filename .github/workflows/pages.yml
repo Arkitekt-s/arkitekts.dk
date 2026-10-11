@@ -1,3 +1,4 @@
+# Restore Pages publication after public/private visibility reset (2026-10-11).
 name: Deploy static preview
 on:
   push:
