@@ -250,6 +250,8 @@
     // Scene 03 text fades out before the staircase begins: video only.
     const leaveThree=smooth(normalize(journey,2.05,2.28));
     const enterThree=smooth(normalize(journey,1.41,1.89));
+    // Crossfade the film lighting on the same continuous timeline.
+    if(shade)shade.style.setProperty("--third-shade-opacity",enterThree.toFixed(3));
     const thirdOpacity=enterThree*(1-leaveThree);
     third.style.opacity=String(thirdOpacity);
     third.style.translate="0 "+(24*(1-enterThree)).toFixed(2)+"px";
