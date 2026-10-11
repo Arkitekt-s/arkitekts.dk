@@ -1,265 +1,255 @@
-/* Soft purple SMOKE follows the mouse, inspired by the user's recording.
- * Homepage scenes 01–03 only; all other sections use the normal cursor.
- * Individual vapor plumes curl, spread and fade to transparent.
- * Mouse press / hold never changes the effect or the website layout.
+/* Viscous violet pointer ribbon based on the movement reference.
+ * Desktop scenes 01–03: white cursor + fluid, elastic, translucent trail.
+ * No button press. Nothing changes the layout or interrupts wheel navigation.
  */
 (() => {
   "use strict";
   const canvas=document.getElementById("pointer-pattern");
   if(!canvas || !matchMedia("(hover: hover) and (pointer: fine)").matches)return;
-  const ctx=canvas.getContext("2d",{alpha:true});
+  const ctx=canvas.getContext("2d",{alpha:true,desynchronized:true});
   if(!ctx)return;
-
   const reduced=matchMedia("(prefers-reduced-motion: reduce)");
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+  const smooth=n=>n*n*(3-2*n);
   const dot=document.createElement("span");
   dot.className="paint-cursor";
   dot.setAttribute("aria-hidden","true");
-  // Separate shell and core so the position follows the mouse instantly,
-  // while only the white core enlarges smoothly as text comes close.
   const dotCore=document.createElement("span");
   dotCore.className="paint-cursor-core";
   dot.append(dotCore);
   document.body.append(dot);
 
-  const MAX_LENGTH=285;       // Compact smoke behind the cursor.
-  const MAX_NODES=78;
-  const FADE_MS=1280;         // Smoke dissipates in just over one second.
-  const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
-  let width=0,height=0,scale=1;
-  let nodes=[],pending=0,lastMove=-Infinity,lastPoint=null;
-  let enabled=false,inside=false,sequence=0;
-  let textRects=[],lastTextScan=-Infinity,scanScene="";
-
-  // Triptych-like white cursor: a small point over empty space, expanding
-  // around actual readable content. Only inspect visible text in 01–03.
-  function updateTextRects(now){
-    const scene=document.body.dataset.currentFrame || "1";
-    if(scene===scanScene && now-lastTextScan<130)return;
-    scanScene=scene;
-    lastTextScan=now;
-    const shared=".site-header .site-name, .navigation a, .site-header .brand-icon";
-    const sceneText=scene==="1"
-      ?".hero-text span, .hero-text em, .scene-eyebrow span"
-      :scene==="2"
-        ?".chapter-title span, .chapter-description, .chapter-link"
-        :"#chapter-three .side-statement span, #twenty-hotspot";
-    textRects=[...document.querySelectorAll(shared+", "+sceneText)]
-      .filter(element=>element.getClientRects().length)
-      .map(element=>element.getBoundingClientRect())
-      .filter(rect=>rect.width>0 && rect.height>0);
-  }
-  function textProximity(x,y,now){
-    updateTextRects(now);
-    let nearest=Infinity;
-    for(const rect of textRects){
-      const dx=Math.max(rect.left-x,0,x-rect.right);
-      const dy=Math.max(rect.top-y,0,y-rect.bottom);
-      nearest=Math.min(nearest,Math.hypot(dx,dy));
-    }
-    // Growth is subtle: 9px at rest and only about 15.8px near text.
-    return clamp(1-nearest/44,0,1);
-  }
+  // Short, substantial liquid tail; pigment evaporates rather than leaving
+  // an opaque fixed paint mark or a large full-screen purple halo.
+  const LIFE=1050,MAX_LENGTH=335,MAX_NODES=105;
+  let width=0,height=0,ratio=1;
+  let trail=[],seq=0,frame=0,lastPoint=null,lastMove=0;
+  let enabled=false,inside=false;
+  let textRects=[],textScan=-Infinity,lastScene="";
+  let tip={x:-2000,y:-2000};
 
   function active(){
-    const scene=document.body.dataset.currentFrame;
-    return (!scene||scene==="1"||scene==="2"||scene==="3") &&
-      !reduced.matches;
+    const scene=document.body.dataset.currentFrame||"1";
+    return (scene==="1"||scene==="2"||scene==="3") &&
+      !reduced.matches && !document.body.classList.contains("motion-off");
   }
   function resize(){
-    width=innerWidth;height=innerHeight;
-    scale=Math.min(devicePixelRatio||1,1.2);
-    canvas.width=Math.round(width*scale);
-    canvas.height=Math.round(height*scale);
-    ctx.setTransform(scale,0,0,scale,0,0);
+    width=window.innerWidth;height=window.innerHeight;
+    ratio=Math.min(devicePixelRatio||1,1.65);
+    canvas.width=Math.ceil(width*ratio);
+    canvas.height=Math.ceil(height*ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0);
     ctx.clearRect(0,0,width,height);
   }
   function clear(){
-    if(pending)cancelAnimationFrame(pending);
-    pending=0;
-    nodes=[];
-    lastPoint=null;
-    lastMove=-Infinity;
-    canvas.dataset.ambientActive="false";
+    if(frame)cancelAnimationFrame(frame);
+    frame=0;trail=[];lastPoint=null;lastMove=0;
     ctx.clearRect(0,0,width,height);
+    canvas.dataset.ambientActive="false";
   }
   function sync(){
     const next=active();
     if(next!==enabled){
       enabled=next;
       document.body.classList.toggle("paint-cursor-active",enabled);
-      lastTextScan=-Infinity;
+      textScan=-Infinity;
       if(!enabled)clear();
       else dotCore.style.setProperty("--cursor-scale","1");
     }
     dot.classList.toggle("is-visible",enabled&&inside);
   }
-  function queue(){
-    if(!pending)pending=requestAnimationFrame(draw);
+  function inspectText(now){
+    const scene=document.body.dataset.currentFrame||"1";
+    if(scene===lastScene&&now-textScan<150)return;
+    textScan=now;lastScene=scene;
+    const common=".site-header .site-name, .navigation a, .site-header .brand-icon";
+    const selector=scene==="1"
+      ?".hero-text span, .hero-text em, .scene-eyebrow span"
+      :scene==="2"
+        ?".chapter-title span, .chapter-description, .chapter-link"
+        :"#chapter-three .side-statement span, #twenty-hotspot";
+    textRects=[...document.querySelectorAll(common+", "+selector)]
+      .filter(el=>el.getClientRects().length)
+      .map(el=>el.getBoundingClientRect())
+      .filter(r=>r.width>0&&r.height>0);
   }
-  function addNode(x,y,time){
-    nodes.push({x,y,time,id:sequence++});
-    if(nodes.length>MAX_NODES)nodes.splice(0,nodes.length-MAX_NODES);
-    // Keep the visible stroke compact even after many fast mouse events.
-    let length=0;
-    for(let i=nodes.length-1;i>0;i--){
-      length+=Math.hypot(nodes[i].x-nodes[i-1].x,nodes[i].y-nodes[i-1].y);
-      if(length>MAX_LENGTH){
-        nodes.splice(0,i);
-        break;
-      }
+  function textNear(x,y,now){
+    inspectText(now);
+    let distance=Infinity;
+    for(const r of textRects){
+      const dx=Math.max(r.left-x,0,x-r.right);
+      const dy=Math.max(r.top-y,0,y-r.bottom);
+      distance=Math.min(distance,Math.hypot(dx,dy));
     }
+    return smooth(clamp(1-distance/40,0,1));
+  }
+  function queue(){if(!frame)frame=requestAnimationFrame(draw);}
+  function deposit(x,y,t,speed){
+    trail.push({x,y,t,speed,id:seq++});
+    if(trail.length>MAX_NODES)trail.splice(0,trail.length-MAX_NODES);
   }
   function record(x,y,now){
-    if(!lastPoint || now-lastMove>310 ||
-       Math.hypot(x-lastPoint.x,y-lastPoint.y)>Math.max(230,width*.46)){
-      nodes=[];
-      addNode(x,y,now);
-    }else{
-      const dx=x-lastPoint.x,dy=y-lastPoint.y;
-      const steps=Math.min(28,Math.max(1,Math.ceil(Math.hypot(dx,dy)/8)));
+    const previous=lastPoint;
+    const gap=previous?Math.hypot(x-previous.x,y-previous.y):Infinity;
+    if(!previous||now-lastMove>260||gap>Math.max(235,width*.42)){
+      trail=[];
+      deposit(x,y,now,0);
+    }else if(gap>=.75){
+      const steps=Math.min(42,Math.max(1,Math.ceil(gap/6)));
+      const velocity=clamp(gap/Math.max(8,now-lastMove),0,5);
       for(let i=1;i<=steps;i++){
-        const v=i/steps;
-        addNode(lastPoint.x+dx*v,lastPoint.y+dy*v,now);
+        const f=i/steps;
+        deposit(previous.x+(x-previous.x)*f,
+                previous.y+(y-previous.y)*f,
+                now-(steps-i)*.45,velocity);
       }
+    }else if(trail.length){
+      trail[trail.length-1].t=now;
     }
     lastPoint={x,y};
     lastMove=now;
+    tip={x,y};
+    // Enforce a spatial length cap, independently of event rate.
+    let length=0,keepFrom=0;
+    for(let i=trail.length-1;i>0;i--){
+      length+=Math.hypot(trail[i].x-trail[i-1].x,trail[i].y-trail[i-1].y);
+      if(length>MAX_LENGTH){keepFrom=i;break;}
+    }
+    if(keepFrom)trail.splice(0,keepFrom);
     queue();
   }
-  // Smoke isn't a flat paint stroke. Each deposited point has its own
-  // lifespan: old vapor drifts, gets wider, becomes translucent and breaks
-  // apart, while the newest smoke near the white cursor stays vivid.
-  function displaced(p,now){
-    const age=clamp((now-p.time)/FADE_MS,0,1);
-    const drift=age*age;
+  function point(p,now){
+    const age=clamp((now-p.t)/LIFE,0,1);
+    const fade=Math.pow(1-smooth(age),1.15);
+    // The wet front stays on the mouse. Only older dye curls, floats up,
+    // and becomes transparent, like the reference's viscous wisps.
+    const drift=smooth(clamp((age-.13)/.87,0,1));
     return {
-      x:p.x+Math.sin(p.id*.19+age*4.6)*drift*10,
-      y:p.y-drift*12+Math.cos(p.id*.14+age*3.2)*drift*3,
-      age,id:p.id
+      x:p.x+Math.sin(p.id*.24+age*6.2)*drift*(3+age*4),
+      y:p.y-drift*(3+age*10)+Math.cos(p.id*.17)*drift*3,
+      id:p.id,age,fade,speed:p.speed
     };
   }
-  function cloud(x,y,radius,alpha){
-    if(alpha<.003)return;
-    const g=ctx.createRadialGradient(x,y,0,x,y,radius);
-    g.addColorStop(0,"rgba(205,42,246,"+(.44*alpha).toFixed(3)+")");
-    g.addColorStop(.26,"rgba(174,25,236,"+(.32*alpha).toFixed(3)+")");
-    g.addColorStop(.58,"rgba(134,13,215,"+(.12*alpha).toFixed(3)+")");
-    g.addColorStop(.83,"rgba(103,9,181,"+(.025*alpha).toFixed(3)+")");
-    g.addColorStop(1,"rgba(103,9,181,0)");
+  function glow(x,y,r,opacity){
+    if(opacity<=.005)return;
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,"rgba(239,70,255,"+(.24*opacity).toFixed(3)+")");
+    g.addColorStop(.21,"rgba(190,28,242,"+(.20*opacity).toFixed(3)+")");
+    g.addColorStop(.54,"rgba(138,18,217,"+(.085*opacity).toFixed(3)+")");
+    g.addColorStop(1,"rgba(109,0,167,0)");
     ctx.fillStyle=g;
-    ctx.fillRect(x-radius,y-radius,radius*2,radius*2);
+    ctx.fillRect(x-r,y-r,r*2,r*2);
   }
-  function smoke(points,now){
-    if(!points.length)return;
-    const ageSinceMove=now-lastMove;
-    // Fade after the user stops, rather than leaving a solid static worm.
-    const still=clamp(1-ageSinceMove/FADE_MS,0,1);
-    if(still<=0)return;
-    const placed=points.map(p=>displaced(p,now));
-    const count=placed.length;
-    // Vapor body: hazy lobes where the trail bends, like the recording.
-    // Radius expands as smoke cools; alpha drops toward its outer edges.
-    for(let i=0;i<count;i+=3){
-      const p=placed[i];
-      const life=1-p.age;
-      const along=i/Math.max(1,count-1);
-      const opacity=Math.pow(life,1.25)*(.29+.71*along)*still;
-      const radius=21+21*p.age+9*Math.pow(along,.7);
-      cloud(p.x,p.y,radius,opacity);
-    }
-    // Soft continuous center, variable thickness and slight smoky wiggle.
-    // Small gaps open in older vapor, so pieces detach and dissolve.
+  function stroke(a,b,size,color){
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y);
+    ctx.lineTo(b.x,b.y);
     ctx.lineCap="round";
     ctx.lineJoin="round";
-    for(let i=1;i<count;i++){
-      const a=placed[i-1],b=placed[i];
-      const age=b.age;
-      const life=Math.pow(1-age,1.6)*still;
-      if(life<.025)continue;
-      const along=i/(count-1);
-      const wobble=1+.16*Math.sin(b.id*.39+age*5.4);
-      const thickness=(2.3+18.2*Math.pow(along,.83))*life*wobble;
-      // Aged pieces taper away, leaving translucent detached wisps.
-      const breakup=age>.56 && (Math.floor(b.id/6)%4===0);
-      if(breakup)continue;
-      const vx=b.x-a.x,vy=b.y-a.y;
-      if(Math.hypot(vx,vy)>48)continue;
-      ctx.beginPath();ctx.moveTo(a.x,a.y);
-      ctx.quadraticCurveTo((a.x+b.x)/2- Math.sin(b.id*.28)*age*3,
-                           (a.y+b.y)/2- Math.cos(b.id*.23)*age*3,b.x,b.y);
-      ctx.save();
-      ctx.shadowColor="rgba(156,12,221,"+(.56*life).toFixed(3)+")";
-      ctx.shadowBlur=14+9*age;
-      ctx.lineWidth=thickness+3;
-      ctx.strokeStyle="rgba(103,0,171,"+(.45*life).toFixed(3)+")";
-      ctx.stroke();
-      ctx.restore();
-      // Velvet-magenta core, strongest near the mouse and diffused at tail.
-      ctx.lineWidth=thickness*.76;
-      ctx.strokeStyle="rgba(170,13,231,"+(.66*life).toFixed(3)+")";
-      ctx.stroke();
-      if(along>.5 && life>.22){
-        ctx.lineWidth=thickness*.36;
-        ctx.strokeStyle="rgba(217,54,251,"+(.43*life).toFixed(3)+")";
-        ctx.stroke();
+    ctx.lineWidth=size;
+    ctx.strokeStyle=color;
+    ctx.stroke();
+  }
+  function render(now){
+    const points=trail.map(p=>point(p,now));
+    if(!points.length)return;
+    // Background bloom has a short radius and fades at the same speed
+    // as the ribbon. There is no wide purple "radiation" across the page.
+    for(let i=0;i<points.length;i+=4){
+      const p=points[i];
+      const f=p.fade*(.42+.58*i/Math.max(1,points.length-1));
+      glow(p.x,p.y,26+12*p.age,f*.8);
+    }
+
+    // Paint each tiny interpolated section in layered, rounded passes.
+    // The width/shine variations form one liquid ribbon, not round smoke
+    // particles or separate stiff strokes.
+    for(let i=1;i<points.length;i++){
+      const a=points[i-1],b=points[i];
+      if(Math.hypot(b.x-a.x,b.y-a.y)>26)continue;
+      const along=i/(points.length-1);
+      const f=Math.min(a.fade,b.fade)*Math.pow(.20+.80*along,.40);
+      if(f<.015)continue;
+      const pressure=clamp(.34+.66*Math.pow(along,.36),.2,1);
+      const wobble=1+.14*Math.sin(b.id*.23+b.age*3);
+      const thickness=(7.8+16*pressure+2.4*b.speed)*wobble;
+      const body=thickness*(.55+.45*f);
+      // Dark violet edge gives definition over both white scenery and
+      // the deep purple background; violet center is luminous.
+      stroke(a,b,body+9*f,"rgba(100,2,157,"+(.20*f).toFixed(3)+")");
+      stroke(a,b,body+4*f,"rgba(135,7,206,"+(.50*f).toFixed(3)+")");
+      stroke(a,b,body*.82,"rgba(176,21,231,"+(.75*f).toFixed(3)+")");
+      stroke(a,b,body*.43,"rgba(223,60,253,"+(.47*f).toFixed(3)+")");
+      // Iridescent specular streak sliding beside the ribbon's center.
+      if(f>.22 && i%2===0){
+        const dx=b.x-a.x,dy=b.y-a.y;
+        const len=Math.max(1,Math.hypot(dx,dy));
+        const normal={x:-dy/len,y:dx/len};
+        const off=body*.20;
+        stroke({x:a.x+normal.x*off,y:a.y+normal.y*off},
+               {x:b.x+normal.x*off,y:b.y+normal.y*off},
+               1.15+1.65*f,"rgba(255,176,255,"+(.33*f).toFixed(3)+")");
       }
     }
-    const tip=placed[count-1];
-    // Small bright smoky bead under the WHITE cursor, not a hard ring.
-    cloud(tip.x,tip.y,33,.66*still);
-    cloud(tip.x,tip.y,15,.83*still);
+
+    // A few irregular droplets tear away when the stroke turns sharply.
+    // They float out and disappear, without drawing a whole particle cloud.
+    for(let i=5;i<points.length-4;i+=9){
+      const p=points[i],a=points[i-3],b=points[i+3];
+      if(p.age<.26||p.age>.77||p.fade<.08)continue;
+      const v1=Math.atan2(p.y-a.y,p.x-a.x);
+      const v2=Math.atan2(b.y-p.y,b.x-p.x);
+      const turn=Math.abs(Math.atan2(Math.sin(v2-v1),Math.cos(v2-v1)));
+      if(turn<.39)continue;
+      const ox=Math.sin(p.id*1.6)*14*p.age,oy=Math.cos(p.id*1.1)*12*p.age;
+      ctx.beginPath();
+      ctx.ellipse(p.x+ox,p.y+oy,2.1+2.2*p.fade,3.5+3*p.fade,v2,0,Math.PI*2);
+      ctx.fillStyle="rgba(196,35,240,"+(.33*p.fade).toFixed(3)+")";
+      ctx.fill();
+    }
+
+    // The vivid end of the worm remains attached to the white cursor.
+    const idle=clamp(1-(now-lastMove)/LIFE,0,1);
+    glow(tip.x,tip.y,23,.9*idle);
+    glow(tip.x,tip.y,11,1.0*idle);
   }
   function draw(now){
-    pending=0;
+    frame=0;
     if(!active()||document.hidden){clear();return;}
     ctx.clearRect(0,0,width,height);
-    const life=now-lastMove;
-    if(life>FADE_MS){clear();return;}
-    nodes=nodes.filter(p=>now-p.time<FADE_MS);
-    if(nodes.length){
-      smoke(nodes,now);
+    trail=trail.filter(p=>now-p.t<LIFE);
+    if(trail.length){
+      render(now);
       canvas.dataset.ambientActive="true";
       queue();
     }else canvas.dataset.ambientActive="false";
   }
   addEventListener("pointermove",event=>{
-    if(event.pointerType!=="mouse" && event.pointerType!=="pen")return;
-    const x=event.clientX,y=event.clientY;
+    if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
     inside=true;
-    // Track without drawing in scenes 04–05, where the normal cursor
-    // returns. The custom core is always bright white, never magenta.
-    dot.style.transform="translate3d("+x.toFixed(1)+"px,"+
-      y.toFixed(1)+"px,0)";
-    if(!active()){
-      dot.classList.remove("is-visible");
-      return;
-    }
+    const x=event.clientX,y=event.clientY;
+    dot.style.transform="translate3d("+x.toFixed(1)+"px,"+y.toFixed(1)+"px,0)";
+    if(!active()){dot.classList.remove("is-visible");return;}
     const now=performance.now();
-    const near=textProximity(x,y,now);
-    const size=1+.75*near*near*(3-2*near);
-    dotCore.style.setProperty("--cursor-scale",size.toFixed(3));
+    // White point: 9px normally, max 15px near writing (not huge).
+    dotCore.style.setProperty("--cursor-scale",(1+.67*textNear(x,y,now)).toFixed(3));
     dot.classList.add("is-visible");
     record(x,y,now);
   },{passive:true});
   document.addEventListener("mouseout",event=>{
-    if(!event.relatedTarget){
-      inside=false;dot.classList.remove("is-visible");
-    }
+    if(!event.relatedTarget){inside=false;dot.classList.remove("is-visible");}
   },{passive:true});
   addEventListener("blur",()=>{
     inside=false;dot.classList.remove("is-visible");clear();
   });
-  addEventListener("resize",()=>{
-    resize();clear();lastTextScan=-Infinity;
-  },{passive:true});
+  addEventListener("resize",()=>{resize();clear();textScan=-Infinity;},{passive:true});
   document.addEventListener("visibilitychange",()=>{
     if(document.hidden)clear();
   });
   reduced.addEventListener("change",sync);
   new MutationObserver(sync).observe(document.body,{
-    attributes:true,attributeFilter:["data-current-frame"]
+    attributes:true,attributeFilter:["data-current-frame","class"]
   });
-  canvas.dataset.ambientActive="false";
   resize();
   sync();
 })();
