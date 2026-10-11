@@ -136,8 +136,8 @@ with sync_playwright() as p:
                     page.wait_for_function(
                         "(v)=>document.getElementById('panorama')?.dataset.artScene===String(v)",
                         arg=expected, timeout=2500)
-                    # Let the 2.25s liquid wipe clear before a new hold.
-                    page.wait_for_timeout(2350)
+                    # Let the 2.4s liquid wave clear before another hold.
+                    page.wait_for_timeout(2550)
                     if page.locator(".hero-text").inner_text()!=original_title:
                         errors.append("desktop: hold changed the hero headline")
                     if page.locator("body").get_attribute("data-current-frame")!="1":
@@ -151,22 +151,17 @@ with sync_playwright() as p:
                         errors.append("desktop: cinematic artwork not present in all three arches")
                     if expected in (1,2):
                         film=page.locator("#hold-scene-film")
-                        if film.evaluate("e=>e.tagName")!="CANVAS":
-                            errors.append(f"desktop: scene {expected} is not a custom rendered film")
-                        area=page.locator("#panorama .hold-scene-paint").first
-                        video_pixels=area.evaluate("""e=>{
-                            const c=e.getContext('2d');
-                            if(!c||e.width<100||e.height<100)return 0;
-                            const data=c.getImageData(15,15,1,1).data;
-                            return data[0]+data[1]+data[2];
-                        }""")
-                        if video_pixels<10:
-                            errors.append(f"desktop: scene {expected} background is empty")
-                        labels=page.locator("#panorama .hold-tech-label").all_text_contents()
-                        if expected==1 and not any("DATA CENTER" in label for label in labels):
-                            errors.append("desktop: data-center scene missing")
-                        if expected==2 and not any("ANSIBLE PLAYBOOKS" in label for label in labels):
-                            errors.append("desktop: Linux automation scene missing")
+                        if film.evaluate("e=>e.tagName")!="VIDEO":
+                            errors.append(f"desktop: scene {expected} must use real video")
+                        selected_url=film.get_attribute("src") or ""
+                        if str({1:5028622,2:34160292}[expected]) not in selected_url:
+                            errors.append(f"desktop: scene {expected} points at wrong Pexels clip")
+                        if page.locator(".hold-scene-poster").count()!=1:
+                            errors.append("desktop: photograph fallback missing")
+                        if page.locator(".hold-scene-tech").count():
+                            errors.append("desktop: fake technical status overlays returned")
+                        # Remote video decoding may be blocked in CI. The site's
+                        # actual playback is verified by browser inspection.
                 # Select the data center again and confirm it follows through
                 # the entire scroll-controlled editorial journey.
                 page.mouse.move(w*.62,h*.63)
@@ -176,7 +171,7 @@ with sync_playwright() as p:
                 page.wait_for_function(
                     "document.getElementById('panorama')?.dataset.artScene==='1'",
                     timeout=2500)
-                page.wait_for_timeout(2350)
+                page.wait_for_timeout(2550)
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")
@@ -222,8 +217,8 @@ with sync_playwright() as p:
             errors.append(f"{name}: section counter did not reach 02")
         if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
             errors.append("desktop: selected data-center animation lost entering Section 02")
-        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="CANVAS":
-            errors.append("desktop: server animation lost from Section 02 background")
+        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="VIDEO":
+            errors.append("desktop: server film lost from Section 02 background")
         # Once the arches become one film, masks must not separate.
         if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
             opened_arch=page.locator("#panorama .arch").first
@@ -248,8 +243,8 @@ with sync_playwright() as p:
             errors.append(f"{name}: section counter did not reach 03")
         if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
             errors.append("desktop: selected data-center animation lost entering Section 03")
-        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="CANVAS":
-            errors.append("desktop: server animation lost from Section 03 background")
+        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="VIDEO":
+            errors.append("desktop: server film lost from Section 03 background")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)

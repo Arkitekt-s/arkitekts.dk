@@ -667,166 +667,30 @@ body.frame-one.frame-three-active .frame-stage .hold-scene-film{
 }
 
 
-/* Infrastructure films: subtle professional telemetry, never a dashboard.
-   Only the two alternate videos get overlays. Natural mountain film stays
-   clean, and the approved typography and curved silhouette stay unchanged. */
-body.frame-one #panorama .arch .hold-scene-tech{
-  position:absolute;
-  z-index:4;
-  inset:0;
-  pointer-events:none;
-  opacity:0;
-  visibility:hidden;
-  user-select:none;
-  color:rgba(224,249,255,.92);
-  font:700 9px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
-  letter-spacing:.095em;
-  text-shadow:0 2px 10px rgba(6,14,28,.8);
-  transition:opacity .6s ease,visibility .6s;
-}
-body.frame-one #panorama[data-art-scene="1"][data-art-media-ready="true"] .arch .hold-scene-tech,
-body.frame-one #panorama[data-art-scene="2"][data-art-media-ready="true"] .arch .hold-scene-tech{
-  opacity:.85;
-  visibility:visible;
-}
-body.frame-one #panorama .arch .hold-scene-tech::before{
-  content:"";
+
+/* Real Pexels footage. A photographic poster sits behind the movie,
+   preventing any empty black background on slow connections. */
+body.frame-one .frame-stage .hold-scene-poster{
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,rgba(7,12,32,.19),transparent 25%,
-    transparent 61%,rgba(8,18,34,.6));
-  pointer-events:none;
-}
-body.frame-one #panorama .arch .hold-tech-top{
-  position:absolute;
-  top:15%;
-  left:11%;
-  opacity:.68;
-  font-size:8px;
-  letter-spacing:.12em;
-}
-body.frame-one #panorama .arch .hold-tech-label{
-  position:absolute;
-  left:10%;
-  right:7%;
-  bottom:7%;
-  line-height:1.35;
-  font-size:clamp(7px,.72vw,10px);
-  letter-spacing:.10em;
-  border-left:2px solid rgba(130,229,245,.77);
-  padding:3px 0 3px 8px;
-}
-body.frame-one #panorama[data-art-scene="2"] .arch .hold-tech-label{
-  border-left-color:rgba(162,245,210,.84);
-}
-body.frame-one #panorama .arch .hold-tech-flow{
-  position:absolute;
-  right:11%;
-  top:15%;
-  display:flex;
-  gap:5px;
-  align-items:center;
-}
-body.frame-one #panorama .arch .hold-tech-flow i{
+  z-index:5;
   display:block;
-  width:3px;height:3px;
-  border-radius:50%;
-  background:rgba(170,237,251,.8);
-  box-shadow:0 0 8px rgba(121,225,240,.5);
-  animation:holdTechBlink 4.8s ease-in-out infinite;
-  animation-delay:calc(var(--unit) * -.8s);
-}
-body.frame-one #panorama[data-art-scene="2"] .arch .hold-tech-flow i{
-  background:#9af5c7;
-}
-@keyframes holdTechBlink{
-  0%,100%{opacity:.3;transform:scale(.75)}
-  45%{opacity:.95;transform:scale(1.15)}
-}
-/* A very light system-flow signature follows the selected film into
-   editorial Sections 02 and 03, behind the existing headings and controls. */
-body.frame-one .frame-stage .hold-scene-system-flow{
-  position:absolute;
-  left:8%;
-  right:8%;
-  bottom:10%;
-  z-index:7;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
   pointer-events:none;
+  user-select:none;
   opacity:0;
   visibility:hidden;
-  transition:opacity .55s ease,visibility .55s;
-  color:rgba(223,240,253,.62);
+  filter:saturate(.84) contrast(1.02) brightness(.94);
+  will-change:opacity;
 }
-body.frame-one[data-frame-one-art="1"][data-current-frame="2"] .hold-scene-system-flow,
-body.frame-one[data-frame-one-art="1"][data-current-frame="3"] .hold-scene-system-flow,
-body.frame-one[data-frame-one-art="2"][data-current-frame="2"] .hold-scene-system-flow,
-body.frame-one[data-frame-one-art="2"][data-current-frame="3"] .hold-scene-system-flow{
-  opacity:1;
-  visibility:visible;
-}
-body.frame-one .frame-stage .hold-flow-track{
-  display:flex;
-  width:min(650px,83%);
-  margin:0 auto;
-  justify-content:space-between;
-  align-items:center;
-  position:relative;
-  gap:15px;
-}
-body.frame-one .frame-stage .hold-flow-track::before{
-  content:"";
-  position:absolute;
-  height:1px;
-  top:50%;
-  left:0;right:0;
-  background:linear-gradient(90deg,transparent,rgba(148,223,243,.37) 28%,
-    rgba(163,229,218,.32) 70%,transparent);
-  animation:holdTechCurrent 7s ease-in-out infinite;
-}
-body.frame-one .frame-stage .hold-flow-chip{
-  position:relative;
-  z-index:1;
-  background:rgba(15,23,35,.66);
-  border:1px solid rgba(169,217,237,.23);
-  padding:5px 9px;
-  border-radius:3px;
-  font:650 8px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;
-  letter-spacing:.08em;
-  white-space:nowrap;
-  text-shadow:0 1px 10px #071522;
-}
-@keyframes holdTechCurrent{
-  0%,100%{opacity:.35;filter:brightness(.7)}
-  55%{opacity:1;filter:brightness(1.6)}
-}
-@media(max-width:760px){
-  body.frame-one #panorama .arch .hold-tech-label{font-size:7px;letter-spacing:0}
-  body.frame-one #panorama .arch .hold-tech-top{font-size:7px}
-  body.frame-one .frame-stage .hold-scene-system-flow{bottom:15%;left:5%;right:5%}
-  body.frame-one .frame-stage .hold-flow-track{width:100%;gap:5px}
-  body.frame-one .frame-stage .hold-flow-chip{font-size:7px;padding:4px 5px}
-}
-@media(max-width:470px){
-  body.frame-one #panorama .arch .hold-tech-label{font-size:6.4px;padding-left:4px}
-  body.frame-one #panorama .arch .hold-tech-top{font-size:6px}
-  body.frame-one .frame-stage .hold-flow-chip{font-size:6.5px;padding:4px}
+body.frame-one .frame-stage .hold-scene-film{
+  z-index:5;
 }
 @media(prefers-reduced-motion:reduce){
-  body.frame-one .hold-tech-flow i,
-  body.frame-one .hold-flow-track::before{animation:none!important}
-  body.frame-one .hold-scene-tech,
-  body.frame-one .hold-scene-system-flow{transition:none!important}
-}
-
-/* Keep the new technical films crisp but subdued behind white typography. */
-body.frame-one #panorama .arch .hold-scene-paint{
-  filter:saturate(.9) contrast(1.08) brightness(.97);
-}
-body.frame-one .frame-stage #hold-scene-film{
-  image-rendering:auto;
-  filter:saturate(.87) contrast(1.08) brightness(.91);
-}
-body.frame-one #panorama[data-art-scene="1"] .arch .hold-scene-tech,
-body.frame-one #panorama[data-art-scene="2"] .arch .hold-scene-tech{
-  text-shadow:0 2px 14px rgba(2,11,26,.9);
+  body.frame-one .frame-stage .hold-scene-poster{
+    transition:none!important;
+  }
 }
