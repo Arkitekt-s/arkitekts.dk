@@ -137,7 +137,7 @@ with sync_playwright() as p:
                 original_title=page.locator(".hero-text").inner_text()
                 original_position=page.locator(".hero-text").bounding_box()
                 opening_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
-                if abs(opening_rate-.70)>.02:
+                if abs(opening_rate-.50)>.02:
                     errors.append(f"desktop: AI film did not slow down ({opening_rate})")
                 for expected in (1,2,0):
                     page.mouse.move(w*.62,h*.63)
@@ -165,7 +165,7 @@ with sync_playwright() as p:
                         if film.evaluate("e=>e.tagName")!="VIDEO":
                             errors.append(f"desktop: scene {expected} must use real video")
                         selected_url=film.get_attribute("src") or ""
-                        if str({1:5028622,2:34160292}[expected]) not in selected_url:
+                        if str({1:25744122,2:18069165}[expected]) not in selected_url:
                             errors.append(f"desktop: scene {expected} points at wrong Pexels clip")
                         if page.locator(".hold-scene-poster").count()!=1:
                             errors.append("desktop: photograph fallback missing")
