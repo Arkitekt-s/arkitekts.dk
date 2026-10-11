@@ -72,7 +72,8 @@
   // before revealing Frame 05. Reversible by scrolling upward.
   let galleryAutoExit=false,galleryExitReadyAt=0,galleryNextPhotoAt=0;
   let filmSuspendedForGallery=false;
-  let lastRendered=0;
+  let lastRendered=-1;
+  let previousFrameTime=0;
 
   function measure(){
     // Drop runtime values briefly so measurements come from approved CSS.
@@ -96,6 +97,7 @@
       if(overrides[i])panorama.style.setProperty(p,overrides[i]);
     });
     galleryStep=Math.max(120,photos[1].offsetLeft-photos[0].offsetLeft);
+    lastRendered=-1; // Recalculate dimensions after an actual resize.
     paint();
   }
 
@@ -166,25 +168,30 @@
     const head=Math.max(0,initial.head*(1-fillScreen));
     const foot=Math.max(0,initial.foot*(1-fillScreen));
     const sceneHeight=innerHeight-head-foot;
-    stage.style.top=toPx(head);
-    stage.style.bottom=toPx(foot);
-    // The landscape travels from the first-frame card to the full-viewport film.
-    panorama.style.width=toPx(lerp(initial.w,innerWidth+2,grow));
-    panorama.style.height=toPx(lerp(initial.h,sceneHeight+2,grow));
-    panorama.style.gap=toPx(lerp(initial.gap,0,grow));
-    panorama.style.top=toPx(lerp(initial.top,sceneHeight*.5,grow));
-    if(p>.001){
-      panorama.style.transform="translate3d(-50%,-50%,0) scale(1)";
-    }else{
-      panorama.style.removeProperty("transform");
-    }
-    const round=(1-grow);
-    if(grow>.002){
-      arches.forEach(a=>{
-        a.style.borderRadius=(50*round).toFixed(3)+"% "+(50*round).toFixed(3)+"% 0 0 / "+(28*round).toFixed(3)+"% "+(28*round).toFixed(3)+"% 0 0";
-      });
-    }else{
-      arches.forEach(a=>a.style.removeProperty("border-radius"));
+    // Resizing the video arches is expensive. Once the intro has filled
+    // the screen, all later chapters share the same dimensions.
+    // Avoid hundreds of unnecessary full-viewport layout recalculations.
+    if(p!==lastRendered){
+      stage.style.top=toPx(head);
+      stage.style.bottom=toPx(foot);
+      // The landscape travels from the first-frame card to the full-viewport film.
+      panorama.style.width=toPx(lerp(initial.w,innerWidth+2,grow));
+      panorama.style.height=toPx(lerp(initial.h,sceneHeight+2,grow));
+      panorama.style.gap=toPx(lerp(initial.gap,0,grow));
+      panorama.style.top=toPx(lerp(initial.top,sceneHeight*.5,grow));
+      if(p>.001){
+        panorama.style.transform="translate3d(-50%,-50%,0) scale(1)";
+      }else{
+        panorama.style.removeProperty("transform");
+      }
+      const round=(1-grow);
+      if(grow>.002){
+        arches.forEach(a=>{
+          a.style.borderRadius=(50*round).toFixed(3)+"% "+(50*round).toFixed(3)+"% 0 0 / "+(28*round).toFixed(3)+"% "+(28*round).toFixed(3)+"% 0 0";
+        });
+      }else{
+        arches.forEach(a=>a.style.removeProperty("border-radius"));
+      }
     }
     // One uninterrupted, reversible scroll transition from 01 to 02.
     // The outgoing sentence starts drifting up before the arches finish
@@ -194,7 +201,7 @@
     if(hero){
       hero.style.opacity=String(firstOpacity);
       hero.style.translate="0 "+(-22*introExit).toFixed(2)+"px";
-      hero.style.filter=reduced.matches?"none":"blur("+(4.5*introExit).toFixed(2)+"px)";
+      hero.style.filter="none";
     }
     if(support)support.style.opacity=String(firstOpacity);
     if(eyebrow)eyebrow.style.opacity=String(1-smooth(normalize(p,.31,.85)));
@@ -213,12 +220,12 @@
     const leaveTwo=smooth(normalize(journey,1.37,1.88));
     chapter.style.opacity=String(textOpacity*(1-leaveTwo));
     chapter.style.translate="0 "+(22*(1-textOpacity)-24*leaveTwo).toFixed(2)+"px";
-    chapter.style.filter=reduced.matches?"none":"blur("+(5.5*leaveTwo).toFixed(2)+"px)";
+    chapter.style.filter="none";
     chapterTitleLines.forEach((line,index)=>{
       const wordEnter=smooth(normalize(p,.54+index*.055,.84+index*.045));
       line.style.opacity=String(wordEnter);
       line.style.transform="translate3d(0,"+(28*(1-wordEnter)).toFixed(2)+"px,0)";
-      line.style.filter=reduced.matches?"none":"blur("+(7*(1-wordEnter)).toFixed(2)+"px)";
+      line.style.filter="none";
     });
     const descriptionEnter=smooth(normalize(p,.70,.97));
     if(chapterDescription){
@@ -257,7 +264,7 @@
       const wordEnter=smooth(normalize(journey,1.43+index*.075,1.75+index*.055));
       word.style.opacity=String(wordEnter);
       word.style.transform="translateY("+(30*(1-wordEnter)).toFixed(2)+"px)";
-      word.style.filter=reduced.matches?"none":"blur("+(7*(1-wordEnter)).toFixed(2)+"px)";
+      word.style.filter="none";
     });
     const showThird=journey>1.40 && journey<2.60;
     if(thirdVisible!==showThird){
@@ -285,12 +292,12 @@
       points.push("100% 100%");
       revealMask="polygon("+points.join(",")+")";
     }
-    backdrop.style.clipPath=revealMask;
+    if(backdrop.style.clipPath!==revealMask)backdrop.style.clipPath=revealMask;
     backdrop.style.opacity=journey>=stairStart?"1":"0";
     backdrop.classList.toggle("is-active",journey>=stairStart);
     const leaveFourth=smooth(normalize(journey,3.12,3.80));
     fourth.style.opacity=String(1-leaveFourth);
-    fourth.style.clipPath=revealMask;
+    if(fourth.style.clipPath!==revealMask)fourth.style.clipPath=revealMask;
     const reelReady=journey>=stairEnd;
     fourth.classList.toggle("gallery-reveal-complete",reelReady);
     const showFourth=journey>=stairStart && journey<3.81;
@@ -333,7 +340,9 @@
       filmSuspendedForGallery=false;
       if(!reduced.matches && !document.body.classList.contains("motion-off"))film.play().catch(()=>{});
     }
-    renderGallery();
+    // Only update the 3D photo reel while the gallery is approaching,
+    // visible, or leaving. Other frames do not need its 7 card filters.
+    if(journey>2.15 && journey<3.95)renderGallery();
     document.body.dataset.journeyProgress=journey.toFixed(4);
     document.body.dataset.currentFrame=journey<.83?"1":journey<1.42?"2":journey<2.55?"3":journey<3.49?"4":"5";
     if(rail){
@@ -354,16 +363,23 @@
     updateJourneyScrollbar();
   }
 
-  function frameStep(){
+  function frameStep(now){
     frame=0;
+    // Time-based easing, consistent on 60, 90, 120 Hz and slower devices.
+    // No CSS animation competes with the scroll-driven section positions.
+    const dt=previousFrameTime?clamp(now-previousFrameTime,1,48):16.67;
+    previousFrameTime=now;
+    const follow=1-Math.exp(-dt/108);
+    const galleryFollow=1-Math.exp(-dt/84);
+    const pointerFollow=1-Math.exp(-dt/108);
     if(reduced.matches)position=target;
-    else position+= (target-position)*.18;
+    else position+=(target-position)*follow;
     if(Math.abs(target-position)<.0006)position=target;
-    paint();
-    if(!reelDragging)galleryPosition+=(galleryTarget-galleryPosition)*(reduced.matches?1:.22);
+    if(!reelDragging)galleryPosition+=(galleryTarget-galleryPosition)*(reduced.matches?1:galleryFollow);
     if(Math.abs(galleryPosition-galleryTarget)<.003)galleryPosition=galleryTarget;
-    galleryPointer+=(galleryPointerTarget-galleryPointer)*(reduced.matches?1:.12);
+    galleryPointer+=(galleryPointerTarget-galleryPointer)*(reduced.matches?1:pointerFollow);
     if(Math.abs(galleryPointer-galleryPointerTarget)<.05)galleryPointer=galleryPointerTarget;
+    paint();
     if(galleryAutoExit && !reelDragging){
       const now=performance.now();
       // Centre every photograph in sequence; never jump from 01 to 07.
