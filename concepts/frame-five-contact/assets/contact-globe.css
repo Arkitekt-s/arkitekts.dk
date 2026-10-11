@@ -543,30 +543,23 @@ body.frame-one #panorama .arch .hold-scene-paint{
 }
 body.frame-one #panorama[data-art-scene="1"][data-art-media-ready="true"] .arch .hold-scene-paint,
 body.frame-one #panorama[data-art-scene="2"][data-art-media-ready="true"] .arch .hold-scene-paint{
-  opacity:1;
+  opacity:.92;
   visibility:visible;
 }
-/* The hold transition uses the same rising ten-step silhouette
-   as the Section 03 -> 04 gallery entrance, at a slower cinematic pace. */
+/* Frame 01 only: translucent, marbled liquid wave.
+   Positioned BELOW the white hero text and ABOVE the arch background.
+   Its canvas changes no geometry, typography, or scroll navigation. */
 body.frame-one .frame-stage .hold-scene-wipe{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
-  pointer-events:none;
-  z-index:29;
-  visibility:hidden;
-  overflow:hidden;
-}
-body.frame-one .frame-stage .hold-scene-curtain-panel{
-  position:absolute;
   display:block;
-  top:100%;
-  bottom:0;
-  background:linear-gradient(165deg,#21162d 0%,#150f25 57%,#0b1020 100%);
-  box-shadow:inset 1px 0 0 rgba(230,196,245,.035);
   pointer-events:none;
-  will-change:top,bottom;
+  z-index:7;
+  visibility:hidden;
+  opacity:1;
+  overflow:hidden;
 }
 body.frame-one .panorama .scenery{
   animation-duration:29s;

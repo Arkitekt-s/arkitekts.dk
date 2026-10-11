@@ -112,8 +112,13 @@ with sync_playwright() as p:
             if control.count()!=1:
                 errors.append("desktop: press-and-hold scene control missing")
             else:
-                if page.locator(".hold-scene-curtain-panel").count()!=10:
-                    errors.append("desktop: the 10-step curtain panels are missing")
+                wave=page.locator(".hold-scene-wipe")
+                if wave.count()!=1 or wave.evaluate("e=>e.tagName")!="CANVAS":
+                    errors.append("desktop: organic liquid transition canvas missing")
+                elif wave.evaluate("e=>getComputedStyle(e).zIndex")!="7":
+                    errors.append("desktop: liquid wave should stay behind hero text")
+                original_title=page.locator(".hero-text").inner_text()
+                original_position=page.locator(".hero-text").bounding_box()
                 mountain_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
                 if abs(mountain_rate-.70)>.02:
                     errors.append(f"desktop: mountain film did not slow down ({mountain_rate})")
@@ -125,9 +130,17 @@ with sync_playwright() as p:
                     page.wait_for_function(
                         "(v)=>document.getElementById('panorama')?.dataset.artScene===String(v)",
                         arg=expected, timeout=2500)
-                    # Wait for the 1.85s staircase curtain to clear before
-                    # triggering the next long-press.
-                    page.wait_for_timeout(1950)
+                    # Let the 2.25s liquid wipe clear before a new hold.
+                    page.wait_for_timeout(2350)
+                    if page.locator(".hero-text").inner_text()!=original_title:
+                        errors.append("desktop: hold changed the hero headline")
+                    if page.locator("body").get_attribute("data-current-frame")!="1":
+                        errors.append("desktop: a hold navigated away from Section 01")
+                    current_position=page.locator(".hero-text").bounding_box()
+                    if original_position and current_position and (
+                        abs(original_position["x"]-current_position["x"])>2 or
+                        abs(original_position["y"]-current_position["y"])>2):
+                        errors.append("desktop: liquid wipe moved the hero headline")
                     if page.locator("#panorama .hold-scene-paint").count()!=3:
                         errors.append("desktop: cinematic artwork not present in all three arches")
                     if expected in (1,2):
@@ -146,7 +159,7 @@ with sync_playwright() as p:
                 page.wait_for_function(
                     "document.getElementById('panorama')?.dataset.artScene==='1'",
                     timeout=2500)
-                page.wait_for_timeout(1950)
+                page.wait_for_timeout(2350)
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")
