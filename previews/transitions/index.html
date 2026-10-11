@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#130d1e">
+<title>Private transition studies · arkitekts.dk</title>
+<style>
+:root{color-scheme:dark;--bg:#100b19;--ink:#faf6ff;--dim:#ada1ba;--rose:#d16dea;--accent:#d427e8;--line:#ffffff25}
+*{box-sizing:border-box}html{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg)}
+body{margin:0;color:var(--ink);min-width:280px;background:radial-gradient(circle at 50% 0%,#281235 0,transparent 48%),#100b19}
+button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:2px solid #e8a8ff;outline-offset:4px}
+a{color:inherit}.shell{max-width:1440px;margin:0 auto;padding:0 clamp(15px,3.8vw,60px) 58px}
+.mast{min-height:90px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}
+.wordmark{font-size:22px;font-weight:850;letter-spacing:-.08em}.wordmark span{color:#f45bff}
+.mast-right{font-size:10px;letter-spacing:.2em;font-weight:750;color:#bcafca;text-align:right}
+.hero{padding:clamp(30px,4vw,58px) 0 30px;display:flex;justify-content:space-between;align-items:end;gap:30px}
+.kicker{font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.22em;color:#e59ef5;text-transform:uppercase}
+h1{font-size:clamp(32px,4.9vw,74px);line-height:1.01;letter-spacing:-.07em;font-weight:620;margin:12px 0 15px}
+h1 em{font-family:Georgia,serif;font-weight:400;color:#e7a0f6}
+.lead{color:#b6a9c2;line-height:1.65;max-width:640px;font-size:clamp(13px,1.25vw,16px);margin:0}
+.live-note{white-space:nowrap;font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.14em;color:#bcaac5;padding-bottom:9px}
+.live-note i{display:inline-block;width:7px;height:7px;background:#a3ebd7;border-radius:50%;margin-right:10px;box-shadow:0 0 0 5px #a3ebd710}
+.preview-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(255px,340px);gap:18px;align-items:stretch}
+.monitor{min-width:0;background:#120f20;border:1px solid #493853;box-shadow:0 28px 72px #07040b8c;overflow:hidden}
+.monitor-top{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:13px 17px;background:#1c1528;border-bottom:1px solid #42314d;color:#d0c4d8}
+.monitor-top span{font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.15em}
+.dots{display:flex;gap:5px}.dots i{width:7px;height:7px;border-radius:50%;border:1px solid #ad96b5}
+.stage{height:clamp(330px,43vw,590px);min-height:330px;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse 50% 45% at 50% 60%,#623664aa,transparent 86%),#1a1028}
+.stage:before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.27;background-image:linear-gradient(90deg,#fff1 1px,transparent 1px);background-size:12.5% 100%}
+.scene-picture{background-image:linear-gradient(90deg,#190e2e8a,#190f2765 50%,#1c0e338c),url("https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600");background-size:cover;background-position:center center}
+.full-scene{position:absolute;inset:0;opacity:0;z-index:1;transform-origin:50% 54%;will-change:opacity,transform,clip-path}
+.full-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0c091bbd,#0d0d1b60 68%,#120d1e7a)}
+.panels{position:absolute;z-index:2;display:flex;gap:clamp(7px,1.5vw,20px);width:66%;height:63%;top:47%;left:50%;transform:translate(-50%,-50%);will-change:opacity,transform}
+.panel{min-width:0;flex:1;border-radius:45% 45% 0 0/19% 19% 0 0;overflow:hidden;box-shadow:0 25px 55px #08031583;border:1px solid #ffffff24;position:relative}
+.panel:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 23px #fff2;pointer-events:none}
+.panel .scene-picture{position:absolute;inset:0;background-size:300% auto}
+.panel:nth-child(1) .scene-picture{background-position:0% center}.panel:nth-child(2) .scene-picture{background-position:50% center}.panel:nth-child(3) .scene-picture{background-position:100% center}
+.stage-nav{position:absolute;z-index:12;top:0;left:0;right:0;min-height:63px;border-bottom:1px solid #ffffff25;display:flex;justify-content:space-between;align-items:center;padding:0 4%;background:#160d2145}
+.mark{font-weight:900;font-size:23px;letter-spacing:-.15em}.mark b{color:#e727e8}
+.stage-nav small{font:700 9px ui-monospace,Consolas,monospace;letter-spacing:.23em;opacity:.88}
+.stage-nav .stage-menu{font:700 8px ui-monospace,Consolas,monospace;letter-spacing:.16em}
+.stage-footer{position:absolute;z-index:12;bottom:0;left:0;right:0;min-height:51px;border-top:1px solid #ffffff25;display:flex;justify-content:space-between;align-items:center;padding:0 4%;background:#140d2077}
+.stage-footer span{font:700 8px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#e1d0e7}
+.chapter{position:absolute;z-index:6;pointer-events:none;will-change:opacity,transform}
+.chapter-one{opacity:1;width:100%;top:48%;left:50%;transform:translate(-50%,-50%)}
+.chapter-one h2{margin:0;text-align:center;font-size:clamp(39px,5.1vw,80px);font-weight:830;line-height:1.07;letter-spacing:-.085em;text-shadow:0 12px 40px #0a05148c}
+.chapter-one h2 span{display:block}.chapter-one em{font:italic 400 1em Georgia,serif}.chapter-one b{color:#ef45ff}
+.chapter-two{opacity:0;left:8%;top:50%;width:83%;transform:translateY(-46%)}
+.chapter-two h2{font-size:clamp(38px,5.7vw,84px);margin:0 0 17px;letter-spacing:-.085em;font-weight:760;line-height:1.02}
+.chapter-two h2 span{display:block}.chapter-two h2 em{font-family:Georgia,serif;color:#e9c0f8;font-weight:400}
+.chapter-two p{max-width:435px;font-size:clamp(12px,1.1vw,17px);line-height:1.65;color:#ebddef}
+.chapter-three{opacity:0;left:5%;right:5%;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.1vw,20px)}
+.chapter-three .side{font:760 clamp(9px,1.35vw,17px)/1.45 ui-monospace,Consolas,monospace;letter-spacing:.15em;max-width:23%}
+.chapter-three .side span{display:block}.chapter-three .side:last-child{text-align:right}
+.chapter-three .ten{font-size:clamp(145px,19.5vw,280px);font-weight:850;line-height:.8;letter-spacing:-.15em;text-shadow:0 12px 50px #0008;padding-right:.15em}
+.veil{position:absolute;inset:0;z-index:5;background:#0a0714;opacity:0;pointer-events:none;will-change:opacity}
+.flash{position:absolute;inset:0;z-index:4;background:linear-gradient(135deg,transparent 20%,#f4c1ff25 47%,transparent 75%);opacity:0;pointer-events:none}
+.stage-corner{position:absolute;z-index:10;bottom:73px;right:4%;font:750 9px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#ebd9f3}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;padding:13px 16px;background:#191323}
+.controls .status{font:700 10px ui-monospace,Consolas,monospace;color:#d1bddb;letter-spacing:.08em}
+.controls-actions{display:flex;flex-wrap:wrap;gap:7px}
+.control-button{background:#34233e;border:1px solid #654774;border-radius:4px;color:#f8efff;font-weight:700;font-size:11px;padding:11px 13px;min-height:41px}
+.control-button.primary{background:#bb2dd7;border-color:#d776ec;color:#160b20}
+.control-button:hover{filter:brightness(1.15)}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{display:block;text-align:left;padding:clamp(15px,2.1vw,25px);background:#1a1324;border:1px solid #514057;color:#eee5f4;min-width:0;flex:1;border-radius:3px;transition:background .2s,border-color .2s}
+.choice:hover{border-color:#bc7ecc;background:#26182f}
+.choice[aria-pressed="true"]{border-color:#de71f3;background:linear-gradient(135deg,#392044,#1e1528);box-shadow:inset 3px 0 0 #e65bff}
+.choice-num{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;font:800 10px ui-monospace,Consolas,monospace;letter-spacing:.17em;color:#dba7ea}
+.choice-num .tag{font-size:9px;background:#372342;padding:5px 7px;color:#e3b9f0}
+.choice h3{font-size:clamp(18px,2vw,26px);margin:0 0 9px;font-weight:650;letter-spacing:-.04em}
+.choice p{color:#bcb0c7;margin:0;font-size:12px;line-height:1.55}
+.choice .selected{font:700 10px ui-monospace,Consolas,monospace;margin-top:13px;display:none;color:#efd3f9}
+.choice[aria-pressed="true"] .selected{display:block}
+.disclaimer{display:flex;gap:15px;justify-content:space-between;align-items:center;margin-top:22px;color:#a89ab5;font-size:12px;line-height:1.6}
+.disclaimer strong{color:#fff}.disclaimer a{white-space:nowrap;text-decoration:none;border-bottom:1px solid #9567ad;padding-bottom:4px}
+@media(max-width:1020px){.preview-layout{grid-template-columns:1fr}.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.stage{height:clamp(370px,60vw,580px)}.chapter-one h2{font-size:clamp(45px,8vw,83px)}.chapter-two h2{font-size:clamp(42px,9vw,88px)}.chapter-three .ten{font-size:clamp(155px,27vw,280px)}.chapter-three .side{font-size:clamp(11px,2vw,19px)}}
+@media(max-width:670px){.mast{min-height:71px}.mast-right{font-size:8px}.hero{display:block}.hero .live-note{padding-top:16px}.choices{grid-template-columns:1fr}.choice{padding:18px}.choice-num{margin-bottom:7px}.choice h3{font-size:21px}.stage{height:410px}.panels{width:88%;height:58%;gap:9px}.chapter-one h2{font-size:clamp(38px,9.3vw,59px)}.chapter-two h2{font-size:clamp(46px,10vw,68px)}.chapter-two{left:7%;width:87%}.chapter-two p{font-size:12px;max-width:280px}.chapter-three{gap:7px}.chapter-three .ten{font-size:clamp(120px,28vw,188px)}.chapter-three .side{font-size:clamp(8px,2vw,11px);letter-spacing:.055em}.stage-nav small{font-size:8px}.stage-nav .stage-menu{font-size:7px;max-width:92px;text-align:right}.stage-footer span{font-size:7px;letter-spacing:0}.controls .status{font-size:9px}.control-button{font-size:10px;padding:10px}.disclaimer{align-items:start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.choice{transition:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="mast"><div class="wordmark">S<span>.</span> <span style="font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#b4a5c0;margin-left:10px">SOHEIL</span></div><div class="mast-right">TRANSITION LAB / PRIVATE CONCEPT</div></header>
+<section class="hero"><div><div class="kicker">01 → 02 → 03 · Motion studies</div><h1>Make the transitions <em>feel effortless.</em></h1><p class="lead">Three live motion prototypes using your existing section headlines. Select a style, then replay the transitions. Nothing here changes your public homepage.</p></div><div class="live-note"><i></i> INTERACTIVE DESIGN STUDY</div></section>
+<div class="preview-layout">
+<section class="monitor" aria-label="Motion preview">
+<div class="monitor-top"><span id="preview-caption">OPTION A · SEAMLESS DISSOLVE</span><div class="dots"><i></i><i></i><i></i></div><span>STUDY / 01—03</span></div>
+<div class="stage" id="stage" role="img" aria-label="Animated preview of three homepage scenes">
+<div class="full-scene scene-picture" id="full-scene"></div>
+<div class="panels" id="panels"><div class="panel"><div class="scene-picture"></div></div><div class="panel"><div class="scene-picture"></div></div><div class="panel"><div class="scene-picture"></div></div></div>
+<div class="flash" id="flash"></div>
+<div class="veil" id="veil"></div>
+<div class="chapter chapter-one" id="chapter-one"><h2><span>I make complex</span><span>systems <em>work</em><b>.</b></span></h2></div>
+<div class="chapter chapter-two" id="chapter-two"><h2><span>Curiosity.</span><span>Code.</span><span><em>Delivery.</em></span></h2><p>I'm Soheil. I build and automate platforms that work in the real world.</p></div>
+<div class="chapter chapter-three" id="chapter-three"><div class="side"><span>BUILDING</span><span>RELIABLE</span></div><div class="ten">10</div><div class="side"><span>SYSTEMS</span><span>THAT LAST</span></div></div>
+<div class="stage-nav"><div class="mark">S<b>.</b></div><small>SOHEIL FATTAHIEH</small><div class="stage-menu">PROFILE · PORTFOLIO · CONTACT</div></div>
+<div class="stage-footer"><span>LINUX · ANSIBLE · ELASTICSEARCH · KAFKA</span><span>COPENHAGEN · DENMARK</span></div>
+<div class="stage-corner" id="scene-number">01 / 03</div>
+</div>
+<div class="controls"><span class="status" id="status" role="status" aria-live="polite">PLAYING 01 → 02 → 03</span><div class="controls-actions"><button class="control-button" id="replay-12" type="button">01 → 02</button><button class="control-button" id="replay-23" type="button">02 → 03</button><button class="control-button primary" id="replay-all" type="button">REPLAY ALL ↻</button></div></div>
+</section>
+<aside class="choices" aria-label="Choose a transition concept">
+<button class="choice" type="button" aria-pressed="true" data-mode="a"><div class="choice-num">OPTION A <span class="tag">RECOMMENDED</span></div><h3>Seamless dissolve</h3><p>The same moving world continues. Three arches blend into one. Typography crossfades with no abrupt cut.</p><div class="selected">● SELECTED · PREVIEW PLAYING</div></button>
+<button class="choice" type="button" aria-pressed="false" data-mode="b"><div class="choice-num">OPTION B <span class="tag">CINEMATIC</span></div><h3>Soft shadow cut</h3><p>A brief, elegant shadow hides the video swap. The next story appears as the scene brightens.</p><div class="selected">● SELECTED · PREVIEW PLAYING</div></button>
+<button class="choice" type="button" aria-pressed="false" data-mode="c"><div class="choice-num">OPTION C <span class="tag">DRAMATIC</span></div><h3>Glass portal zoom</h3><p>The three arches expand into a full-screen portal. A subtle camera push introduces the next chapter.</p><div class="selected">● SELECTED · PREVIEW PLAYING</div></button>
+</aside>
+</div>
+<footer class="disclaimer"><div><strong>This is a separate concept preview.</strong> It demonstrates transition timing, direction and visual language—not a replacement for the production site. The production videos and interactions will be retained when implementing your choice.</div><a href="https://arkitekts.dk/" rel="noopener">CURRENT WEBSITE ↗</a></footer>
+</div>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const els={stage:$("stage"),panels:$("panels"),full:$("full-scene"),veil:$("veil"),flash:$("flash"),one:$("chapter-one"),two:$("chapter-two"),three:$("chapter-three"),scene:$("scene-number"),status:$("status"),caption:$("preview-caption")};
+const modes={a:"OPTION A · SEAMLESS DISSOLVE",b:"OPTION B · SOFT SHADOW CUT",c:"OPTION C · GLASS PORTAL ZOOM"};
+let mode="a",generation=0,animations=[];
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const motionReduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function clearAnimations(){for(const a of animations){try{a.cancel()}catch(e){}}animations=[]}
+function setScene(n){
+ clearAnimations();
+ const initial=n===1;
+ els.panels.style.opacity=initial?"1":"0";
+ els.panels.style.transform="translate(-50%,-50%) scale(1)";
+ els.full.style.opacity=initial?"0":"1";
+ els.full.style.transform="scale(1)";
+ els.full.style.clipPath="none";
+ els.one.style.opacity=initial?"1":"0";els.one.style.transform="translate(-50%,-50%)";
+ els.two.style.opacity=n===2?"1":"0";els.two.style.transform="translateY(-46%)";
+ els.three.style.opacity=n===3?"1":"0";els.three.style.transform="translateY(-50%)";
+ els.veil.style.opacity="0";els.flash.style.opacity="0";
+ els.scene.textContent=String(n).padStart(2,"0")+" / 03";
+ els.stage.dataset.scene=String(n);
+}
+function animate(el,frames,duration,delay=0,easing="cubic-bezier(.22,.74,.22,1)"){
+ const a=el.animate(frames,{duration,delay,fill:"forwards",easing});animations.push(a);return a
+}
+function playMotion(from,to){
+ setScene(from);
+ const a=mode==="a",b=mode==="b";
+ const total=b?1750:a?1600:1800;
+ els.status.textContent="PLAYING "+String(from).padStart(2,"0")+" → "+String(to).padStart(2,"0");
+ els.scene.textContent=String(from).padStart(2,"0")+" → "+String(to).padStart(2,"0");
+ if(motionReduced){setScene(to);return 300}
+ if(from===1){
+  if(a){
+   animate(els.panels,[{opacity:1,transform:"translate(-50%,-50%) scale(1)",offset:0},{opacity:.92,transform:"translate(-50%,-50%) scale(1.025)",offset:.22},{opacity:0,transform:"translate(-50%,-50%) scale(1.19)",offset:1}],1200);
+   animate(els.full,[{opacity:0},{opacity:0,offset:.12},{opacity:1,offset:1}],1100,140);
+   animate(els.one,[{opacity:1,transform:"translate(-50%,-50%)"},{opacity:0,transform:"translate(-50%,-56%)"}],660,50);
+   animate(els.two,[{opacity:0,transform:"translateY(-41%)"},{opacity:1,transform:"translateY(-46%)"}],850,700);
+  }else if(b){
+   animate(els.veil,[{opacity:0,offset:0},{opacity:.96,offset:.42},{opacity:.96,offset:.55},{opacity:0,offset:1}],1540);
+   animate(els.panels,[{opacity:1},{opacity:0}],350,510);
+   animate(els.full,[{opacity:0},{opacity:1}],380,610);
+   animate(els.one,[{opacity:1},{opacity:0}],380,250);
+   animate(els.two,[{opacity:0,transform:"translateY(-43%)"},{opacity:1,transform:"translateY(-46%)"}],700,870);
+  }else{
+   els.full.style.clipPath="circle(0% at 50% 52%)";
+   animate(els.full,[{opacity:1,clipPath:"circle(0% at 50% 52%)",transform:"scale(1.08)"},{opacity:1,clipPath:"circle(88% at 50% 52%)",transform:"scale(1)"}],1460);
+   animate(els.panels,[{opacity:1},{opacity:1,offset:.52},{opacity:0,offset:1}],1380);
+   animate(els.one,[{opacity:1,transform:"translate(-50%,-50%)"},{opacity:0,transform:"translate(-50%,-60%)"}],600,180);
+   animate(els.two,[{opacity:0,transform:"translateY(-39%)"},{opacity:1,transform:"translateY(-46%)"}],900,900);
+   animate(els.flash,[{opacity:0},{opacity:.58,offset:.4},{opacity:0}],1000,450);
+  }
+ }else{
+  if(a){
+   animate(els.two,[{opacity:1,transform:"translateY(-46%)"},{opacity:0,transform:"translateY(-53%)"}],750);
+   animate(els.three,[{opacity:0,transform:"translateY(-45%)"},{opacity:1,transform:"translateY(-50%)"}],1000,520);
+   animate(els.full,[{transform:"scale(1)"},{transform:"scale(1.035)"},{transform:"scale(1)"}],1550);
+  }else if(b){
+   animate(els.veil,[{opacity:0,offset:0},{opacity:.93,offset:.42},{opacity:.93,offset:.55},{opacity:0,offset:1}],1450);
+   animate(els.two,[{opacity:1},{opacity:0}],470,220);
+   animate(els.three,[{opacity:0},{opacity:1}],750,830);
+  }else{
+   animate(els.full,[{transform:"scale(1)"},{transform:"scale(1.11)",offset:.42},{transform:"scale(1)"}],1600);
+   animate(els.flash,[{opacity:0},{opacity:.45,offset:.45},{opacity:0}],1100,200);
+   animate(els.two,[{opacity:1,transform:"translateY(-46%)"},{opacity:0,transform:"translateY(-62%)"}],650);
+   animate(els.three,[{opacity:0,transform:"translateY(-42%)"},{opacity:1,transform:"translateY(-50%)"}],900,690);
+  }
+ }
+ return total;
+}
+function start(kind){
+ const token=++generation;
+ async function run(){
+  if(kind==="12" || kind==="23"){
+   const from=kind==="12"?1:2,to=from+1;
+   await sleep(60);
+   if(token!==generation)return;
+   const duration=playMotion(from,to);
+   await sleep(duration);
+   if(token!==generation)return;
+   setScene(to);els.status.textContent="PREVIEW COMPLETE · "+String(from).padStart(2,"0")+" → "+String(to).padStart(2,"0");
+   return;
+  }
+  while(token===generation){
+   setScene(1);els.status.textContent="GET READY · SECTION 01";
+   await sleep(850);
+   if(token!==generation)return;
+   let duration=playMotion(1,2);
+   await sleep(duration+650);
+   if(token!==generation)return;
+   setScene(2);els.status.textContent="SECTION 02 · HOLD";
+   await sleep(900);
+   if(token!==generation)return;
+   duration=playMotion(2,3);
+   await sleep(duration);
+   if(token!==generation)return;
+   setScene(3);els.status.textContent="SECTION 03 · HOLD";
+   await sleep(1900);
+   if(motionReduced)break;
+  }
+ }
+ run();
+}
+document.querySelectorAll(".choice").forEach(button=>button.addEventListener("click",()=>{
+ mode=button.dataset.mode;
+ document.querySelectorAll(".choice").forEach(choice=>choice.setAttribute("aria-pressed",String(choice===button)));
+ els.caption.textContent=modes[mode];
+ start("all");
+}));
+$("replay-12").addEventListener("click",()=>start("12"));
+$("replay-23").addEventListener("click",()=>start("23"));
+$("replay-all").addEventListener("click",()=>start("all"));
+setScene(1);
+start("all");
+})();
+</script>
+</body>
+</html>
