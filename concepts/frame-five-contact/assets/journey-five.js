@@ -51,6 +51,8 @@
   const windowVideos=[...document.querySelectorAll("#panorama .arch-video")];
   const pauseControl=document.getElementById("motion-button");
   let filmStarted=false, windowsPaused=false;
+  const scrollbar=document.getElementById("journey-scrollbar");
+  const scrollbarThumb=document.getElementById("journey-scrollbar-thumb");
   const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
   if(!stage||!panorama||arches.length!==3||!chapter||!third||!twenty||!fourth||!fifth||!fifthBackdrop||!reel||photos.length<5)return;
 
@@ -146,6 +148,15 @@
       else if(position>.52)film.play().catch(()=>{});
     },0);
   });
+
+  function updateJourneyScrollbar(){
+    if(!scrollbar||!scrollbarThumb)return;
+    const scrollRange=Math.max(0,scrollbar.clientHeight-scrollbarThumb.offsetHeight);
+    const progress=clamp(position/4,0,1);
+    scrollbarThumb.style.transform="translate3d(0,"+(scrollRange*progress).toFixed(2)+"px,0)";
+    scrollbar.setAttribute("aria-valuenow",String(Math.round(progress*100)));
+    scrollbar.setAttribute("aria-valuetext","Section "+Math.min(5,Math.round(position)+1)+" of 5");
+  }
 
   function paint(){
     const journey=position;
@@ -340,6 +351,7 @@
     document.documentElement.style.setProperty("--portal-progress",p.toFixed(4));
     if(tools)tools.style.opacity=String(1-smooth(normalize(p,.69,.95))*.75);
     lastRendered=p;
+    updateJourneyScrollbar();
   }
 
   function frameStep(){
@@ -406,6 +418,49 @@
     document.body.dataset.galleryAutoPhoto=String(Math.round(galleryPosition)+1).padStart(2,"0");
     document.body.dataset.galleryAutoExit="moving";
     schedule();
+  }
+
+  // A visible scrollbar gives a familiar cue that the scenes scroll.
+  // Dragging its thumb navigates the same timeline as the mouse wheel.
+  if(scrollbar&&scrollbarThumb){
+    let dragging=false,grabOffset=0;
+    const scrub=clientY=>{
+      const rect=scrollbar.getBoundingClientRect();
+      const travel=Math.max(1,rect.height-scrollbarThumb.offsetHeight);
+      const progress=clamp((clientY-rect.top-grabOffset)/travel,0,1);
+      cancelGalleryExit();
+      setTarget(progress*4);
+    };
+    scrollbar.addEventListener("pointerdown",event=>{
+      if(event.button!==0)return;
+      const thumbRect=scrollbarThumb.getBoundingClientRect();
+      grabOffset=event.target===scrollbarThumb?event.clientY-thumbRect.top:thumbRect.height/2;
+      dragging=true;
+      scrollbar.setPointerCapture(event.pointerId);
+      scrub(event.clientY);
+      event.preventDefault();
+    });
+    scrollbar.addEventListener("pointermove",event=>{
+      if(dragging)scrub(event.clientY);
+    });
+    const endScrollDrag=()=>{dragging=false;};
+    scrollbar.addEventListener("pointerup",endScrollDrag);
+    scrollbar.addEventListener("pointercancel",endScrollDrag);
+    scrollbar.addEventListener("lostpointercapture",endScrollDrag);
+    scrollbar.addEventListener("keydown",event=>{
+      let next=target;
+      if(event.key==="ArrowDown")next+=.18;
+      else if(event.key==="ArrowUp")next-=.18;
+      else if(event.key==="PageDown")next+=1;
+      else if(event.key==="PageUp")next-=1;
+      else if(event.key==="Home")next=0;
+      else if(event.key==="End")next=4;
+      else return;
+      event.stopPropagation();
+      event.preventDefault();
+      cancelGalleryExit();
+      setTarget(next);
+    });
   }
 
   // More reading time in the first three scenes (about 30% slower).
