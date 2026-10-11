@@ -333,21 +333,43 @@ body.frame-one .portal-navigation #next-chapter.is-scroll-invite .next-arrow-ico
   }
 }
 
-/* Visible cinematic cursor color in homepage scenes 01 and 02 only.
-   Full-alpha overlay makes the violet/pink/cyan pigment visible on both
-   dark scenery and pale mountain footage. Video and layout stay untouched.
-   Pointer events pass through; press/hold cannot affect the effect. */
+/* The S. logo's little magenta square replaces the pointer only
+   inside homepage scenes 01, 02, 03. Never hide the mouse anywhere else.
+   On touch devices or with reduced motion the browser cursor stays native. */
+body.frame-one.paint-cursor-active,
+body.frame-one.paint-cursor-active *{
+  cursor:none!important;
+}
+body.frame-one .paint-cursor{
+  position:fixed;
+  top:0;
+  left:0;
+  width:11px;
+  height:11px;
+  border-radius:0;
+  background:#b02ecb; /* Exact square color from soheil-logo-inverse.svg */
+  z-index:220;
+  pointer-events:none;
+  opacity:0;
+  will-change:transform;
+  box-shadow:0 0 14px rgba(176,46,203,.43);
+}
+body.frame-one.paint-cursor-active .paint-cursor.is-visible{opacity:1}
+
+/* Soft wet-paint ribbons remain on the path briefly after each gesture. */
 body.frame-one #pointer-pattern{
   pointer-events:none;
   mix-blend-mode:normal;
   opacity:0;
-  transition:opacity .24s ease-out;
+  transition:opacity .20s ease-out;
 }
 body.frame-one:not([data-current-frame]) #pointer-pattern,
 body.frame-one[data-current-frame="1"] #pointer-pattern,
-body.frame-one[data-current-frame="2"] #pointer-pattern{
+body.frame-one[data-current-frame="2"] #pointer-pattern,
+body.frame-one[data-current-frame="3"] #pointer-pattern{
   opacity:1;
 }
 @media(prefers-reduced-motion:reduce){
-  body.frame-one #pointer-pattern{display:none!important}
+  body.frame-one #pointer-pattern,
+  body.frame-one .paint-cursor{display:none!important}
 }
