@@ -378,7 +378,7 @@
       rail.classList.add("is-visible");
       rail.style.opacity="1";
     }
-    if(prevSectionButton)prevSectionButton.disabled=target<=.001;
+    if(prevSectionButton)prevSectionButton.disabled=target<=.001 && !returnTour;
     if(nextSectionButton){
       nextSectionButton.disabled=target>=3.999 && !returnTour;
       nextSectionButton.classList.toggle("is-scroll-invite",visibleSection===1 && !returnTour);
@@ -465,9 +465,15 @@
   function schedule(){
     if(!frame)frame=requestAnimationFrame(frameStep);
   }
+  function interruptReturnTour(){
+    if(!returnTour)return;
+    returnTour=null;
+    document.body.dataset.returnTour="cancelled";
+    target=position;
+  }
   function setTarget(value){
     // A manual wheel, swipe, key or scrub always takes over immediately.
-    if(returnTour){returnTour=null;document.body.dataset.returnTour="cancelled";}
+    interruptReturnTour();
     target=clamp(value,0,4);
     if(reduced.matches)position=target;
     schedule();
@@ -560,6 +566,7 @@
     const pixels=event.deltaMode===1?event.deltaY*18:event.deltaMode===2?event.deltaY*innerHeight:event.deltaY;
     if(!Number.isFinite(pixels)||Math.abs(pixels)<.1)return;
     const delta=clamp(pixels,-160,160);
+    interruptReturnTour();
     if(galleryAutoExit){
       // A reverse gesture cancels the automatic glide safely.
       if(delta<0)cancelGalleryExit();
@@ -592,6 +599,7 @@
     const next=event.touches[0].clientY;
     const delta=touchY-next;
     touchY=next;
+    if(Math.abs(delta)>.05)interruptReturnTour();
     if(event.cancelable)event.preventDefault();
     if(galleryAutoExit){
       if(delta<0)cancelGalleryExit();
@@ -609,6 +617,7 @@
     const key=event.key;
     if(event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
     if(event.target instanceof Element && event.target.closest("a,button,input,textarea,select"))return;
+    if(["ArrowUp","ArrowDown","PageUp","PageDown"," ","Home","End","ArrowLeft","ArrowRight"].includes(key))interruptReturnTour();
     if((key==="ArrowLeft"||key==="ArrowRight") && position>2.92 && position<3.05){
       event.preventDefault();
       cancelGalleryExit();
@@ -643,6 +652,7 @@
       if(direction>0)return;
       cancelGalleryExit();
     }
+    interruptReturnTour();
     const current=clamp(Math.round(target),0,4);
     const destination=clamp(current+direction,0,4);
     if(destination===current)return;
