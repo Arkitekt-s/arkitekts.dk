@@ -1,6 +1,9 @@
 /* Cinematic Frame 01: three real scenic films selected by press-and-hold.
  * The chosen film continues into Frames 02 and 03, then pauses behind
- * Frames 04–05. The approved scroll timeline, arch springs and typography
+ * Frames 04–05. All three movies run at calm 70% playback speed.
+ * The press-and-hold switch borrows the 10-step bottom-up staircase
+ * curtain from the existing Frame 03→04 gallery reveal.
+ * The approved scroll timeline, arch springs and typography
  * are untouched. Alternate clips licensed by Pexels (free video license):
  * https://www.pexels.com/video/clear-ocean-water-853862/
  * https://www.pexels.com/video/northern-lights-time-lapse-5700806/
@@ -41,6 +44,25 @@
   player.disablePictureInPicture=true;
   player.setAttribute("aria-hidden","true");
   player.setAttribute("tabindex","-1");
+  const FILM_SPEED=.70;
+  // The same reduced speed carries from three windows into the full screen.
+  const originalMovies=[
+    ...document.querySelectorAll("#panorama .arch-video"),
+    document.getElementById("portal-film")
+  ].filter(Boolean);
+  function slowMovies(){
+    for(const video of [...originalMovies,player]){
+      if(Math.abs(video.playbackRate-FILM_SPEED)>.001)
+        video.playbackRate=FILM_SPEED;
+    }
+  }
+  originalMovies.forEach(video=>{
+    video.addEventListener("loadedmetadata",slowMovies);
+    video.addEventListener("playing",slowMovies);
+  });
+  player.addEventListener("loadedmetadata",slowMovies);
+  player.addEventListener("playing",slowMovies);
+  slowMovies();
   stage.insertBefore(player,shade);
 
   // Render ONE moving video through three synchronized arch windows.
@@ -54,11 +76,22 @@
   });
   const photo=new Image();
   photo.decoding="async";
-  const wipe=document.createElement("canvas");
+  // The existing 03→04 transition rises as ten staggered columns.
+  // Reuse that visual language here, but without altering its actual code.
+  const wipe=document.createElement("div");
   wipe.className="hold-scene-wipe";
   wipe.setAttribute("aria-hidden","true");
+  const curtainPanels=Array.from({length:10},(_,i)=>{
+    const panel=document.createElement("span");
+    panel.className="hold-scene-curtain-panel";
+    panel.style.left=i*10+"%";
+    panel.style.width="calc(10% + 1px)";
+    panel.style.top="100%";
+    panel.style.bottom="0";
+    wipe.append(panel);
+    return panel;
+  });
   stage.append(wipe);
-  const wipeCtx=wipe.getContext("2d",{alpha:true});
   const button=document.createElement("button");
   button.type="button";button.className="hold-scene-control";
   button.id="hold-scene-control";
@@ -71,7 +104,6 @@
 
   let scene=0,armed=null,heldPointer=null,transition=null;
   let videoLoop=0,lastDraw=0,selectionVersion=0;
-  let wipeW=0,wipeH=0,dpr=1;
   let lastDimensions="",lastOpacity=-1,lastVisible=false;
   function progress(){return clamp(Number(document.body.dataset.portalProgress||0),0,1);}
   function journey(){return Number(document.body.dataset.journeyProgress||0);}
@@ -91,14 +123,7 @@
     button.setAttribute("aria-label",
       films[scene].name+". Click to change to the next moving landscape.");
   }
-  function resize(){
-    const r=stage.getBoundingClientRect();
-    wipeW=r.width;wipeH=r.height;dpr=Math.min(devicePixelRatio||1,1.4);
-    wipe.width=Math.max(1,Math.round(r.width*dpr));
-    wipe.height=Math.max(1,Math.round(r.height*dpr));
-    wipeCtx.setTransform(dpr,0,0,dpr,0,0);
-    sizePanes();
-  }
+  function resize(){sizePanes();}
   function sizePanes(){
     for(const pane of panes){
       const r=pane.arch.getBoundingClientRect();
@@ -222,44 +247,58 @@
     // Prefer an attractive full-size image instead of a blank patterned film.
     if(scene!==0)paintPanes();
   });
+  // Bottom-up staircase curtain, like the Frame 03 → 04 reveal.
+  // Cover the outgoing image, swap halfway, then reveal the new image
+  // from bottom to top. Each of the ten columns is slightly staggered.
+  const CURTAIN_MS=1850;
+  function resetPanels(){
+    for(const panel of curtainPanels){
+      panel.style.top="100%";
+      panel.style.bottom="0";
+    }
+  }
   function wipeFrame(now){
     if(!transition)return;
-    const s=transition;
-    const t=clamp((now-s.started)/1250,0,1);
-    if(!eligible()){transition=null;wipe.style.visibility="hidden";return;}
-    if(!s.switched&&t>=.49){
-      s.switched=true;
-      setScene(s.next);
+    const state=transition;
+    const t=clamp((now-state.started)/CURTAIN_MS,0,1);
+    if(!eligible()){
+      transition=null;
+      wipe.style.visibility="hidden";
+      resetPanels();
+      return;
     }
-    wipeCtx.clearRect(0,0,wipeW,wipeH);
-    if(t>=1){transition=null;wipe.style.visibility="hidden";return;}
-    const opacity=1-ease((t-.66)/.33);
-    const radius=25+Math.hypot(wipeW,wipeH)*1.45*ease(t/.56);
-    const g=wipeCtx.createRadialGradient(s.x,s.y,0,s.x,s.y,radius);
-    g.addColorStop(0,"#f9e5fd");
-    g.addColorStop(.24,"#dc91f5");
-    g.addColorStop(.66,"#8d3bb4");
-    g.addColorStop(1,"#261037");
-    wipeCtx.globalAlpha=opacity;
-    wipeCtx.beginPath();
-    for(let i=0;i<=90;i++){
-      const a=i/90*Math.PI*2;
-      const ripple=1+.045*Math.sin(a*6+now*.004)+.025*Math.sin(a*13-now*.005);
-      const x=s.x+Math.cos(a)*radius*ripple,y=s.y+Math.sin(a)*radius*ripple;
-      if(i===0)wipeCtx.moveTo(x,y);else wipeCtx.lineTo(x,y);
+    if(!state.switched && t>=.5){
+      state.switched=true;
+      setScene(state.next);
     }
-    wipeCtx.closePath();wipeCtx.fillStyle=g;wipeCtx.fill();
-    wipeCtx.globalAlpha=1;
+    for(let i=0;i<curtainPanels.length;i++){
+      const offset=i*.012;
+      const panel=curtainPanels[i];
+      if(t<.5){
+        const rise=ease((t-offset)/(.49-9*.012));
+        panel.style.top=(100*(1-rise)).toFixed(3)+"%";
+        panel.style.bottom="0";
+      }else{
+        const reveal=ease((t-.5-offset)/(.5-9*.012));
+        panel.style.top="0";
+        panel.style.bottom=(100*reveal).toFixed(3)+"%";
+      }
+    }
+    if(t>=1){
+      transition=null;
+      wipe.style.visibility="hidden";
+      resetPanels();
+      return;
+    }
     requestAnimationFrame(wipeFrame);
   }
   function advance(x,y){
     if(!eligible()||transition)return;
     resize();
     if(reduced.matches){setScene((scene+1)%3);return;}
-    const rect=stage.getBoundingClientRect();
+    resetPanels();
     transition={
-      next:(scene+1)%3,started:performance.now(),switched:false,
-      x:clamp(x-rect.left,0,rect.width),y:clamp(y-rect.top,0,rect.height)
+      next:(scene+1)%3,started:performance.now(),switched:false
     };
     wipe.style.visibility="visible";
     requestAnimationFrame(wipeFrame);
@@ -313,7 +352,7 @@
           setScene(transition.next);
           transition.switched=true;
         }
-        transition=null;wipe.style.visibility="hidden";
+        transition=null;wipe.style.visibility="hidden";resetPanels();
       }
       showFilm();
       startRender();

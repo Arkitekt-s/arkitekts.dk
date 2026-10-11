@@ -546,6 +546,8 @@ body.frame-one #panorama[data-art-scene="2"][data-art-media-ready="true"] .arch 
   opacity:1;
   visibility:visible;
 }
+/* The hold transition uses the same rising ten-step silhouette
+   as the Section 03 -> 04 gallery entrance, at a slower cinematic pace. */
 body.frame-one .frame-stage .hold-scene-wipe{
   position:absolute;
   inset:0;
@@ -554,7 +556,20 @@ body.frame-one .frame-stage .hold-scene-wipe{
   pointer-events:none;
   z-index:29;
   visibility:hidden;
-  filter:saturate(1.09);
+  overflow:hidden;
+}
+body.frame-one .frame-stage .hold-scene-curtain-panel{
+  position:absolute;
+  display:block;
+  top:100%;
+  bottom:0;
+  background:linear-gradient(165deg,#21162d 0%,#150f25 57%,#0b1020 100%);
+  box-shadow:inset 1px 0 0 rgba(230,196,245,.035);
+  pointer-events:none;
+  will-change:top,bottom;
+}
+body.frame-one .panorama .scenery{
+  animation-duration:29s;
 }
 /* A quiet, functional cue; existing title, navigation and pagination remain. */
 body.frame-one .frame-stage .hold-scene-control{

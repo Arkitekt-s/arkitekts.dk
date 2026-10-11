@@ -112,6 +112,11 @@ with sync_playwright() as p:
             if control.count()!=1:
                 errors.append("desktop: press-and-hold scene control missing")
             else:
+                if page.locator(".hold-scene-curtain-panel").count()!=10:
+                    errors.append("desktop: the 10-step curtain panels are missing")
+                mountain_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
+                if abs(mountain_rate-.70)>.02:
+                    errors.append(f"desktop: mountain film did not slow down ({mountain_rate})")
                 for expected in (1,2,0):
                     page.mouse.move(w*.62,h*.63)
                     page.mouse.down()
@@ -120,13 +125,18 @@ with sync_playwright() as p:
                     page.wait_for_function(
                         "(v)=>document.getElementById('panorama')?.dataset.artScene===String(v)",
                         arg=expected, timeout=2500)
-                    page.wait_for_timeout(950)
+                    # Wait for the 1.85s staircase curtain to clear before
+                    # triggering the next long-press.
+                    page.wait_for_timeout(1950)
                     if page.locator("#panorama .hold-scene-paint").count()!=3:
                         errors.append("desktop: cinematic artwork not present in all three arches")
                     if expected in (1,2):
                         selected_url=page.locator("#hold-scene-film").get_attribute("src") or ""
                         if "videos.pexels.com/video-files/" not in selected_url:
                             errors.append(f"desktop: scene {expected} is not photographic video")
+                        speed=page.locator("#hold-scene-film").evaluate("e=>e.playbackRate")
+                        if abs(speed-.70)>.02:
+                            errors.append(f"desktop: scene {expected} playback is too fast ({speed})")
                 # Select the ocean again and confirm it follows through
                 # the entire scroll-controlled editorial journey.
                 page.mouse.move(w*.62,h*.63)
@@ -136,7 +146,7 @@ with sync_playwright() as p:
                 page.wait_for_function(
                     "document.getElementById('panorama')?.dataset.artScene==='1'",
                     timeout=2500)
-                page.wait_for_timeout(900)
+                page.wait_for_timeout(1950)
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")
