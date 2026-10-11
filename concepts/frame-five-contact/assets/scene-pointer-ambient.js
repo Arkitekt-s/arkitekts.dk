@@ -97,8 +97,10 @@
     if(event.pointerType!=="mouse" && event.pointerType!=="pen")return;
     if(!sceneActive())return;
     tx=event.clientX;ty=event.clientY;
-    if(px<0){px=tx;py=ty;}
-    lastMove=performance.now();
+    const now=performance.now();
+    // Returning the cursor should not sweep light across the whole screen.
+    if(px<0 || now-lastMove>940){px=tx;py=ty;trail=[];}
+    lastMove=now;
     schedule();
   },{passive:true});
   addEventListener("resize",resize,{passive:true});
