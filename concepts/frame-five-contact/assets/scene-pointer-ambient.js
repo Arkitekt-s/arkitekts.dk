@@ -168,7 +168,12 @@
     if(outline.length>18 && alive>.20){
       const k=Math.max(2,Math.floor(outline.length*.12));
       const a=smoothed[k],b=smoothed[Math.min(k+3,cap)];
-      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      const dx=b.x-a.x,dy=b.y-a.y,mag=Math.max(1,Math.hypot(dx,dy));
+      const nx=-dy/mag,ny=dx/mag;
+      // The outer fleck is slightly detached, like the recorded purple splash.
+      ctx.beginPath();
+      ctx.moveTo(a.x+nx*17,a.y+ny*17);
+      ctx.lineTo(b.x+nx*20,b.y+ny*20);
       ctx.strokeStyle="rgba(195,35,245,"+(.37*alive).toFixed(3)+")";
       ctx.lineWidth=4*alive;
       ctx.stroke();
