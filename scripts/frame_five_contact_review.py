@@ -74,7 +74,7 @@ with sync_playwright() as p:
                 errors.append(f"{name}: cursor is not white")
             if dot.evaluate("e=>getComputedStyle(e).borderRadius") not in ("50%","4.5px"):
                 errors.append(f"{name}: cursor is not round")
-            # Moving within 50 pixels of a heading should enlarge the cursor.
+            # Near text the cursor should grow slightly, never become huge.
             page.mouse.move(2,h*.44,steps=4)
             page.wait_for_timeout(260)
             resting_scale=dot.evaluate(
@@ -85,11 +85,15 @@ with sync_playwright() as p:
             page.wait_for_timeout(260)
             heading_scale=dot.evaluate(
                 "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
-            if heading_scale<3 or heading_scale-resting_scale<1:
-                errors.append(f"{name}: cursor does not expand near text ({resting_scale},{heading_scale})")
+            if not 1.48<=heading_scale<=1.83 or heading_scale-resting_scale<.38:
+                errors.append(f"{name}: cursor hover should stay modest ({resting_scale},{heading_scale})")
         page.mouse.move(w*.2,h*.4,steps=6)
         page.wait_for_timeout(220)
         left_color=glow_pixel(w*.2,h*.4)
+        # Watercolor radiates from vivid center to near-transparent edge.
+        water_edge=glow_pixel(w*.2,h*.4+116)
+        if water_edge[3]>left_color[3]*.27:
+            errors.append(f"{name}: water effect has a hard or opaque edge ({left_color},{water_edge})")
         page.mouse.move(w*.75,h*.52,steps=6)
         page.wait_for_function(
             "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
