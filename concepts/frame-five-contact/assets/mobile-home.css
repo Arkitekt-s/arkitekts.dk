@@ -231,3 +231,29 @@
   body.frame-one .frame-stage #chapter-two .chapter-description{font-size:12px}
   body.frame-one .frame-stage #chapter-three .side-statement{font-size:clamp(16px,3vw,22px)}
 }
+
+/* Section 04 is an editorial chapter, not just a floating thumbnail. */
+.gallery-mobile-intro{display:none}
+@media (max-width:760px) and (orientation:portrait){
+  body.frame-one .frame-four-gallery .gallery-mobile-intro{
+    display:flex;flex-direction:column;gap:8px;
+    position:absolute;z-index:8;top:15%;left:6%;right:6%;
+    pointer-events:none;
+    color:#fbf6ff;
+  }
+  body.frame-one .frame-four-gallery .gallery-mobile-intro > span{
+    color:#d8a7e8;
+    font:780 9px/1.4 ui-monospace,Consolas,monospace;
+    letter-spacing:.15em;
+  }
+  body.frame-one .frame-four-gallery .gallery-mobile-intro > strong{
+    display:block;font-size:clamp(30px,8.8vw,45px);
+    font-weight:730;letter-spacing:-.073em;
+    line-height:1.03;
+  }
+  body.frame-one .frame-four-gallery .gallery-mobile-intro > strong span{color:#cb5ae5}
+  body.frame-one .frame-four-gallery .gallery-mobile-intro > p{
+    font-size:clamp(12px,3.2vw,14px);line-height:1.5;
+    color:#d9cbdc;margin:0;max-width:310px;
+  }
+}
