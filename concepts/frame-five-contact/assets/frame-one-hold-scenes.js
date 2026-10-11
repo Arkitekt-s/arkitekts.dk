@@ -6,7 +6,7 @@
  * The approved scroll timeline, arch springs and typography
  * are untouched. Alternate clips licensed by Pexels (free video license):
  * https://www.pexels.com/video/an-artist-s-animation-of-artificial-intelligence-ai-this-video-represents-how-ai-powered-tools-can-support-us-and-save-time-it-was-created-by-martina-stiftinger-as-part-of-the-visualis-18069232/
- * https://www.pexels.com/video/database-storage-of-a-server-5028622/
+ * https://www.pexels.com/video/an-artist-s-illustration-of-artificial-intelligence-ai-this-image-explores-ai-generated-media-can-be-watermarked-it-was-created-by-zunc-studio-as-part-of-the-visualising-ai-project-lau-25744122/
  * https://www.pexels.com/video/dark-room-coding-on-multiple-monitors-34160292/
  */
 (() => {
@@ -23,10 +23,11 @@
   const films=[
     {name:"AI Visualisation · Google DeepMind"},
     {
-      name:"Professional Data Center",
-      url:"https://videos.pexels.com/video-files/5028622/5028622-hd_1920_1080_25fps.mp4",
-      backup:"https://videos.pexels.com/video-files/5028622/5028622-uhd_3840_2160_25fps.mp4",
-      poster:"https://images.pexels.com/videos/5028622/pexels-photo-5028622.jpeg?auto=compress&w=1600",
+      name:"Visualising AI · SynthID Watermarking · Zünc Studio",
+      // Pexels 25744122: HD delivery with the confirmed 4K download as backup.
+      url:"https://videos.pexels.com/video-files/25744122/11904079_1920_1080_30fps.mp4",
+      backup:"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
+      poster:"https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&w=1600",
       fallback:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85"
     },
     {
