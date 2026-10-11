@@ -92,11 +92,10 @@ with sync_playwright() as p:
                 errors.append(f"{name}: {slug} missing original project work steps")
             if not page.locator(".case-stack li").count():
                 errors.append(f"{name}: {slug} missing technology stack")
-            if page.locator(".case-resource-links a").count()<1:
-                errors.append(f"{name}: {slug} missing original project link")
-            external=page.locator(".case-resource-links a").first.get_attribute("href")
-            if not external.startswith("https://arkitekts.dk/portfolio/"):
-                errors.append(f"{name}: {slug} original project reference missing")
+            if page.locator('.case-resources .case-return[href="../"]').count()!=1:
+                errors.append(f"{name}: {slug} missing local portfolio return link")
+            if page.locator('.case-resource-links a[href*="arkitekts.dk/portfolio/"]').count():
+                errors.append(f"{name}: {slug} still links to the retired WordPress site")
             if page.locator(".navigation a").all_inner_texts()!=MENU:
                 errors.append(f"{name}: {slug} navigation differs from approved DNA")
             for n,expected in enumerate(LINKS):
@@ -143,11 +142,8 @@ with sync_playwright() as p:
                     if natural["w"]<200 or natural["h"]<200 or not natural["src"].startswith("../assets/"):
                         errors.append(f"{name}: {slug} local image broken {natural}")
             if slug=="basecamp-response":
-                original_source="https://arkitekts.dk/portfolio/basecamp-customer-response-monitor/"
-                if page.locator(f'.case-resource-links a[href="{original_source}"]').count()!=1:
-                    errors.append(f"{name}: Basecamp source case study link missing")
-                if page.locator(f'.basecamp-original-story a[href="{original_source}"]').count()!=1:
-                    errors.append(f"{name}: Basecamp original project shortcut missing")
+                if page.locator('.basecamp-original-story a[href*="arkitekts.dk/portfolio/"]').count():
+                    errors.append(f"{name}: Basecamp still links to old WordPress content")
                 if page.locator('.basecamp-cover-link[href="../assets/basecamp-response.webp"]').count()!=1:
                     errors.append(f"{name}: Original Basecamp application screenshot cannot open full size")
                 if page.locator(".basecamp-sprints>div").count()!=2:
