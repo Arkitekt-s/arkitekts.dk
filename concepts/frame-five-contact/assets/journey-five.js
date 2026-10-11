@@ -43,6 +43,10 @@
   const shade=document.querySelector(".portal-shade");
   const rail=document.querySelector(".portal-navigation");
   const fill=document.getElementById("portal-fill");
+  const currentLabel=document.getElementById("portal-current");
+  const sectionTrack=document.querySelector(".portal-steps .portal-track");
+  const prevSectionButton=document.getElementById("previous-chapter");
+  const nextSectionButton=document.getElementById("next-chapter");
   const wheelHint=document.getElementById("wheel-hint");
   const note=document.getElementById("interaction-note");
   const live=document.getElementById("live-status");
@@ -74,6 +78,7 @@
   let filmSuspendedForGallery=false;
   let lastRendered=-1;
   let previousFrameTime=0;
+  let displayedSection=0;
   let scrollbarTravel=0,scrollbarPercent=-1,scrollbarScene=-1;
 
   function measure(){
@@ -357,11 +362,22 @@
     // visible, or leaving. Other frames do not need its 7 card filters.
     if(journey>2.15 && journey<3.95)renderGallery();
     document.body.dataset.journeyProgress=journey.toFixed(4);
-    document.body.dataset.currentFrame=journey<.83?"1":journey<1.42?"2":journey<2.55?"3":journey<3.49?"4":"5";
-    if(rail){
-      rail.classList.toggle("is-visible",p>.035);
-      rail.style.opacity=String(smooth(normalize(p,.035,.16)));
+    // The label, controls and theme follow the same section boundaries.
+    // Only update the displayed number when a section actually changes.
+    const visibleSection=journey<.83?1:journey<1.42?2:journey<2.55?3:journey<3.49?4:5;
+    document.body.dataset.currentFrame=String(visibleSection);
+    if(visibleSection!==displayedSection){
+      if(currentLabel)currentLabel.textContent=String(visibleSection).padStart(2,"0");
+      if(sectionTrack)sectionTrack.setAttribute("aria-valuenow",String(visibleSection));
+      if(rail)rail.setAttribute("aria-label","Section "+visibleSection+" of 5");
+      displayedSection=visibleSection;
     }
+    if(rail){
+      rail.classList.add("is-visible");
+      rail.style.opacity="1";
+    }
+    if(prevSectionButton)prevSectionButton.disabled=target<=.001;
+    if(nextSectionButton)nextSectionButton.disabled=target>=3.999;
     if(fill)fill.style.transform="scaleX("+clamp(journey/4,0,1).toFixed(4)+")";
     if(wheelHint){
       wheelHint.style.opacity=(journey>.06&&journey<.82)?"1":"0";
@@ -575,11 +591,24 @@
       event.preventDefault();setTarget(4);
     }
   });
-  document.getElementById("next-chapter")?.addEventListener("click",()=>{
-    if(position>2.90 && position<3.20)beginGalleryExit();
-    else setTarget(Math.min(4,Math.floor(target+.12)+1));
-  });
-  document.getElementById("previous-chapter")?.addEventListener("click",()=>setTarget(position>3.03?3:position>2.75?2:Math.max(0,Math.ceil(target-.12)-1)));
+  // Chapter controls move exactly one section at a time.
+  // The Frame 04 → 05 control still shows the full photo sequence first.
+  function navigateSection(direction){
+    if(galleryAutoExit){
+      if(direction>0)return;
+      cancelGalleryExit();
+    }
+    const current=clamp(Math.round(target),0,4);
+    const destination=clamp(current+direction,0,4);
+    if(destination===current)return;
+    if(current===3 && direction>0){
+      beginGalleryExit();
+      return;
+    }
+    setTarget(destination);
+  }
+  nextSectionButton?.addEventListener("click",()=>navigateSection(1));
+  prevSectionButton?.addEventListener("click",()=>navigateSection(-1));
 
   // The scattered nine-piece number joins into a legible 10 on hover.
   // Leaving the hotspot returns every piece to its separate resting point.
