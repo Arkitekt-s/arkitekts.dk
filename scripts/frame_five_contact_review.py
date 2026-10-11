@@ -45,15 +45,15 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # Scenes 01–03 use an S-logo square cursor and painterly trail.
+        # Scenes 01–03 use a logo-square pointer and purple liquid trail.
         # Scenes 04–05 and every other page use the default browser cursor.
         # Mouse movement must never tilt, zoom or hold the landscape.
         if page.locator("#pointer-pattern").count()!=1:
             errors.append(f"{name}: cursor-light canvas missing")
         scene=page.locator("#panorama")
         initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
-        # Verify the trail actually paints visible color, not merely
-        # toggling a hidden canvas. Colors should vary by screen position.
+        # Verify the purple liquid visibly follows the pointer.
+        # The reference is magenta, not location-dependent rainbow paint.
         def glow_pixel(x,y):
             return page.evaluate("""([x,y]) => {
                 const c=document.getElementById('pointer-pattern');
@@ -82,8 +82,13 @@ with sync_playwright() as p:
         right_color=glow_pixel(w*.75,h*.52)
         if left_color[3]<35 or right_color[3]<35:
             errors.append(f"{name}: cursor color is too faint ({left_color},{right_color})")
-        if sum(abs(a-b) for a,b in zip(left_color[:3],right_color[:3]))<35:
-            errors.append(f"{name}: cursor hue does not change across scene ({left_color},{right_color})")
+        for pixel in (left_color,right_color):
+            if pixel[1]>=pixel[0] or pixel[1]>=pixel[2]:
+                errors.append(f"{name}: liquid trail should be purple ({pixel})")
+        # The ribbon must fade and clear when the mouse stays still.
+        page.wait_for_timeout(1180)
+        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
+            errors.append(f"{name}: liquid ribbon did not fade out")
         page.mouse.down()
         page.wait_for_timeout(120)
         if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
