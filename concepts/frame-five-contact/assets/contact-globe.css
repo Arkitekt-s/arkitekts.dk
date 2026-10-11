@@ -297,3 +297,28 @@ body.frame-one.frame-three-active .portal-shade{
   background:linear-gradient(0deg,rgba(8,10,29,.36),rgba(17,6,28,.12) 50%,rgba(7,6,23,.23));
   opacity:var(--third-shade-opacity,0);
 }
+
+
+/* SOHEIL: magnetic, individually animated header letters.
+   Scope to the final homepage; no effects on the shared site navigation. */
+body.frame-one .site-header .site-name.name-hover-ready{
+  padding:12px 1px;
+  margin:-12px -1px;
+  user-select:none;
+  white-space:nowrap;
+  isolation:isolate;
+}
+body.frame-one .site-header .site-name .name-hover-glyph{
+  display:inline-block;
+  position:relative;
+  transform-origin:50% 78%;
+  vertical-align:baseline;
+  will-change:transform;
+  backface-visibility:hidden;
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .site-header .site-name .name-hover-glyph{
+    will-change:auto;
+    transform:none!important;
+  }
+}
