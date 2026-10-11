@@ -267,3 +267,33 @@ html body.frame-one.frame-five-active .site-footer {
  .journey-scrollbar::before{right:5px}
  .journey-scrollbar-thumb{right:3px;width:6px}
 }
+
+
+/* Smooth-scroll polish: all these scenes are already eased in JavaScript.
+   Avoid stacking long CSS transitions on top of per-frame reel transforms. */
+.frame-stage #gallery-reel,
+.frame-stage #gallery-reel .gallery-photo{
+  transition:none!important;
+}
+
+/* Keep the original breathing landscape alive when Chapter 02 activates.
+   Previously animation:none reset it to the first frame halfway through
+   the first video expansion, causing a visible snap. */
+body.frame-one.chapter-two-active .panorama .scenery{
+  animation:landscapeBreathe 19s ease-in-out infinite alternate!important;
+}
+body.frame-one.chapter-two-active .arch-one .scenery{animation-delay:-2s!important}
+body.frame-one.chapter-two-active .arch-two .scenery{animation-delay:-8s!important}
+body.frame-one.chapter-two-active .arch-three .scenery{animation-delay:-14s!important}
+
+/* Mix the third scene's lighting in progressively, rather than swapping
+   entire gradient backgrounds the instant the active class changes. */
+body.frame-one.frame-three-active .portal-shade{
+  background:linear-gradient(100deg,rgba(7,10,24,.9) 0%,rgba(7,10,24,.72) 28%,rgba(7,10,24,.32) 60%,rgba(7,10,24,.17) 100%),linear-gradient(0deg,#0c102259,transparent 40%);
+}
+.frame-stage .portal-shade::after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(8,10,29,.36),rgba(17,6,28,.12) 50%,rgba(7,6,23,.23));
+  opacity:var(--third-shade-opacity,0);
+}
