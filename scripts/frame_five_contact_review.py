@@ -33,6 +33,8 @@ with sync_playwright() as p:
         response=page.goto(URL,wait_until="domcontentloaded",timeout=30000)
         if response.status!=200:errors.append(f"{name}: HTTP {response.status}")
         if page.locator("#panorama .arch").count()!=3:errors.append(f"{name}: approved arches changed")
+        if page.locator("#portal-current").inner_text().strip()!="01":
+            errors.append(f"{name}: section counter must start at 01")
         if page.locator(".twenty-piece").count()!=9:errors.append(f"{name}: number 10 lost a piece")
         if page.locator(".gallery-photo").count()!=7:errors.append(f"{name}: approved gallery missing")
         if page.locator("#frame-five-contact").get_attribute("aria-hidden")!="true":
@@ -44,9 +46,13 @@ with sync_playwright() as p:
         page.mouse.move(w*.58,h*.49)
         # 01–03 now have deliberately longer scroll travel.
         wheel(page,7);wait(page,.995)
+        if page.locator("#portal-current").inner_text().strip()!="02":
+            errors.append(f"{name}: section counter did not reach 02")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 02 copy not visible")
         wheel(page,7);wait(page,1.995)
+        if page.locator("#portal-current").inner_text().strip()!="03":
+            errors.append(f"{name}: section counter did not reach 03")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         if page.locator(".twenty-piece").first.evaluate("e=>getComputedStyle(e).animationName")!="none":
@@ -70,6 +76,8 @@ with sync_playwright() as p:
         if abs(scatter)<1 or abs(assembled)>.05 or abs(scattered_again)<1:
             errors.append(f"{name}: reversed hover failed ({scatter},{assembled},{scattered_again})")
         wheel(page,5);wait(page,2.995)
+        if page.locator("#portal-current").inner_text().strip()!="04":
+            errors.append(f"{name}: section counter did not reach 04")
         gallery=page.locator("#frame-four-gallery")
         if gallery.get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 04 photo gallery missing")
@@ -103,6 +111,10 @@ with sync_playwright() as p:
         page.screenshot(path=str(OUT/f"{name}-04-dark-gallery-end.png"),animations="allow")
         page.wait_for_function("document.body.dataset.galleryAutoExit==='complete'",timeout=7000)
         wait(page,3.995)
+        if page.locator("#portal-current").inner_text().strip()!="05":
+            errors.append(f"{name}: section counter did not reach 05")
+        if not page.locator(".portal-navigation").is_visible():
+            errors.append(f"{name}: navigation disappeared in final section")
         contact=page.locator("#frame-five-contact")
         if contact.get_attribute("aria-hidden")!="false" or not contact.is_visible():
             errors.append(f"{name}: final contact not visible")
