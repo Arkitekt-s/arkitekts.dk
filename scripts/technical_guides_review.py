@@ -112,8 +112,8 @@ with sync_playwright() as p:
                 issues.append(f"{device}: {slug} missing back link")
             if detail.locator(".guide-article-body").inner_text().strip()=="":
                 issues.append(f"{device}: article is empty: {slug}")
-            if detail.locator(".guide-original a").get_attribute("href")!=item["source_url"]:
-                issues.append(f"{device}: original WordPress source lost: {slug}")
+            if detail.locator(".guide-original, .guide-article-actions a[href*='arkitekts.dk/']").count():
+                issues.append(f"{device}: retired WordPress article shortcut remains: {slug}")
             if detail.locator(".navigation a").all_inner_texts()!=EXPECTED:
                 issues.append(f"{device}: guide header differs from published site {slug}")
             if detail.locator(".footer-specialties").inner_text()!="LINUX · ANSIBLE · ELASTICSEARCH · KAFKA":
