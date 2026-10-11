@@ -196,13 +196,17 @@
     queue();
   }
   addEventListener("pointermove",event=>{
-    if(!active())return;
     if(event.pointerType!=="mouse" && event.pointerType!=="pen")return;
     const x=event.clientX,y=event.clientY;
     inside=true;
-    // The square pointer matches the dot in the site's S. logo.
+    // Track the pointer without painting in scenes 04–05. This also keeps
+    // its position correct when the visitor scrolls back into scene 03.
     dot.style.transform="translate3d("+(x-5.5).toFixed(1)+"px,"+
       (y-5.5).toFixed(1)+"px,0)";
+    if(!active()){
+      dot.classList.remove("is-visible");
+      return;
+    }
     dot.classList.add("is-visible");
     record(x,y,performance.now());
   },{passive:true});
