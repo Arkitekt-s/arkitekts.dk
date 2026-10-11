@@ -333,21 +333,20 @@ body.frame-one .portal-navigation #next-chapter.is-scroll-invite .next-arrow-ico
   }
 }
 
-/* Calm cursor response in homepage scenes 01 and 02 only.
-   Cursor light is an independent overlay: video, images and text stay fixed.
-   No press/hold zoom, large ripples or mouse-driven 3D transformations. */
+/* Visible cinematic cursor color in homepage scenes 01 and 02 only.
+   Full-alpha overlay makes the violet/pink/cyan pigment visible on both
+   dark scenery and pale mountain footage. Video and layout stay untouched.
+   Pointer events pass through; press/hold cannot affect the effect. */
 body.frame-one #pointer-pattern{
   pointer-events:none;
+  mix-blend-mode:normal;
   opacity:0;
-  transition:opacity .3s ease-out;
+  transition:opacity .24s ease-out;
 }
 body.frame-one:not([data-current-frame]) #pointer-pattern,
 body.frame-one[data-current-frame="1"] #pointer-pattern,
 body.frame-one[data-current-frame="2"] #pointer-pattern{
-  opacity:.56;
-}
-body.frame-one.motion-off #pointer-pattern{
-  opacity:0!important;
+  opacity:1;
 }
 @media(prefers-reduced-motion:reduce){
   body.frame-one #pointer-pattern{display:none!important}
