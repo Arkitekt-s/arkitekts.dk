@@ -715,3 +715,32 @@ body.frame-one[data-frame-one-art="0"] .panorama .near-clouds{
 body.frame-one[data-frame-one-art="0"] .panorama .arch-video{
   filter:saturate(.88) contrast(1.01) brightness(.97);
 }
+
+/* OPTION A — SEAMLESS, REVERSIBLE HANDOFF FOR CHAPTERS 01–03.
+   Only the current homepage imports this file. Do not modify the
+   approved arch silhouette, original film files, or later chapters. */
+body.frame-one .panorama{
+  will-change:opacity,transform;
+  backface-visibility:hidden;
+}
+body.frame-one #portal-film,
+body.frame-one.chapter-two-active #portal-film{
+  /* Old active-state selector changed the film colour mid-crossfade. */
+  filter:saturate(.80) contrast(1);
+  will-change:opacity;
+  backface-visibility:hidden;
+}
+body.frame-one .panorama .scenery,
+body.frame-one.chapter-two-active .panorama .scenery{
+  /* Class activation previously restarted the looping backdrop animation,
+     briefly resetting the frame beneath the playing video. */
+  animation:none!important;
+}
+body.frame-one:not(.frame-four-active):not(.frame-five-active) .gridlines{
+  /* Continuous grid tint while chapter 01, 02 and 03 share one scene. */
+  opacity:.72!important;
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .panorama,
+  body.frame-one #portal-film{will-change:auto}
+}
