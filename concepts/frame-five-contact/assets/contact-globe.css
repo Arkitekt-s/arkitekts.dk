@@ -745,6 +745,21 @@ body.frame-one:not(.frame-four-active):not(.frame-five-active) .gridlines{
   body.frame-one #portal-film{will-change:auto}
 }
 
+/* Paint the chosen poster even before deferred media scripts initialize.
+   This avoids flashing the default AI film on slower phones. */
+html[data-initial-homepage-film="1"] body.frame-one #panorama .arch-video,
+html[data-initial-homepage-film="2"] body.frame-one #panorama .arch-video{
+  opacity:0!important;visibility:hidden!important;
+}
+html[data-initial-homepage-film="1"] body.frame-one #panorama .distant-mountains{
+  background-image:linear-gradient(180deg,#fff2,#13092118 60%,#10081d6b),
+    url("https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&w=1600");
+}
+html[data-initial-homepage-film="2"] body.frame-one #panorama .distant-mountains{
+  background-image:linear-gradient(180deg,#fff2,#13092118 60%,#10081d6b),
+    url("https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600");
+}
+
 /* Fresh-visit random first video: show only the selected artwork.
    Its photographic poster remains behind the selected decoded stream
    while media is loading, with the same three-panel crop as the video.
