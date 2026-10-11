@@ -74,6 +74,7 @@
   let filmSuspendedForGallery=false;
   let lastRendered=-1;
   let previousFrameTime=0;
+  let scrollbarTravel=0,scrollbarPercent=-1,scrollbarScene=-1;
 
   function measure(){
     // Drop runtime values briefly so measurements come from approved CSS.
@@ -97,6 +98,7 @@
       if(overrides[i])panorama.style.setProperty(p,overrides[i]);
     });
     galleryStep=Math.max(120,photos[1].offsetLeft-photos[0].offsetLeft);
+    if(scrollbar&&scrollbarThumb)scrollbarTravel=Math.max(0,scrollbar.clientHeight-scrollbarThumb.offsetHeight);
     lastRendered=-1; // Recalculate dimensions after an actual resize.
     paint();
   }
@@ -153,11 +155,20 @@
 
   function updateJourneyScrollbar(){
     if(!scrollbar||!scrollbarThumb)return;
-    const scrollRange=Math.max(0,scrollbar.clientHeight-scrollbarThumb.offsetHeight);
     const progress=clamp(position/4,0,1);
-    scrollbarThumb.style.transform="translate3d(0,"+(scrollRange*progress).toFixed(2)+"px,0)";
-    scrollbar.setAttribute("aria-valuenow",String(Math.round(progress*100)));
-    scrollbar.setAttribute("aria-valuetext","Section "+Math.min(5,Math.round(position)+1)+" of 5");
+    // Cached measurements: reading offsetHeight after updating 3D scenes
+    // would force a synchronous browser layout on every animation frame.
+    scrollbarThumb.style.transform="translate3d(0,"+(scrollbarTravel*progress).toFixed(2)+"px,0)";
+    const percent=Math.round(progress*100);
+    const scene=Math.min(5,Math.round(position)+1);
+    if(percent!==scrollbarPercent){
+      scrollbar.setAttribute("aria-valuenow",String(percent));
+      scrollbarPercent=percent;
+    }
+    if(scene!==scrollbarScene){
+      scrollbar.setAttribute("aria-valuetext","Section "+scene+" of 5");
+      scrollbarScene=scene;
+    }
   }
 
   function paint(){
