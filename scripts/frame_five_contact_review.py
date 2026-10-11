@@ -117,11 +117,34 @@ with sync_playwright() as p:
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")
+        # Arches react subtly as the cursor approaches, then spring home.
+        # Do not make the whole panorama move or interfere with smoke/10.
+        if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
+            arch=page.locator("#panorama .arch").first
+            region=arch.bounding_box()
+            if region:
+                page.mouse.move(region["x"]+region["width"]*.77,
+                                region["y"]+region["height"]*.30,steps=7)
+                page.wait_for_timeout(300)
+                offset=arch.evaluate("e=>parseFloat(e.style.getPropertyValue('--arch-x')||'0')")
+                if abs(offset)<.8 or abs(offset)>8.1:
+                    errors.append(f"{name}: gentle arch reaction missing or excessive ({offset})")
+                page.mouse.move(2,2,steps=5)
+                page.wait_for_timeout(640)
+                returned=arch.evaluate("e=>parseFloat(e.style.getPropertyValue('--arch-x')||'0')")
+                if abs(returned)>.40:
+                    errors.append(f"{name}: arch failed to return after mouse left ({returned})")
         page.mouse.move(w*.58,h*.49)
         # 01–03 now have deliberately longer scroll travel.
         wheel(page,7);wait(page,.995)
         if page.locator("#portal-current").inner_text().strip()!="02":
             errors.append(f"{name}: section counter did not reach 02")
+        # Once the arches become one film, masks must not separate.
+        if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
+            opened_arch=page.locator("#panorama .arch").first
+            opened_x=opened_arch.evaluate("e=>parseFloat(e.style.getPropertyValue('--arch-x')||'0')")
+            if abs(opened_x)>.6:
+                errors.append(f"{name}: arch displacement survived full-screen expansion ({opened_x})")
         if page.locator("#next-chapter").evaluate("e=>e.classList.contains('is-scroll-invite')"):
             errors.append(f"{name}: section 01 arrow cue did not disappear in section 02")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="false":
