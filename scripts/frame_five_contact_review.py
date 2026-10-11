@@ -145,12 +145,18 @@ with sync_playwright() as p:
                         errors.append("desktop: cinematic artwork not present in all three arches")
                     if expected in (1,2):
                         selected_url=page.locator("#hold-scene-film").get_attribute("src") or ""
-                        if "videos.pexels.com/video-files/" not in selected_url:
-                            errors.append(f"desktop: scene {expected} is not photographic video")
+                        chosen_id={1:"5028622",2:"6804117"}[expected]
+                        if chosen_id not in selected_url:
+                            errors.append(f"desktop: scene {expected} is not the expected professional film")
+                        labels=page.locator("#panorama .hold-tech-label").all_text_contents()
+                        if expected==1 and not any("PRODUCTION NODES" in label for label in labels):
+                            errors.append("desktop: data-center telemetry missing")
+                        if expected==2 and not any("ANSIBLE PLAYBOOKS" in label for label in labels):
+                            errors.append("desktop: Linux automation telemetry missing")
                         speed=page.locator("#hold-scene-film").evaluate("e=>e.playbackRate")
                         if abs(speed-.70)>.02:
                             errors.append(f"desktop: scene {expected} playback is too fast ({speed})")
-                # Select the ocean again and confirm it follows through
+                # Select the data center again and confirm it follows through
                 # the entire scroll-controlled editorial journey.
                 page.mouse.move(w*.62,h*.63)
                 page.mouse.down()
@@ -204,9 +210,9 @@ with sync_playwright() as p:
         if page.locator("#portal-current").inner_text().strip()!="02":
             errors.append(f"{name}: section counter did not reach 02")
         if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
-            errors.append("desktop: selected ocean animation lost entering Section 02")
-        if name=="desktop" and "853862" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
-            errors.append("desktop: ocean video lost from Section 02 full-screen film")
+            errors.append("desktop: selected data-center animation lost entering Section 02")
+        if name=="desktop" and "5028622" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
+            errors.append("desktop: server video lost from Section 02 full-screen film")
         # Once the arches become one film, masks must not separate.
         if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
             opened_arch=page.locator("#panorama .arch").first
@@ -230,9 +236,9 @@ with sync_playwright() as p:
         if page.locator("#portal-current").inner_text().strip()!="03":
             errors.append(f"{name}: section counter did not reach 03")
         if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
-            errors.append("desktop: selected ocean animation lost entering Section 03")
-        if name=="desktop" and "853862" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
-            errors.append("desktop: ocean video lost from Section 03 full-screen film")
+            errors.append("desktop: selected data-center animation lost entering Section 03")
+        if name=="desktop" and "5028622" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
+            errors.append("desktop: server video lost from Section 03 full-screen film")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)

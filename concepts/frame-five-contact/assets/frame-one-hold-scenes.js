@@ -4,9 +4,9 @@
  * The hold transition is a translucent organic, marbled liquid wave.
  * Only the film changes; the title and all Section 01 layout stay fixed.
  * The approved scroll timeline, arch springs and typography
- * are untouched. Alternate clips licensed by Pexels (free video license):
- * https://www.pexels.com/video/clear-ocean-water-853862/
- * https://www.pexels.com/video/northern-lights-time-lapse-5700806/
+ * are untouched. Alternate clips are free-use Pexels videos:
+ * https://www.pexels.com/video/database-storage-of-a-server-5028622/
+ * https://www.pexels.com/video/a-computer-code-running-on-screen-6804117/
  */
 (() => {
   "use strict";
@@ -22,16 +22,16 @@
   const films=[
     {name:"Mountain Film"},
     {
-      name:"Ocean Coast",
-      url:"https://videos.pexels.com/video-files/853862/853862-hd_1920_1080_25fps.mp4",
-      poster:"https://images.pexels.com/videos/853862/free-video-853862.jpg?auto=compress&w=1600",
-      fallback:"https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1600&q=85"
+      name:"Data Center · Servers & Infrastructure",
+      url:"https://videos.pexels.com/video-files/5028622/5028622-hd_1920_1080_25fps.mp4",
+      poster:"https://images.pexels.com/videos/5028622/pexels-photo-5028622.jpeg?auto=compress&w=1600",
+      fallback:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85"
     },
     {
-      name:"Northern Lights",
-      url:"https://videos.pexels.com/video-files/5700806/5700806-hd_1920_1080_25fps.mp4",
-      poster:"https://images.pexels.com/videos/5700806/pexels-photo-5700806.jpeg?auto=compress&w=1600",
-      fallback:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=1600&q=85"
+      name:"Linux · Code & Automation",
+      url:"https://videos.pexels.com/video-files/6804117/6804117-hd_1920_1080_25fps.mp4",
+      poster:"https://images.pexels.com/videos/6804117/pexels-photo-6804117.jpeg?auto=compress&w=1600",
+      fallback:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=85"
     }
   ];
   const player=document.createElement("video");
@@ -67,13 +67,52 @@
 
   // Render ONE moving video through three synchronized arch windows.
   // This uses one decoded movie, not three separate video downloads.
-  const panes=arches.map(arch=>{
+  const captions=[
+    ["PRODUCTION NODES","NETWORK  /  24×7","SEARCH & LOGGING"],
+    ["LINUX  /  RHEL","ANSIBLE PLAYBOOKS","KAFKA  →  LOGSTASH  →  ES"]
+  ];
+  // Small glass telemetry, not a fake login screen or a code-wall.
+  // The mountain scene stays visually unchanged.
+  const panes=arches.map((arch,index)=>{
     const canvas=document.createElement("canvas");
     canvas.className="hold-scene-paint";
     canvas.setAttribute("aria-hidden","true");
     arch.append(canvas);
-    return {arch,canvas,ctx:canvas.getContext("2d",{alpha:true})};
+    const overlay=document.createElement("div");
+    overlay.className="hold-scene-tech";
+    overlay.setAttribute("aria-hidden","true");
+    const header=document.createElement("span");
+    header.className="hold-tech-top";
+    header.textContent="0"+(index+1)+"  /  03";
+    const label=document.createElement("span");
+    label.className="hold-tech-label";
+    const flow=document.createElement("span");
+    flow.className="hold-tech-flow";
+    for(let n=0;n<3;n++){
+      const light=document.createElement("i");
+      light.style.setProperty("--unit",String(n));
+      flow.append(light);
+    }
+    overlay.append(header,flow,label);
+    arch.append(overlay);
+    return {arch,canvas,ctx:canvas.getContext("2d",{alpha:true}),label};
   });
+  // In Frames 02 and 03 the active video fills the screen.
+  // Keep a single subdued technology signature below the chapter text.
+  const systemFlow=document.createElement("div");
+  systemFlow.className="hold-scene-system-flow";
+  systemFlow.setAttribute("aria-hidden","true");
+  const flowLine=document.createElement("span");
+  flowLine.className="hold-flow-track";
+  const chipLabels=["LINUX","AUTOMATION","STREAMING","SEARCH"];
+  for(const name of chipLabels){
+    const chip=document.createElement("span");
+    chip.textContent=name;
+    chip.className="hold-flow-chip";
+    flowLine.append(chip);
+  }
+  systemFlow.append(flowLine);
+  stage.insertBefore(systemFlow,shade);
   const photo=new Image();
   photo.decoding="async";
   // An offscreen painterly texture gives the organic wave marbled detail.
@@ -160,7 +199,7 @@
   function status(){
     button.textContent="PRESS & HOLD  ·  "+String(scene+1).padStart(2,"0")+" / 03";
     button.setAttribute("aria-label",
-      films[scene].name+". Click to change to the next moving landscape.");
+      films[scene].name+". Click to change to the next cinematic background.");
   }
   function resize(){
     const rect=stage.getBoundingClientRect();
@@ -265,6 +304,11 @@
     panorama.dataset.artScene=String(scene);
     document.body.dataset.frameOneArt=String(scene);
     status();
+    if(scene>0){
+      panes.forEach((pane,index)=>{
+        pane.label.textContent=captions[scene-1][index];
+      });
+    }
     lastOpacity=-1;lastVisible=false;
     if(scene===0){
       stopRender();player.pause();
