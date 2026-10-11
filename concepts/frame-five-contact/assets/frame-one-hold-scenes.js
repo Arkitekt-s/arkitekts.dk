@@ -230,7 +230,7 @@
     if(scene===0||!inMovieChapters())return;
     if(now-lastDraw>=32){
       lastDraw=now;
-      if(progress()<.995)paintPanes();
+      if(progress()<.90)paintPanes();
     }
     if(motionAllowed()&&player.paused && player.readyState>=2)
       player.play().catch(()=>{});
@@ -247,8 +247,10 @@
   function showFilm(){
     if(scene===0)return;
     const p=progress();
-    const visible=inMovieChapters() && p>.63 && panorama.dataset.artMediaReady==="true";
-    const opacity=visible?ease((p-.69)/.24):0;
+    // Option A: alternate movie and poster dissolve over the same window
+    // as the default full-screen film. No late cut or default-film bleed.
+    const visible=inMovieChapters() && p>.39 && panorama.dataset.artMediaReady==="true";
+    const opacity=visible?ease((p-.42)/.47):0;
     // Real HD footage takes over when decoded. A still poster preserves
     // the selected look if the media host is slow or temporarily blocked.
     photo.style.opacity=opacity.toFixed(3);
