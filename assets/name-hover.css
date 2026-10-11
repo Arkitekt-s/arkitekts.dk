@@ -47,3 +47,20 @@
   }
   .site-header .site-name .name-hover-in{display:none}
 }
+
+
+/* Slightly larger SOHEIL wordmark on every public page.
+   Keep the existing typeface, letter-flip effect and centered header. */
+.site-header .site-name{
+  font-size:13.5px;
+}
+@media (min-width:761px) and (max-width:1199px){
+  .site-header .site-name{
+    font-size:11px;
+  }
+}
+@media (max-width:760px){
+  .site-header .site-name{
+    font-size:11px;
+  }
+}
