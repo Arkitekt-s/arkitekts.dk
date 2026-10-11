@@ -39,9 +39,16 @@
     stroke.setAttribute("stroke-width","1.15");
     stroke.setAttribute("vector-effect","non-scaling-stroke");
     border.append(stroke);
+    // Separate, mouse-local chromatic lens. It recolors LIVE footage below
+    // without modifying the movie, SVG mask, or approved earlier frames.
+    const lens=document.createElement("span");
+    lens.className="arch-color-lens";
+    lens.setAttribute("aria-hidden","true");
+    lens.style.visibility="hidden";
+    element.append(lens);
     element.append(border);
-    return {element,path,stroke,id:clip.id,rect:null,vertices:[],
-      applied:false, progress:0,active:false};
+    return {element,path,stroke,lens,id:clip.id,rect:null,vertices:[],
+      applied:false,progress:0,active:false,color:0,colorX:50,colorY:50};
   });
   const CURVE_STEPS=48, SIDE_STEPS=18;
   let mouseX=-10000,mouseY=-10000,tracking=false;
@@ -152,10 +159,32 @@
     a.element.style.setProperty("--arch-glow","7px");
   }
 
+  // Match the CURVED, deforming silhouette rather than its rectangular box.
+  // The lens never activates over the empty upper corners of an arch.
+  function pointerInside(a){
+    if(!tracking||!a.rect||!a.vertices.length)return false;
+    const x=mouseX-a.rect.left,y=mouseY-a.rect.top;
+    if(x<0||x>a.rect.width||y<0||y>a.rect.height)return false;
+    let inside=false;
+    const points=a.vertices;
+    for(let i=0,j=points.length-1;i<points.length;j=i++){
+      const u=points[i],v=points[j];
+      const ux=u.x+u.nx*u.displacement,uy=u.y+u.ny*u.displacement;
+      const vx=v.x+v.nx*v.displacement,vy=v.y+v.ny*v.displacement;
+      if((uy>y)!==(vy>y) &&
+          x<(vx-ux)*(y-uy)/(vy-uy)+ux)inside=!inside;
+    }
+    return inside;
+  }
+  function clearColor(a){
+    a.color=0;
+    a.lens.style.opacity="0";
+    a.lens.style.visibility="hidden";
+  }
   function animate(now){
     frame=0;
     if(!available()){
-      items.forEach(a=>setMask(a,false));
+      items.forEach(a=>{setMask(a,false);clearColor(a);});
       lastFrame=0;return;
     }
     const dt=lastFrame?clamp((now-lastFrame)/16.67,.55,1.8):1;
@@ -170,6 +199,7 @@
       // Only disable the clip when the rounded arch has fully opened.
       if(p>=.92){
         setMask(a,false);
+        clearColor(a);
         continue;
       }
       setMask(a,true);
@@ -193,6 +223,35 @@
         else{v.displacement=target;v.velocity=0;}
       }
       drawMask(a);
+
+      // Color follows the cursor only INSIDE this particular arch.
+      // It gradually releases both on exit and during the scroll-to-film.
+      const fadeWithScroll=1-easing(clamp((p-.08)/.20,0,1));
+      const inside=fadeWithScroll>.001&&pointerInside(a);
+      const colorTarget=inside ? fadeWithScroll : 0;
+      const previous=a.color;
+      const colorEase=1-Math.exp(-dt*16.67/(inside?105:235));
+      a.color+=(colorTarget-a.color)*colorEase;
+      if(Math.abs(colorTarget-a.color)<.003)a.color=colorTarget;
+
+      if(inside){
+        a.colorX=clamp((mouseX-a.rect.left)/a.rect.width*100,0,100);
+        a.colorY=clamp((mouseY-a.rect.top)/a.rect.height*100,0,100);
+        // Pointer position changes the color mix, like moving a liquid prism.
+        const hue=105+a.colorX*.92+a.colorY*.28;
+        a.lens.style.setProperty("--lens-x",a.colorX.toFixed(2)+"%");
+        a.lens.style.setProperty("--lens-y",a.colorY.toFixed(2)+"%");
+        a.lens.style.setProperty("--lens-hue",hue.toFixed(2)+"deg");
+      }
+      if(a.color>.003){
+        a.lens.style.visibility="visible";
+        a.lens.style.opacity=a.color.toFixed(3);
+      }else{
+        a.lens.style.opacity="0";
+        a.lens.style.visibility="hidden";
+      }
+      if(Math.abs(colorTarget-a.color)>.003 || Math.abs(previous-a.color)>.003)
+        alive=true;
     }
     if(alive)requestFrame();
     else lastFrame=0;
