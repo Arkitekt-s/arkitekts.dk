@@ -299,26 +299,52 @@ body.frame-one.frame-three-active .portal-shade{
 }
 
 
-/* SOHEIL: magnetic, individually animated header letters.
-   Scope to the final homepage; no effects on the shared site navigation. */
+/* SOHEIL: one hovered letter flips upward in 240ms.
+   Keep original wordmark spacing and its fixed header position. */
 body.frame-one .site-header .site-name.name-hover-ready{
   padding:12px 1px;
   margin:-12px -1px;
   user-select:none;
   white-space:nowrap;
-  isolation:isolate;
 }
 body.frame-one .site-header .site-name .name-hover-glyph{
   display:inline-block;
   position:relative;
-  transform-origin:50% 78%;
   vertical-align:baseline;
-  will-change:transform;
+  perspective:180px;
+  cursor:default;
+}
+body.frame-one .site-header .site-name .name-hover-face{
+  display:block;
+  transform-origin:center 50%;
   backface-visibility:hidden;
+  pointer-events:none;
+}
+body.frame-one .site-header .site-name .name-hover-in{
+  position:absolute;
+  inset:0;
+  opacity:0;
+}
+body.frame-one .site-header .site-name .name-hover-glyph.is-flipping .name-hover-out{
+  animation:soheil-letter-flip-out .24s cubic-bezier(.2,.7,.2,1) both;
+}
+body.frame-one .site-header .site-name .name-hover-glyph.is-flipping .name-hover-in{
+  animation:soheil-letter-flip-in .24s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes soheil-letter-flip-out{
+  0%{opacity:1;transform:translate3d(0,0,0) rotateX(0deg)}
+  55%{opacity:.15}
+  100%{opacity:0;transform:translate3d(0,-75%,0) rotateX(78deg)}
+}
+@keyframes soheil-letter-flip-in{
+  0%{opacity:0;transform:translate3d(0,75%,0) rotateX(-78deg)}
+  40%{opacity:.2}
+  100%{opacity:1;transform:translate3d(0,0,0) rotateX(0deg)}
 }
 @media(prefers-reduced-motion:reduce){
-  body.frame-one .site-header .site-name .name-hover-glyph{
-    will-change:auto;
+  body.frame-one .site-header .site-name .name-hover-face{
+    animation:none!important;
     transform:none!important;
   }
+  body.frame-one .site-header .site-name .name-hover-in{display:none}
 }
