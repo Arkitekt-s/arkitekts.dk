@@ -524,9 +524,11 @@ body.motion-off .panorama .arch .arch-color-lens{
 }
 
 
-/* Frame 01 — three live cinematic films. Selected video continues
-   as the fullscreen background through Frames 02 and 03.
-   Preserve arch size, Silver Glass, text and scroll transitions. */
+/* Frame 01 — three cinematic backgrounds.
+   Mountain footage remains the original film.
+   Server infrastructure and Linux automation are new original motion
+   artwork (Canvas 2D) to avoid low-quality/broken external clips.
+   Selection continues as full screen through Frames 02 and 03. */
 body.frame-one #panorama .arch .hold-scene-paint{
   position:absolute;
   inset:0;
@@ -546,20 +548,23 @@ body.frame-one #panorama[data-art-scene="2"][data-art-media-ready="true"] .arch 
   opacity:.92;
   visibility:visible;
 }
-/* Frame 01 only: translucent, marbled liquid wave.
-   Positioned BELOW the white hero text and ABOVE the arch background.
-   Its canvas changes no geometry, typography, or scroll navigation. */
-body.frame-one .frame-stage .hold-scene-wipe{
-  position:absolute;
+/* The liquid now spans the ENTIRE viewport: header, content and
+   footer. At 68% maximum alpha the page's name and headline remain
+   visible beneath the wave and never move or change text. */
+body.frame-one > .hold-scene-wipe{
+  position:fixed;
   inset:0;
-  width:100%;
-  height:100%;
+  width:100vw;
+  height:100vh;
+  width:100dvw;
+  height:100dvh;
   display:block;
   pointer-events:none;
-  z-index:7;
+  z-index:175;
   visibility:hidden;
   opacity:1;
   overflow:hidden;
+  user-select:none;
 }
 body.frame-one .panorama .scenery{
   animation-duration:29s;
@@ -811,4 +816,17 @@ body.frame-one .frame-stage .hold-flow-chip{
   body.frame-one .hold-flow-track::before{animation:none!important}
   body.frame-one .hold-scene-tech,
   body.frame-one .hold-scene-system-flow{transition:none!important}
+}
+
+/* Keep the new technical films crisp but subdued behind white typography. */
+body.frame-one #panorama .arch .hold-scene-paint{
+  filter:saturate(.9) contrast(1.08) brightness(.97);
+}
+body.frame-one .frame-stage #hold-scene-film{
+  image-rendering:auto;
+  filter:saturate(.87) contrast(1.08) brightness(.91);
+}
+body.frame-one #panorama[data-art-scene="1"] .arch .hold-scene-tech,
+body.frame-one #panorama[data-art-scene="2"] .arch .hold-scene-tech{
+  text-shadow:0 2px 14px rgba(2,11,26,.9);
 }

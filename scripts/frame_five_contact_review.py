@@ -115,8 +115,14 @@ with sync_playwright() as p:
                 wave=page.locator(".hold-scene-wipe")
                 if wave.count()!=1 or wave.evaluate("e=>e.tagName")!="CANVAS":
                     errors.append("desktop: organic liquid transition canvas missing")
-                elif wave.evaluate("e=>getComputedStyle(e).zIndex")!="7":
-                    errors.append("desktop: liquid wave should stay behind hero text")
+                elif wave.evaluate("e=>getComputedStyle(e).zIndex")!="175":
+                    errors.append("desktop: liquid wave should cover the full site chrome")
+                elif wave.evaluate("e=>e.parentElement===document.body") is not True:
+                    errors.append("desktop: liquid wave is trapped inside Section 01")
+                else:
+                    area=wave.bounding_box()
+                    if area and (area["y"]>1 or area["height"]<h-2):
+                        errors.append("desktop: wave canvas does not cover header and footer")
                 original_title=page.locator(".hero-text").inner_text()
                 original_position=page.locator(".hero-text").bounding_box()
                 mountain_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
@@ -144,18 +150,23 @@ with sync_playwright() as p:
                     if page.locator("#panorama .hold-scene-paint").count()!=3:
                         errors.append("desktop: cinematic artwork not present in all three arches")
                     if expected in (1,2):
-                        selected_url=page.locator("#hold-scene-film").get_attribute("src") or ""
-                        chosen_id={1:"5028622",2:"6804117"}[expected]
-                        if chosen_id not in selected_url:
-                            errors.append(f"desktop: scene {expected} is not the expected professional film")
+                        film=page.locator("#hold-scene-film")
+                        if film.evaluate("e=>e.tagName")!="CANVAS":
+                            errors.append(f"desktop: scene {expected} is not a custom rendered film")
+                        area=page.locator("#panorama .hold-scene-paint").first
+                        video_pixels=area.evaluate("""e=>{
+                            const c=e.getContext('2d');
+                            if(!c||e.width<100||e.height<100)return 0;
+                            const data=c.getImageData(15,15,1,1).data;
+                            return data[0]+data[1]+data[2];
+                        }""")
+                        if video_pixels<10:
+                            errors.append(f"desktop: scene {expected} background is empty")
                         labels=page.locator("#panorama .hold-tech-label").all_text_contents()
-                        if expected==1 and not any("PRODUCTION NODES" in label for label in labels):
-                            errors.append("desktop: data-center telemetry missing")
+                        if expected==1 and not any("DATA CENTER" in label for label in labels):
+                            errors.append("desktop: data-center scene missing")
                         if expected==2 and not any("ANSIBLE PLAYBOOKS" in label for label in labels):
-                            errors.append("desktop: Linux automation telemetry missing")
-                        speed=page.locator("#hold-scene-film").evaluate("e=>e.playbackRate")
-                        if abs(speed-.70)>.02:
-                            errors.append(f"desktop: scene {expected} playback is too fast ({speed})")
+                            errors.append("desktop: Linux automation scene missing")
                 # Select the data center again and confirm it follows through
                 # the entire scroll-controlled editorial journey.
                 page.mouse.move(w*.62,h*.63)
@@ -211,8 +222,8 @@ with sync_playwright() as p:
             errors.append(f"{name}: section counter did not reach 02")
         if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
             errors.append("desktop: selected data-center animation lost entering Section 02")
-        if name=="desktop" and "5028622" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
-            errors.append("desktop: server video lost from Section 02 full-screen film")
+        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="CANVAS":
+            errors.append("desktop: server animation lost from Section 02 background")
         # Once the arches become one film, masks must not separate.
         if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
             opened_arch=page.locator("#panorama .arch").first
@@ -237,8 +248,8 @@ with sync_playwright() as p:
             errors.append(f"{name}: section counter did not reach 03")
         if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
             errors.append("desktop: selected data-center animation lost entering Section 03")
-        if name=="desktop" and "5028622" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
-            errors.append("desktop: server video lost from Section 03 full-screen film")
+        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="CANVAS":
+            errors.append("desktop: server animation lost from Section 03 background")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)

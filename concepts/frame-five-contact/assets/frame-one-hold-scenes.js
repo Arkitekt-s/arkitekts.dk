@@ -1,78 +1,50 @@
-/* Cinematic Frame 01: three real scenic films selected by press-and-hold.
- * The chosen film continues into Frames 02 and 03, then pauses behind
- * Frames 04–05. All three movies run at calm 70% playback speed.
- * The hold transition is a translucent organic, marbled liquid wave.
- * Only the film changes; the title and all Section 01 layout stay fixed.
- * The approved scroll timeline, arch springs and typography
- * are untouched. Alternate clips are free-use Pexels videos:
- * https://www.pexels.com/video/database-storage-of-a-server-5028622/
- * https://www.pexels.com/video/a-computer-code-running-on-screen-6804117/
+/* Three cinematic worlds for Frames 01–03.
+ * 01 = original mountain video (untouched).
+ * 02 = original, rendered server-room corridor.
+ * 03 = original, rendered Linux/Ansible automation workspace.
+ * Hold switches one world while the translucent liquid wave travels
+ * across the ENTIRE viewport, including header and footer.
+ * The scroll journey, arches, text, gallery and contact remain unchanged.
  */
 (() => {
   "use strict";
   const stage=document.getElementById("frame");
   const panorama=document.getElementById("panorama");
-  const arches=[...document.querySelectorAll("#panorama .arch")];
   const shade=document.querySelector(".portal-shade");
-  if(!stage||!panorama||arches.length!==3||!shade)return;
-
+  const arches=[...document.querySelectorAll("#panorama .arch")];
+  if(!stage||!panorama||!shade||arches.length!==3)return;
   const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-  const ease=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
-  const films=[
-    {name:"Mountain Film"},
-    {
-      name:"Data Center · Servers & Infrastructure",
-      url:"https://videos.pexels.com/video-files/5028622/5028622-hd_1920_1080_25fps.mp4",
-      poster:"https://images.pexels.com/videos/5028622/pexels-photo-5028622.jpeg?auto=compress&w=1600",
-      fallback:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85"
-    },
-    {
-      name:"Linux · Code & Automation",
-      url:"https://videos.pexels.com/video-files/6804117/6804117-hd_1920_1080_25fps.mp4",
-      poster:"https://images.pexels.com/videos/6804117/pexels-photo-6804117.jpeg?auto=compress&w=1600",
-      fallback:"https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1600&q=85"
-    }
-  ];
-  const player=document.createElement("video");
-  player.id="hold-scene-film";
-  player.className="hold-scene-film";
-  player.muted=true;
-  player.loop=true;
-  player.playsInline=true;
-  player.preload="none";
-  player.disablePictureInPicture=true;
-  player.setAttribute("aria-hidden","true");
-  player.setAttribute("tabindex","-1");
-  const FILM_SPEED=.70;
-  // The same reduced speed carries from three windows into the full screen.
-  const originalMovies=[
-    ...document.querySelectorAll("#panorama .arch-video"),
-    document.getElementById("portal-film")
-  ].filter(Boolean);
-  function slowMovies(){
-    for(const video of [...originalMovies,player]){
-      if(Math.abs(video.playbackRate-FILM_SPEED)>.001)
-        video.playbackRate=FILM_SPEED;
-    }
-  }
-  originalMovies.forEach(video=>{
-    video.addEventListener("loadedmetadata",slowMovies);
-    video.addEventListener("playing",slowMovies);
-  });
-  player.addEventListener("loadedmetadata",slowMovies);
-  player.addEventListener("playing",slowMovies);
-  slowMovies();
-  stage.insertBefore(player,shade);
-
-  // Render ONE moving video through three synchronized arch windows.
-  // This uses one decoded movie, not three separate video downloads.
-  const captions=[
-    ["PRODUCTION NODES","NETWORK  /  24×7","SEARCH & LOGGING"],
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const smooth=v=>{v=clamp(v,0,1);return v*v*(3-2*v);};
+  const SCENE_NAMES=["Mountain Film","Server Infrastructure","Linux & Automation"];
+  const LABELS=[
+    ["DATA CENTER","RHEL  /  NODES","PRODUCTION  /  24×7"],
     ["LINUX  /  RHEL","ANSIBLE PLAYBOOKS","KAFKA  →  LOGSTASH  →  ES"]
   ];
-  // Small glass telemetry, not a fake login screen or a code-wall.
-  // The mountain scene stays visually unchanged.
+  const FILM_SPEED=.70;
+  // Keep the owner's selected slower pace on the original mountain film.
+  const originalFilms=[...document.querySelectorAll("#panorama .arch-video"),
+    document.getElementById("portal-film")].filter(Boolean);
+  const slowFilms=()=>{
+    originalFilms.forEach(video=>{
+      if(Math.abs(video.playbackRate-FILM_SPEED)>.001)
+        video.playbackRate=FILM_SPEED;
+    });
+  };
+  originalFilms.forEach(video=>{
+    video.addEventListener("loadedmetadata",slowFilms);
+    video.addEventListener("playing",slowFilms);
+  });
+  slowFilms();
+
+  // Single full-quality canvas, cropped to form one continuous film.
+  // It is redrawn for the arches and the full-screen 02–03 journey.
+  const source=document.createElement("canvas");
+  source.width=1200;source.height=675;
+  const g=source.getContext("2d",{alpha:false});
+  if(!g)return;
+  const W=source.width,H=source.height;
+
   const panes=arches.map((arch,index)=>{
     const canvas=document.createElement("canvas");
     canvas.className="hold-scene-paint";
@@ -81,11 +53,9 @@
     const overlay=document.createElement("div");
     overlay.className="hold-scene-tech";
     overlay.setAttribute("aria-hidden","true");
-    const header=document.createElement("span");
-    header.className="hold-tech-top";
-    header.textContent="0"+(index+1)+"  /  03";
-    const label=document.createElement("span");
-    label.className="hold-tech-label";
+    const number=document.createElement("span");
+    number.className="hold-tech-top";
+    number.textContent=String(index+1).padStart(2,"0")+"  /  03";
     const flow=document.createElement("span");
     flow.className="hold-tech-flow";
     for(let n=0;n<3;n++){
@@ -93,85 +63,83 @@
       light.style.setProperty("--unit",String(n));
       flow.append(light);
     }
-    overlay.append(header,flow,label);
+    const label=document.createElement("span");
+    label.className="hold-tech-label";
+    overlay.append(number,flow,label);
     arch.append(overlay);
     return {arch,canvas,ctx:canvas.getContext("2d",{alpha:true}),label};
   });
-  // In Frames 02 and 03 the active video fills the screen.
-  // Keep a single subdued technology signature below the chapter text.
-  const systemFlow=document.createElement("div");
-  systemFlow.className="hold-scene-system-flow";
-  systemFlow.setAttribute("aria-hidden","true");
-  const flowLine=document.createElement("span");
-  flowLine.className="hold-flow-track";
-  const chipLabels=["LINUX","AUTOMATION","STREAMING","SEARCH"];
-  for(const name of chipLabels){
-    const chip=document.createElement("span");
-    chip.textContent=name;
-    chip.className="hold-flow-chip";
-    flowLine.append(chip);
-  }
-  systemFlow.append(flowLine);
-  stage.insertBefore(systemFlow,shade);
-  const photo=new Image();
-  photo.decoding="async";
-  // An offscreen painterly texture gives the organic wave marbled detail.
-  // It is generated once, not recreated each animation frame.
-  const texture=document.createElement("canvas");
-  texture.width=600;texture.height=350;
-  const tex=texture.getContext("2d",{alpha:false});
-  function createMarble(){
-    if(!tex)return;
-    const w=texture.width,h=texture.height;
-    const img=tex.createImageData(w,h),data=img.data;
-    const colors=[[43,22,84],[81,43,140],[129,74,177],
-      [180,119,210],[219,158,222],[240,184,218],[87,53,152]];
-    for(let y=0;y<h;y++){
-      const v=y/h;
-      for(let x=0;x<w;x++){
-        const u=x/w;
-        const dx=u-.40,dy=v-.46;
-        const radius=Math.hypot(dx*1.2,dy*.86);
-        const theta=Math.atan2(dy,dx);
-        const flow=19*radius-2.6*theta+
-          2.1*Math.sin(v*8+u*3)+1.3*Math.sin(u*13-v*6);
-        const band=.5+.23*Math.sin(flow)+.14*Math.sin(flow*2.35+
-          Math.sin(v*14))+.09*Math.cos(23*u+10*v);
-        const pos=clamp(band,0,.9999)*(colors.length-1);
-        const a=Math.floor(pos),b=Math.min(colors.length-1,a+1),z=pos-a;
-        const offset=(y*w+x)*4;
-        const shade=.91+.09*Math.sin((u+v)*6.3);
-        for(let k=0;k<3;k++)
-          data[offset+k]=(colors[a][k]*(1-z)+colors[b][k]*z)*shade;
-        data[offset+3]=255;
-      }
-    }
-    tex.putImageData(img,0,0);
-    // Threads of polished silver-violet flow across the painted waves.
-    tex.lineCap="round";
-    for(let row=0;row<120;row++){
-      const baseline=(row+.5)*h/120;
-      tex.beginPath();
-      for(let x=0;x<=w;x+=5){
-        const y=baseline+17*Math.sin(x*.023+row*.082)+
-          6*Math.sin(x*.067-row*.12);
-        if(x===0)tex.moveTo(x,y);else tex.lineTo(x,y);
-      }
-      tex.lineWidth=row%10===0?1.05:.38;
-      tex.strokeStyle=row%10===0?
-        "rgba(255,218,252,.19)":"rgba(246,199,247,.10)";
-      tex.stroke();
-    }
-  }
-  createMarble();
+
+  const full=document.createElement("canvas");
+  full.id="hold-scene-film";
+  full.className="hold-scene-film";
+  full.setAttribute("aria-hidden","true");
+  stage.insertBefore(full,shade);
+  const fullCtx=full.getContext("2d",{alpha:false});
+
+  const flow=document.createElement("div");
+  flow.className="hold-scene-system-flow";
+  flow.setAttribute("aria-hidden","true");
+  const flowTrack=document.createElement("span");
+  flowTrack.className="hold-flow-track";
+  ["LINUX","AUTOMATION","STREAMING","SEARCH"].forEach(label=>{
+    const item=document.createElement("span");
+    item.className="hold-flow-chip";
+    item.textContent=label;flowTrack.append(item);
+  });
+  flow.append(flowTrack);
+  stage.insertBefore(flow,shade);
+
+  // The liquid is attached to BODY, not the inset content stage.
+  // This intentionally sends its translucent marbled film across
+  // header, footer, hero and both edges of the browser window.
   const wipe=document.createElement("canvas");
   wipe.className="hold-scene-wipe";
   wipe.setAttribute("aria-hidden","true");
-  stage.append(wipe);
-  const wipeCtx=wipe.getContext("2d",{alpha:true});
-  let wipeW=1,wipeH=1,wipeDpr=1;
+  document.body.append(wipe);
+  const wc=wipe.getContext("2d",{alpha:true});
+  const marble=document.createElement("canvas");
+  marble.width=640;marble.height=360;
+  const mc=marble.getContext("2d",{alpha:false});
+  let wipeWidth=1,wipeHeight=1;
+  function makeMarble(){
+    if(!mc)return;
+    const w=marble.width,h=marble.height;
+    const img=mc.createImageData(w,h),px=img.data;
+    const palette=[[29,25,52],[49,38,81],[81,57,111],[122,91,151],
+      [167,135,189],[213,179,220],[102,100,143]];
+    for(let y=0;y<h;y++){
+      const v=y/h;
+      for(let x=0;x<w;x++){
+        const u=x/w,dx=u-.46,dy=v-.51;
+        const r=Math.hypot(dx*1.2,dy*.84),a=Math.atan2(dy,dx);
+        const twist=17*r-3*a+2.0*Math.sin(u*7+v*4)+
+          1.2*Math.cos(u*11-v*10);
+        const f=clamp(.49+.21*Math.sin(twist)+
+          .17*Math.sin(twist*2.3+.9*Math.cos(v*18))+
+          .09*Math.cos(19*u+13*v),0,.9999)*(palette.length-1);
+        const i=Math.floor(f),n=i+1,t=f-i,p=(y*w+x)*4;
+        for(let k=0;k<3;k++)px[p+k]=palette[i][k]*(1-t)+palette[n][k]*t;
+        px[p+3]=255;
+      }
+    }
+    mc.putImageData(img,0,0);
+    for(let n=0;n<74;n++){
+      mc.beginPath();
+      for(let x=0;x<=w;x+=7){
+        const y=n*h/74+13*Math.sin(x*.026+n*.084)+
+          5*Math.sin(x*.056-n*.14);
+        if(x===0)mc.moveTo(x,y);else mc.lineTo(x,y);
+      }
+      mc.strokeStyle=n%7===0?"rgba(239,234,255,.22)":"rgba(238,206,250,.09)";
+      mc.lineWidth=n%7===0?1.2:.45;mc.stroke();
+    }
+  }
+  makeMarble();
+
   const button=document.createElement("button");
-  button.type="button";button.className="hold-scene-control";
+  button.type="button";
+  button.className="hold-scene-control";
   button.id="hold-scene-control";
   stage.append(button);
   const hint=document.createElement("span");
@@ -180,310 +148,425 @@
   hint.textContent="HOLD ANYWHERE TO CHANGE THE SCENE";
   stage.append(hint);
 
-  let scene=0,armed=null,heldPointer=null,transition=null;
-  let videoLoop=0,lastDraw=0,selectionVersion=0;
-  let lastDimensions="",lastOpacity=-1,lastVisible=false;
-  function progress(){return clamp(Number(document.body.dataset.portalProgress||0),0,1);}
-  function journey(){return Number(document.body.dataset.journeyProgress||0);}
-  function eligible(){
-    return (document.body.dataset.currentFrame||"1")==="1" &&
-      progress()<.075 && !document.body.classList.contains("motion-off") &&
-      !document.hidden;
+  let scene=0,armed=null,held=null,transition=null;
+  let frame=0,lastRendered=0,lastVisible=false,lastOpacity=-1;
+  function progress(){
+    return clamp(Number(document.body.dataset.portalProgress||"0"),0,1);
   }
-  function inMovieChapters(){
-    return journey()<2.82 && !document.hidden;
+  function journey(){
+    return Number(document.body.dataset.journeyProgress||"0");
   }
-  function motionAllowed(){
+  function allowed(){
     return !reduced.matches && !document.body.classList.contains("motion-off");
   }
+  function eligible(){
+    return (document.body.dataset.currentFrame||"1")==="1" &&
+      progress()<.075 && allowed() && !document.hidden;
+  }
+  function visibleMovie(){
+    return journey()<2.82 && !document.hidden;
+  }
   function status(){
-    button.textContent="PRESS & HOLD  ·  "+String(scene+1).padStart(2,"0")+" / 03";
-    button.setAttribute("aria-label",
-      films[scene].name+". Click to change to the next cinematic background.");
+    button.textContent="PRESS & HOLD  ·  "+
+      String(scene+1).padStart(2,"0")+" / 03";
+    button.setAttribute("aria-label",SCENE_NAMES[scene]+
+      ". Hold or click to change the animated background.");
   }
-  function resize(){
-    const rect=stage.getBoundingClientRect();
-    wipeW=Math.max(1,rect.width);wipeH=Math.max(1,rect.height);
-    wipeDpr=Math.min(devicePixelRatio||1,1.5);
-    wipe.width=Math.ceil(wipeW*wipeDpr);
-    wipe.height=Math.ceil(wipeH*wipeDpr);
-    wipeCtx?.setTransform(wipeDpr,0,0,wipeDpr,0,0);
-    sizePanes();
+  function fit(){
+    wipeWidth=Math.max(1,innerWidth);
+    wipeHeight=Math.max(1,innerHeight);
+    const d=Math.min(devicePixelRatio||1,1.35);
+    wipe.width=Math.ceil(wipeWidth*d);
+    wipe.height=Math.ceil(wipeHeight*d);
+    if(wc)wc.setTransform(d,0,0,d,0,0);
+    const box=stage.getBoundingClientRect();
+    const scale=Math.min(devicePixelRatio||1,1.45);
+    const width=Math.max(1,Math.round(box.width*scale));
+    const height=Math.max(1,Math.round(box.height*scale));
+    if(full.width!==width)full.width=width;
+    if(full.height!==height)full.height=height;
   }
-  function sizePanes(){
-    for(const pane of panes){
-      const r=pane.arch.getBoundingClientRect();
-      const scale=Math.min(devicePixelRatio||1,1.4);
-      const w=Math.max(1,Math.round(r.width*scale));
-      const h=Math.max(1,Math.round(r.height*scale));
-      if(pane.canvas.width!==w)pane.canvas.width=w;
-      if(pane.canvas.height!==h)pane.canvas.height=h;
+  function fillGradient(x,y,r,stops){
+    const gradient=g.createRadialGradient(x,y,0,x,y,r);
+    stops.forEach(([p,c])=>gradient.addColorStop(p,c));
+    return gradient;
+  }
+  function line(x,y,x2,y2,color,width=1){
+    g.strokeStyle=color;g.lineWidth=width;g.beginPath();
+    g.moveTo(x,y);g.lineTo(x2,y2);g.stroke();
+  }
+  function panel(x,y,w,h,fill,stroke){
+    g.fillStyle=fill;g.fillRect(x,y,w,h);
+    if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.strokeRect(x+.5,y+.5,w-1,h-1);}
+  }
+  function renderServers(t){
+    // Film lighting: elegant violet shadows, blue steel and mint LEDs.
+    const bg=g.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,"#08131e");bg.addColorStop(.46,"#172a3a");
+    bg.addColorStop(1,"#070d1d");g.fillStyle=bg;g.fillRect(0,0,W,H);
+    const vx=W*.50+Math.sin(t*.11)*9,vy=H*.36;
+    g.fillStyle=fillGradient(vx,vy,660,[
+      [0,"rgba(149,193,205,.24)"],[.48,"rgba(40,91,133,.10)"],
+      [1,"rgba(2,7,20,0)"]]);
+    g.fillRect(0,0,W,H);
+
+    // Roof and floor converge into a long industrial server corridor.
+    g.fillStyle="#101825";
+    g.beginPath();g.moveTo(0,0);g.lineTo(W,0);g.lineTo(vx+170,vy);
+    g.lineTo(vx-170,vy);g.closePath();g.fill();
+    g.fillStyle="#0b1423";
+    g.beginPath();g.moveTo(0,H);g.lineTo(W,H);g.lineTo(vx+160,vy);
+    g.lineTo(vx-160,vy);g.closePath();g.fill();
+    for(const side of [-1,1]){
+      const edge=side<0?0:W;
+      for(let row=0;row<7;row++){
+        const depth=(row+.45+(t*.033)%1)/8;
+        const f=Math.pow(depth,1.42);
+        const lx=vx+side*(165+f*440);
+        const rx=vx+side*(210+f*530);
+        const yTop=vy-f*370,yBottom=vy+f*610;
+        // Side racks are drawn distant-first for a subtle dolly illusion.
+        const rackLeft=Math.min(lx,rx),rackW=Math.abs(rx-lx);
+        const body=g.createLinearGradient(rackLeft,yTop,rackLeft+rackW,yBottom);
+        body.addColorStop(0,side<0?"#142737":"#101c2d");
+        body.addColorStop(1,"#060f1c");
+        g.fillStyle=body;g.fillRect(rackLeft,yTop,rackW,yBottom-yTop);
+        g.strokeStyle="rgba(142,197,207,.24)";
+        g.strokeRect(rackLeft,yTop,rackW,yBottom-yTop);
+        const rows=12;
+        for(let unit=0;unit<rows;unit++){
+          const y=yTop+(unit+.4)/rows*(yBottom-yTop);
+          const thickness=Math.max(1,(yBottom-yTop)/rows*.55);
+          g.fillStyle="rgba(3,11,21,.87)";
+          g.fillRect(rackLeft+2,y,rackW-4,thickness);
+          line(rackLeft+2,y+thickness*.62,rackLeft+rackW-2,
+            y+thickness*.62,"rgba(89,133,156,.24)");
+          const blink=.40+.42*Math.sin(t*.48+unit*2.4+row*1.37+side);
+          const ledColor=unit%4===0?"rgba(179,245,207,"+blink.toFixed(2)+")":
+            "rgba(92,200,241,"+(blink*.75).toFixed(2)+")";
+          g.fillStyle=ledColor;
+          g.fillRect(side<0?rackLeft+rackW-7:rackLeft+5,y+2,
+            Math.max(1,1.8*f),Math.max(1,2.2*f));
+        }
+        line(rackLeft,yTop,rackLeft,yBottom,"rgba(110,200,224,.14)",1.5);
+      }
+      // Light rail on the floor.
+      line(vx+side*82,vy,W*.5+side*560,H,"rgba(111,209,227,.32)",2);
+      line(vx+side*46,vy,W*.5+side*400,H,"rgba(98,155,205,.19)",1.5);
     }
+    for(let row=0;row<9;row++){
+      const d=(row/9+(t*.025)%1);
+      const k=d%1,y=vy+(H-vy)*k*k;
+      line(vx-(170+310*k),y,vx+(170+310*k),y,
+        "rgba(137,211,221,"+(.16*k).toFixed(3)+")",1);
+    }
+    // Soft ceiling lights, with a near-black falloff at the edges.
+    for(let k=0;k<7;k++){
+      const depth=(k/7+t*.035)%1;
+      const y=vy-340*depth*depth;
+      const w=8+90*depth;
+      g.fillStyle="rgba(181,230,235,"+(.08+.2*depth).toFixed(3)+")";
+      g.fillRect(vx-w/2,y,w,2+2*depth);
+    }
+    g.fillStyle=fillGradient(W*.5,H*.36,760,[
+      [0,"rgba(2,9,20,0)"],[.65,"rgba(3,10,20,.12)"],
+      [1,"rgba(2,5,16,.72)"]]);
+    g.fillRect(0,0,W,H);
+    g.fillStyle="rgba(147,210,232,.60)";
+    g.font="600 12px ui-monospace, monospace";
+    g.fillText("INFRASTRUCTURE   /   OPERATIONS",54,52);
+    line(54,66,408,66,"rgba(126,224,231,.30)");
   }
-  // A cover-fit crop is calculated across the FULL panorama, then sliced
-  // by each arch's actual position. No stretched images, no seams.
-  function paintPanes(){
-    if(scene===0||!inMovieChapters())return false;
-    const media=player.readyState>=2&&player.videoWidth ? player :
-      (photo.complete&&photo.naturalWidth?photo:null);
-    if(!media)return false;
-    const srcW=media.videoWidth||media.naturalWidth;
-    const srcH=media.videoHeight||media.naturalHeight;
-    if(srcW<1||srcH<1)return false;
-    const full=panorama.getBoundingClientRect();
-    const w=Math.max(1,full.width),h=Math.max(1,full.height);
-    const scaling=Math.max(w/srcW,h/srcH);
-    const cropW=w/scaling,cropH=h/scaling;
-    const startX=(srcW-cropW)*.5,startY=(srcH-cropH)*.5;
-    sizePanes();
-    let drawn=false;
-    for(const pane of panes){
-      if(!pane.ctx)continue;
-      const r=pane.arch.getBoundingClientRect();
-      const local=clamp((r.left-full.left)/w,0,1);
-      const part=clamp(r.width/w,.001,1-local);
-      try{
-        pane.ctx.drawImage(media,startX+cropW*local,startY,
-          Math.max(1,cropW*part),cropH,
-          0,0,pane.canvas.width,pane.canvas.height);
-        drawn=true;
-      }catch{
-        // If a remote clip is blocked, the still fallback remains visible.
+  function renderLinux(t){
+    // A premium, cinematic Linux automation workspace rather than
+    // generic rapidly scrolling green hacker code.
+    const bg=g.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,"#0a1220");bg.addColorStop(.45,"#14192d");
+    bg.addColorStop(1,"#060d1b");g.fillStyle=bg;g.fillRect(0,0,W,H);
+    g.fillStyle=fillGradient(770,320,620,[
+      [0,"rgba(131,91,166,.24)"],[.55,"rgba(69,88,134,.09)"],
+      [1,"rgba(17,23,40,0)"]]);
+    g.fillRect(0,0,W,H);
+    // Network geometry and a deliberately restrained animated pulse.
+    for(let row=0;row<8;row++){
+      const y=85+row*75;
+      line(0,y,W,y,"rgba(132,171,195,.06)");
+    }
+    for(let col=0;col<15;col++){
+      const x=35+col*79;
+      line(x,0,x,H,"rgba(120,157,192,.045)");
+    }
+    const blink=.4+.4*Math.sin(t*.8);
+    for(let i=0;i<5;i++){
+      const x=820+(i%3)*118,y=110+Math.floor(i/3)*132;
+      const glow=fillGradient(x,y,74,[
+        [0,"rgba(123,220,204,.18)"],[1,"rgba(123,220,204,0)"]]);
+      g.fillStyle=glow;g.fillRect(x-74,y-74,148,148);
+      panel(x-36,y-21,72,42,"rgba(23,48,62,.94)","rgba(126,214,210,.42)");
+      g.font="700 11px ui-monospace, monospace";
+      g.fillStyle="rgba(199,243,236,.86)";
+      g.fillText(["LINUX","VAULT","KAFKA","ES","CI/CD"][i],x-27,y+5);
+      if(i!==4){
+        line(x+37,y,x+83,y,"rgba(99,203,198,.22)",2);
+        const pulse=(Math.sin(t*.6+i)+1)*.5;
+        g.fillStyle="rgba(147,246,224,"+(.4+blink*.35).toFixed(2)+")";
+        g.fillRect(x+38+45*pulse,y-2,4,4);
       }
     }
-    if(drawn && panorama.dataset.artMediaReady!=="true"){
-      panorama.dataset.artMediaReady="true";
-      showFilm();
+    // One strong main shell window, one small status window.
+    const wx=86,wy=88,ww=685,wh=475;
+    g.shadowColor="rgba(2,7,17,.65)";g.shadowBlur=45;
+    panel(wx,wy,ww,wh,"rgba(10,20,34,.94)","rgba(153,192,215,.29)");
+    g.shadowBlur=0;
+    panel(wx,wy,ww,36,"rgba(40,54,74,.73)");
+    for(let i=0;i<3;i++){
+      g.fillStyle=["#9b6a83","#d2ab7c","#80a9b4"][i];
+      g.beginPath();g.arc(wx+18+i*19,wy+18,3.3,0,Math.PI*2);g.fill();
     }
-    return drawn;
-  }
-  function render(now){
-    videoLoop=0;
-    if(scene===0||!inMovieChapters())return;
-    if(now-lastDraw>=32){
-      lastDraw=now;
-      if(progress()<.995)paintPanes();
+    g.fillStyle="rgba(208,225,235,.72)";
+    g.font="600 13px ui-monospace, monospace";
+    g.fillText("soheil@linux-ksp: ~ / automation",wx+91,wy+23);
+    const rows=[
+      ["$ ansible-playbook deploy_ksp.yml","#a5f1d1"],
+      ["PLAY [Configure production services]","#c9deed"],
+      ["TASK [Deploy Elasticsearch configuration]","#9bb6c9"],
+      ["ok: [ksp-es-01]   ok: [ksp-es-02]","#6cd6ad"],
+      ["TASK [Kafka certificates and Vault]","#9bb6c9"],
+      ["changed: [ksp-logstash-01]","#dabedb"],
+      ["TASK [Validate pipeline and health]","#9bb6c9"],
+      ["ok: [ksp-logstash-01]","#6cd6ad"],
+      ["$ journalctl -u elasticsearch","#a5f1d1"],
+      ["service: active (running)","#77d0b8"],
+      ["$ curl -s /_cluster/health","#a5f1d1"],
+      ['{"status":"green","nodes":3}',"#b1cfdd"]
+    ];
+    const cycle=Math.floor(t*.25)%rows.length;
+    for(let i=0;i<11;i++){
+      const item=rows[(i+cycle)%rows.length];
+      const y=wy+71+i*32;
+      g.font=(item[0].startsWith("$")?"700":"530")+" 18px ui-monospace,monospace";
+      g.fillStyle=item[1];
+      g.fillText(item[0],wx+23,y,ww-40);
+      if(item[0].startsWith("ok:")||item[0].startsWith("service:")){
+        g.fillStyle="rgba(80,237,171,.43)";
+        g.fillRect(wx+11,y-12,2,14);
+      }
     }
-    if(motionAllowed()&&player.paused && player.readyState>=2)
-      player.play().catch(()=>{});
-    if(inMovieChapters()&&motionAllowed())videoLoop=requestAnimationFrame(render);
+    g.fillStyle="rgba(177,222,236,.60)";
+    g.font="600 12px ui-monospace, monospace";
+    g.fillText("SYSTEMS   /   CODE   /   DELIVERY",W-349,H-60);
+    line(W-349,H-46,W-73,H-46,"rgba(134,210,216,.33)");
   }
-  function startRender(){
-    if(scene===0||videoLoop||!inMovieChapters()||!motionAllowed())return;
-    videoLoop=requestAnimationFrame(render);
+  function paintSource(time){
+    g.save();
+    g.clearRect(0,0,W,H);
+    if(scene===1)renderServers(time);
+    if(scene===2)renderLinux(time);
+    g.restore();
   }
-  function stopRender(){
-    if(videoLoop)cancelAnimationFrame(videoLoop);
-    videoLoop=0;
+  function drawCover(ctx,destW,destH,sourceX=0,sourceW=W){
+    const scale=Math.max(destW/sourceW,destH/H);
+    const cropW=destW/scale,cropH=destH/scale;
+    const x=sourceX+(sourceW-cropW)*.5,y=(H-cropH)*.5;
+    ctx.drawImage(source,x,y,cropW,cropH,0,0,destW,destH);
   }
-  function showFilm(){
+  function paintPanes(){
+    const fullRect=panorama.getBoundingClientRect();
+    const fw=Math.max(1,fullRect.width),fh=Math.max(1,fullRect.height);
+    const scale=Math.max(fw/W,fh/H);
+    const cropW=fw/scale,cropH=fh/scale;
+    const cropX=(W-cropW)*.5,cropY=(H-cropH)*.5;
+    for(const pane of panes){
+      const r=pane.arch.getBoundingClientRect();
+      const d=Math.min(devicePixelRatio||1,1.45);
+      const width=Math.max(1,Math.round(r.width*d));
+      const height=Math.max(1,Math.round(r.height*d));
+      if(pane.canvas.width!==width)pane.canvas.width=width;
+      if(pane.canvas.height!==height)pane.canvas.height=height;
+      if(!pane.ctx)continue;
+      const offset=clamp((r.left-fullRect.left)/fw,0,1);
+      const part=clamp(r.width/fw,.001,1-offset);
+      pane.ctx.drawImage(source,cropX+offset*cropW,cropY,
+        Math.max(.1,part*cropW),cropH,0,0,width,height);
+    }
+  }
+  function paintFull(){
+    if(!fullCtx)return;
+    const r=stage.getBoundingClientRect();
+    const d=Math.min(devicePixelRatio||1,1.45);
+    const w=Math.max(1,Math.round(r.width*d));
+    const h=Math.max(1,Math.round(r.height*d));
+    if(full.width!==w)full.width=w;
+    if(full.height!==h)full.height=h;
+    drawCover(fullCtx,full.width,full.height);
+  }
+  function updateFull(){
     if(scene===0)return;
     const p=progress();
-    const visible=inMovieChapters() && p>.63 && panorama.dataset.artMediaReady==="true";
-    const opacity=visible?ease((p-.69)/.24):0;
+    const visible=visibleMovie()&&p>.60;
+    const opacity=visible?smooth((p-.69)/.24):0;
     if(opacity!==lastOpacity){
-      player.style.opacity=opacity.toFixed(3);
-      lastOpacity=opacity;
+      full.style.opacity=opacity.toFixed(3);lastOpacity=opacity;
     }
     if(visible!==lastVisible){
-      player.style.visibility=visible?"visible":"hidden";
+      full.style.visibility=visible?"visible":"hidden";
       lastVisible=visible;
     }
-    if(!inMovieChapters()||!motionAllowed()){
-      player.pause();stopRender();
-    }else if(player.paused && player.readyState>=2){
-      player.play().catch(()=>{});
-      startRender();
+  }
+  function paintWorld(time){
+    if(scene===0||!visibleMovie())return;
+    paintSource(time);
+    if(progress()<.995)paintPanes();
+    paintFull();
+    updateFull();
+    panorama.dataset.artMediaReady="true";
+  }
+  function animation(now){
+    frame=0;
+    if(scene===0||!visibleMovie())return;
+    if(now-lastRendered>=37){
+      lastRendered=now;
+      paintWorld(allowed()?now*.00055:0);
     }
+    updateFull();
+    if(allowed())frame=requestAnimationFrame(animation);
+  }
+  function schedule(){
+    if(scene!==0&&visibleMovie()&&!frame&&allowed())
+      frame=requestAnimationFrame(animation);
+  }
+  function stop(){
+    if(frame)cancelAnimationFrame(frame);
+    frame=0;
   }
   function setScene(next){
     scene=((next%3)+3)%3;
-    panorama.dataset.artMediaReady="false";
-    selectionVersion++;
-    const version=selectionVersion;
     panorama.dataset.artScene=String(scene);
     document.body.dataset.frameOneArt=String(scene);
-    status();
-    if(scene>0){
-      panes.forEach((pane,index)=>{
-        pane.label.textContent=captions[scene-1][index];
-      });
-    }
-    lastOpacity=-1;lastVisible=false;
+    panorama.dataset.artMediaReady=scene===0?"false":"true";
+    status();stop();lastVisible=false;lastOpacity=-1;
     if(scene===0){
-      stopRender();player.pause();
-      player.style.opacity="0";player.style.visibility="hidden";
-      player.removeAttribute("src");player.load();
+      full.style.opacity="0";full.style.visibility="hidden";
       return;
     }
-    const cfg=films[scene];
-    photo.onload=()=>{if(version===selectionVersion){paintPanes();startRender();}};
-    photo.onerror=()=>{
-      if(version!==selectionVersion)return;
-      if(!photo.src.startsWith(cfg.fallback))photo.src=cfg.fallback;
-    };
-    photo.src=cfg.poster;
-    player.pause();
-    player.src=cfg.url;
-    player.load();
-    player.poster=cfg.poster;
-    if(motionAllowed()&&inMovieChapters())
-      player.play().catch(()=>{});
-    startRender();
-    showFilm();
+    panes.forEach((pane,i)=>{
+      pane.label.textContent=LABELS[scene-1][i];
+    });
+    paintWorld(performance.now()*.00055);
+    schedule();
   }
-  player.addEventListener("loadeddata",()=>{paintPanes();startRender();});
-  player.addEventListener("playing",startRender);
-  player.addEventListener("error",()=>{
-    // Prefer an attractive full-size image instead of a blank patterned film.
-    if(scene!==0)paintPanes();
-  });
-  // Inspired by the supplied reference: one translucent marbled wave
-  // expands across the arch background without moving the white headline.
-  // The new landscape fades in through the wave, then the wave evaporates.
-  const LIQUID_MS=2250;
+
+  const LIQUID_MS=2400;
   function clearWipe(){
-    if(wipeCtx)wipeCtx.clearRect(0,0,wipeW,wipeH);
+    if(wc)wc.clearRect(0,0,wipeWidth,wipeHeight);
     wipe.style.visibility="hidden";
   }
   function liquidFrame(now){
-    if(!transition||!wipeCtx)return;
-    const tr=transition;
-    const t=clamp((now-tr.started)/LIQUID_MS,0,1);
+    if(!transition||!wc)return;
+    const tr=transition,t=clamp((now-tr.started)/LIQUID_MS,0,1);
     if(!eligible()){
       if(!tr.switched)setScene(tr.next);
-      transition=null;clearWipe();
-      return;
+      transition=null;clearWipe();return;
     }
-    // Prepare the new scene underneath the semi-transparent wave.
-    if(!tr.switched&&t>=.48){
-      tr.switched=true;
-      setScene(tr.next);
+    if(!tr.switched&&t>=.47){
+      tr.switched=true;setScene(tr.next);
     }
-    wipeCtx.clearRect(0,0,wipeW,wipeH);
-    if(t>=1){
-      transition=null;clearWipe();
-      return;
-    }
-    const maxRadius=Math.hypot(wipeW, wipeH)*1.18;
-    const entering=ease(t/.52);
-    const leaving=1-ease((t-.57)/.42);
-    const radius=Math.max(1,22+maxRadius*Math.min(entering,leaving));
-    // Liquid keeps drifting sideways, as in the filmed reference.
-    const drift=ease(t);
-    const cx=tr.x+(wipeW*.22)*drift;
-    const cy=tr.y-(wipeH*.065)*drift;
-    const alpha=.87*(1-ease((t-.62)/.37));
-    if(alpha>.002){
-      wipeCtx.save();
-      wipeCtx.beginPath();
-      const segments=110;
-      for(let i=0;i<=segments;i++){
-        const a=(i/segments)*Math.PI*2;
-        const flutter=1+.050*Math.sin(7*a+now*.0024)+
-          .030*Math.sin(13*a-now*.0022)+
-          .014*Math.cos(19*a+now*.0018);
-        const x=cx+Math.cos(a)*radius*flutter;
-        const y=cy+Math.sin(a)*radius*flutter*.89;
-        if(i===0)wipeCtx.moveTo(x,y);else wipeCtx.lineTo(x,y);
+    wc.clearRect(0,0,wipeWidth,wipeHeight);
+    if(t>=1){transition=null;clearWipe();return;}
+    const entering=smooth(t/.55),leaving=1-smooth((t-.61)/.38);
+    const radius=26+Math.hypot(wipeWidth,wipeHeight)*1.36*
+      Math.min(entering,leaving);
+    const cx=tr.x+wipeWidth*.10*smooth(t);
+    const cy=tr.y-wipeHeight*.04*smooth(t);
+    const alpha=.68*(1-smooth((t-.60)/.39));
+    if(alpha>.003){
+      wc.save();wc.beginPath();
+      for(let i=0;i<=112;i++){
+        const a=i/112*Math.PI*2;
+        const ripple=1+.045*Math.sin(7*a+now*.0021)+
+          .028*Math.cos(14*a-now*.0018);
+        const x=cx+Math.cos(a)*radius*ripple;
+        const y=cy+Math.sin(a)*radius*ripple*.92;
+        if(i===0)wc.moveTo(x,y);else wc.lineTo(x,y);
       }
-      wipeCtx.closePath();
-      wipeCtx.save();
-      wipeCtx.clip();
-      wipeCtx.globalAlpha=alpha;
-      if(tex){
-        const shift=(t*.04)*wipeW;
-        wipeCtx.drawImage(texture,-wipeW*.06+shift,-wipeH*.08,
-          wipeW*1.12,wipeH*1.16);
-      }else{
-        wipeCtx.fillStyle="rgba(169,101,201,.82)";
-        wipeCtx.fillRect(0,0,wipeW,wipeH);
-      }
-      // Gentle luminous bloom, never a fully opaque colored curtain.
-      const gleam=wipeCtx.createRadialGradient(cx,cy,4,cx,cy,radius);
-      gleam.addColorStop(0,"rgba(245,209,255,.19)");
-      gleam.addColorStop(.53,"rgba(215,144,250,.08)");
-      gleam.addColorStop(1,"rgba(85,31,154,.04)");
-      wipeCtx.fillStyle=gleam;
-      wipeCtx.fillRect(0,0,wipeW,wipeH);
-      wipeCtx.restore();
-      wipeCtx.lineWidth=2.5;
-      wipeCtx.strokeStyle="rgba(249,202,255,"+(.68*alpha).toFixed(3)+")";
-      wipeCtx.shadowBlur=22;
-      wipeCtx.shadowColor="rgba(218,120,252,"+(.64*alpha).toFixed(3)+")";
-      wipeCtx.stroke();
-      wipeCtx.restore();
+      wc.closePath();
+      wc.save();wc.clip();wc.globalAlpha=alpha;
+      wc.drawImage(marble,-wipeWidth*.04+t*wipeWidth*.05,
+        -wipeHeight*.06,wipeWidth*1.10,wipeHeight*1.12);
+      const bloom=wc.createRadialGradient(cx,cy,1,cx,cy,radius);
+      bloom.addColorStop(0,"rgba(236,212,253,.18)");
+      bloom.addColorStop(.65,"rgba(195,171,235,.07)");
+      bloom.addColorStop(1,"rgba(67,65,139,.01)");
+      wc.fillStyle=bloom;wc.fillRect(0,0,wipeWidth,wipeHeight);
+      wc.restore();
+      wc.strokeStyle="rgba(234,217,255,"+(alpha*.75).toFixed(3)+")";
+      wc.shadowColor="rgba(180,163,234,"+(alpha*.6).toFixed(3)+")";
+      wc.shadowBlur=18;wc.lineWidth=2.1;wc.stroke();
+      wc.restore();
     }
     requestAnimationFrame(liquidFrame);
   }
   function advance(x,y){
     if(!eligible()||transition)return;
-    resize();
-    if(reduced.matches){setScene((scene+1)%3);return;}
-    const rect=stage.getBoundingClientRect();
+    fit();
+    if(reduced.matches){
+      setScene((scene+1)%3);return;
+    }
     transition={
-      next:(scene+1)%3,started:performance.now(),switched:false,
-      x:clamp(x-rect.left,0,rect.width),y:clamp(y-rect.top,0,rect.height)
+      x:clamp(x,0,wipeWidth),y:clamp(y,0,wipeHeight),
+      next:(scene+1)%3,started:performance.now(),switched:false
     };
     wipe.style.visibility="visible";
     requestAnimationFrame(liquidFrame);
   }
   function unarm(){
     if(armed!==null)clearTimeout(armed);
-    armed=null;heldPointer=null;
+    armed=null;held=null;
   }
   stage.addEventListener("pointerdown",e=>{
     if(!eligible()||transition||e.button!==0||armed!==null)return;
     if(e.target instanceof Element&&e.target.closest(
       "a,button,input,textarea,select,.journey-scrollbar,#journey-scrollbar,#gallery-viewport,#globe-shell"))return;
     const x=e.clientX,y=e.clientY;
-    heldPointer={id:e.pointerId,x,y,triggered:false};
+    held={id:e.pointerId,x,y};
     armed=setTimeout(()=>{
       armed=null;
-      if(!heldPointer||heldPointer.id!==e.pointerId)return;
-      heldPointer.triggered=true;advance(x,y);
+      if(!held||held.id!==e.pointerId)return;
+      advance(x,y);
     },e.pointerType==="touch"?440:320);
   },{passive:true});
   stage.addEventListener("pointermove",e=>{
-    if(!heldPointer||heldPointer.id!==e.pointerId||heldPointer.triggered)return;
-    if(Math.hypot(e.clientX-heldPointer.x,e.clientY-heldPointer.y)>18)unarm();
+    if(!held||held.id!==e.pointerId)return;
+    if(Math.hypot(e.clientX-held.x,e.clientY-held.y)>18)unarm();
   },{passive:true});
   addEventListener("pointerup",unarm,{passive:true});
   addEventListener("pointercancel",unarm,{passive:true});
-  addEventListener("blur",()=>{unarm();player.pause();stopRender();});
+  addEventListener("blur",()=>{unarm();stop();});
   button.addEventListener("click",()=>{
     const r=stage.getBoundingClientRect();
-    advance(r.left+r.width*.34,r.top+r.height*.48);
+    advance(r.left+r.width*.32,r.top+r.height*.48);
   });
-  addEventListener("keydown",e=>{
-    if(e.key==="Escape")unarm();
+  addEventListener("keydown",e=>{if(e.key==="Escape")unarm();});
+  addEventListener("resize",()=>{fit();if(scene!==0)paintWorld(performance.now()*.00055);},{passive:true});
+  reduced.addEventListener("change",()=>{
+    if(scene!==0)paintWorld(0);
+    schedule();
   });
-  addEventListener("resize",()=>{resize();startRender();},{passive:true});
-  reduced.addEventListener("change",showFilm);
-  document.getElementById("motion-button")?.addEventListener("click",showFilm);
-  document.addEventListener("visibilitychange",showFilm);
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden)stop();else schedule();
+  });
   new MutationObserver(()=>{
-    const p=progress(),j=journey();
-    // Do not revert to mountains on entering the other chapters.
-    // Keep playing through Section 03; stop under Gallery and Contact.
-    const signature=[p.toFixed(3),(j>=2.82?"gallery":"film"),
-      document.body.classList.contains("motion-off")?"off":"on"].join(":");
-    if(signature!==lastDimensions){
-      lastDimensions=signature;
-      if(!eligible())unarm();
-      if(transition&&!eligible()){
-        if(!transition.switched){
-          // A rapid scroll during a swap still resolves to the requested film.
-          setScene(transition.next);
-          transition.switched=true;
-        }
-        transition=null;clearWipe();
-      }
-      showFilm();
-      startRender();
+    if(!eligible())unarm();
+    if(transition&&!eligible()){
+      if(!transition.switched)setScene(transition.next);
+      transition=null;clearWipe();
     }
-  }).observe(document.body,{attributes:true,attributeFilter:[
-    "data-current-frame","data-portal-progress","data-journey-progress","class"
-  ]});
-  resize();setScene(0);clearWipe();
+    if(!visibleMovie())stop();
+    else if(scene!==0){updateFull();schedule();}
+  }).observe(document.body,{
+    attributes:true,
+    attributeFilter:["data-current-frame","data-portal-progress",
+      "data-journey-progress","class"]
+  });
+  fit();setScene(0);clearWipe();
 })();
