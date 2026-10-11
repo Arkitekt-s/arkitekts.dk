@@ -404,14 +404,13 @@ body.frame-one .panorama .arch{
 }
 
 
-/* Three deliberately slim VERTICAL arches in the opening scene.
-   Slightly shorter, substantially narrower, and evenly spaced.
-   The elastic cursor mask is unchanged. JS still expands all three
-   into the full-viewport film on scroll; no inline sizing is blocked. */
+/* Opening arches: restore their original balanced proportions,
+   only about 4–5% smaller than the previous approved preview.
+   Preserve elastic edge physics and scroll-driven video expansion. */
 body.frame-one .panorama{
-  width:min(460px,43vw);
-  height:min(460px,59vh);
-  gap:clamp(18px,2.35vw,37px);
+  width:min(770px,61vw);
+  height:min(475px,59vh);
+  gap:clamp(18px,2.4vw,45px);
 }
 /* The luminous edge follows the actual SVG silhouette, not its box. */
 body.frame-one .panorama .arch{
@@ -423,22 +422,22 @@ body.frame-one .panorama .arch .elastic-arch-outline{
 }
 @media(max-width:1100px){
   body.frame-one .panorama{
-    width:min(425px,55vw);
-    height:min(425px,54vh);
-    gap:clamp(15px,2.5vw,25px);
+    width:min(740px,68vw);
+    height:min(440px,54vh);
+    gap:2.9vw;
   }
 }
 @media(max-width:760px){
   body.frame-one .panorama{
-    width:min(350px,77vw);
-    height:45vh;
-    gap:clamp(10px,2.1vw,16px);
+    width:83vw;
+    height:48vh;
+    gap:3vw;
   }
 }
 @media(max-width:470px){
   body.frame-one .panorama{
-    width:min(290px,72vw);
-    height:37vh;
+    width:82vw;
+    height:40vh;
     gap:10px;
   }
 }
