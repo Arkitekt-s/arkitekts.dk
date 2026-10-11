@@ -184,10 +184,10 @@
       </div>
     </div>
   </section>
-  <div class="portal-navigation" aria-label="Story progress">
-    <button type="button" id="previous-chapter" aria-label="Go to the previous frame">↑</button>
-    <div class="portal-steps"><span>01</span><div class="portal-track"><i id="portal-fill"></i></div><span>05</span></div>
-    <button type="button" id="next-chapter" aria-label="Go to the next frame">↓</button>
+  <div class="portal-navigation" aria-label="Section 1 of 5">
+    <button type="button" id="previous-chapter" aria-label="Go to the previous section" aria-controls="frame">↑</button>
+    <div class="portal-steps"><span id="portal-current" aria-live="polite" aria-atomic="true">01</span><div class="portal-track" role="progressbar" aria-label="Current section" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1"><i id="portal-fill"></i></div><span>05</span></div>
+    <button type="button" id="next-chapter" aria-label="Go to the next section" aria-controls="frame">↓</button>
   </div>
 </main>
 <div id="journey-scrollbar" class="journey-scrollbar" role="scrollbar" tabindex="0"
