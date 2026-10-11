@@ -1,0 +1,43 @@
+name: All-page mobile and tablet responsiveness
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'profile/**'
+      - 'software-skills/**'
+      - 'portfolio/**'
+      - 'technical-guides/**'
+      - 'contact/**'
+      - 'concepts/**'
+      - 'assets/**'
+      - 'sitemap.xml'
+      - 'scripts/responsive_site_audit.py'
+      - '.github/workflows/responsive-site-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-tablet:
+    name: Test all 23 pages at five device widths
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chromium
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Test layouts, menus, images and horizontal overflow
+        run: python scripts/responsive_site_audit.py
+      - name: Upload mobile/tablet screenshots and diagnostic JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-page-responsive-screenshots
+          path: screenshots/responsive-site-audit/
+          retention-days: 14
+          if-no-files-found: ignore
