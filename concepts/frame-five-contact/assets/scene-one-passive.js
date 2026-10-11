@@ -49,6 +49,10 @@
   let movieFailure = false;
   let videoTimer;
   const reducedVideo = () => reduced.matches;
+  const usingAlternate = () => {
+    const selected = document.getElementById("panorama")?.dataset.artScene;
+    return selected === "1" || selected === "2";
+  };
   function setVideoStatus(s,code) {
     if(liveText) liveText.textContent = s;
     document.body.classList.toggle("video-live",code==="live");
@@ -57,6 +61,12 @@
   }
   function startVideo() {
     if (!videos.length) return;
+    // Another video is selected for this visit. Do not decode three
+    // unused 4K copies behind the selected film on mobile devices.
+    if (usingAlternate()) {
+      videos.forEach(v=>v.pause());
+      return;
+    }
     if (reducedVideo() || pausedByUser) {
       videos.forEach(v=>v.pause());
       setVideoStatus("MOTION PAUSED · IMAGE FALLBACK","paused");
@@ -69,7 +79,7 @@
     });
   }
   function changeVideoSource() {
-    if(sourceIndex>0)return;
+    if(sourceIndex>0 || usingAlternate())return;
     sourceIndex=1;
     movieFailure=false;
     clearTimeout(videoTimer);
@@ -92,6 +102,7 @@
     const lead=videos[0];
     videos.forEach((v,index)=>{
       v.addEventListener("error",()=>{
+        if(usingAlternate())return;
         if(sourceIndex===0)changeVideoSource();
         else if(index===0){movieFailure=true;setVideoStatus("AI IMAGE / LIVE VIDEO UNAVAILABLE","unavailable");}
       });
@@ -114,7 +125,7 @@
         }
       });
     });
-    videoTimer=setTimeout(()=>{if(!live)changeVideoSource();},8500);
+    videoTimer=setTimeout(()=>{if(!live && !usingAlternate())changeVideoSource();},8500);
     startVideo();
   }
 
@@ -134,7 +145,7 @@
 
   // Pause or resume the AI video.
   pauseButton?.addEventListener("click",()=>{
-    if(pausedByUser){videos.forEach(v=>v.play().catch(()=>{}));startVideo();}
+    if(pausedByUser){startVideo();}
     else{videos.forEach(v=>v.pause());setVideoStatus("MOTION PAUSED / AI IMAGE","paused");}
   });
   reduced.addEventListener("change",()=>{
