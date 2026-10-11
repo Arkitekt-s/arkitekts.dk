@@ -444,3 +444,58 @@ body.frame-one .panorama .arch .elastic-arch-outline{
 @media(prefers-reduced-motion:reduce){
   body.frame-one .panorama .arch .elastic-arch-outline{display:none!important}
 }
+
+
+/* Interactive chromatic lens for the moving video inside the opening arches.
+   The original scenery is unchanged when the pointer leaves. The lens is
+   clipped by the existing elastic SVG outline and never captures clicks. */
+body.frame-one .panorama .arch .arch-color-lens{
+  --lens-x:50%;
+  --lens-y:50%;
+  --lens-hue:135deg;
+  position:absolute;
+  inset:0;
+  display:block;
+  z-index:6;
+  pointer-events:none;
+  opacity:0;
+  visibility:hidden;
+  border-radius:inherit;
+  background:
+    radial-gradient(ellipse 136px 153px at var(--lens-x) var(--lens-y),
+      rgba(245,49,204,.34) 0%,
+      rgba(131,61,248,.24) 22%,
+      rgba(52,181,254,.18) 45%,
+      rgba(255,188,76,.10) 65%,
+      transparent 87%);
+  -webkit-backdrop-filter:hue-rotate(var(--lens-hue)) saturate(2.2) contrast(1.12) brightness(1.055);
+  backdrop-filter:hue-rotate(var(--lens-hue)) saturate(2.2) contrast(1.12) brightness(1.055);
+  -webkit-mask-image:radial-gradient(ellipse 146px 166px at var(--lens-x) var(--lens-y),
+    #000 0%,rgba(0,0,0,.96) 23%,rgba(0,0,0,.68) 49%,transparent 90%);
+  mask-image:radial-gradient(ellipse 146px 166px at var(--lens-x) var(--lens-y),
+    #000 0%,rgba(0,0,0,.96) 23%,rgba(0,0,0,.68) 49%,transparent 90%);
+  will-change:opacity;
+}
+/* A moving, transparent interference ripple adds a liquid/prismatic look.
+   It is a local overlay, not a permanent filter on the mountain video. */
+body.frame-one .panorama .arch .arch-color-lens::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 37px 72px at calc(var(--lens-x) - 16px) calc(var(--lens-y) - 13px),
+      rgba(255,234,255,.33),transparent 80%),
+    radial-gradient(ellipse 96px 109px at calc(var(--lens-x) + 24px) calc(var(--lens-y) + 17px),
+      rgba(51,227,255,.20),rgba(164,42,241,.08) 56%,transparent 83%);
+  mix-blend-mode:screen;
+}
+body.motion-off .panorama .arch .arch-color-lens{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .panorama .arch .arch-color-lens{
+    display:none!important;
+  }
+}
