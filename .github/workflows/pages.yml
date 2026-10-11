@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build canonical homepage from approved landing
+      - name: Verify root homepage and generate legacy redirect
         run: python3 scripts/build-homepage.py
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

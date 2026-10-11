@@ -15,7 +15,7 @@ OUT=ROOT/"screenshots"/"frame-five-contact"
 OUT.mkdir(parents=True,exist_ok=True)
 server=ThreadingHTTPServer(("127.0.0.1",0),partial(SimpleHTTPRequestHandler,directory=str(ROOT)))
 Thread(target=server.serve_forever,daemon=True).start()
-URL=f"http://127.0.0.1:{server.server_port}/concepts/frame-five-contact/"
+URL=f"http://127.0.0.1:{server.server_port}/"
 SIZES={"small-phone":(320,720),"phone":(390,844),"tablet":(768,1024),"desktop":(1440,900)}
 errors=[]
 records=[]

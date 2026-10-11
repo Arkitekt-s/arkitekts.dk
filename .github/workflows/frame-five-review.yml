@@ -2,11 +2,13 @@ name: Frame 05 Copenhagen globe and contact review
 on:
   push:
     paths:
+      - "index.html"
       - "concepts/frame-five-contact/**"
       - "scripts/frame_five_contact_review.py"
       - ".github/workflows/frame-five-review.yml"
   pull_request:
     paths:
+      - "index.html"
       - "concepts/frame-five-contact/**"
       - "scripts/frame_five_contact_review.py"
   workflow_dispatch:
