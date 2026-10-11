@@ -1,0 +1,44 @@
+name: Homepage random three-video selection
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'concepts/frame-five-contact/assets/frame-one-hold-scenes.js'
+      - 'concepts/frame-five-contact/assets/journey-five.js'
+      - 'concepts/frame-five-contact/assets/scene-one-passive.js'
+      - 'concepts/frame-five-contact/assets/contact-globe.css'
+      - 'scripts/homepage_random_video_review.py'
+      - '.github/workflows/homepage-random-video.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  random-video:
+    name: Test video 1, 2, 3 per visit on phone, tablet and desktop
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chromium and Playwright
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Validate JS syntax
+        run: |
+          node --check concepts/frame-five-contact/assets/frame-one-hold-scenes.js
+          node --check concepts/frame-five-contact/assets/journey-five.js
+          node --check concepts/frame-five-contact/assets/scene-one-passive.js
+      - name: Test random choice and persistence across three sections
+        run: python scripts/homepage_random_video_review.py
+      - name: Save browser test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-random-video-review
+          path: screenshots/random-homepage-films/
+          retention-days: 14
+          if-no-files-found: ignore
