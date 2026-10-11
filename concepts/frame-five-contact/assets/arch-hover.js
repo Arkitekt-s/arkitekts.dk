@@ -1,131 +1,175 @@
-/* Cinematic homepage arches respond gently to mouse proximity.
- * Only arch masks move; the mountain footage, words and scroll timeline don't.
- * No mouse-button or hold interaction.  Avoid seams once arches are full-screen.
+/* Pointer-reactive liquid ARCH MASKS.
+ * Keeps the existing layout, videos, text and cinematic scroll untouched.
+ * Locally bends the edge closest to the cursor and springs back on exit.
+ * Works only in the opening frame, with hover and normal motion enabled.
  */
 (() => {
   "use strict";
   const arches=[...document.querySelectorAll("#panorama .arch")];
   if(arches.length!==3 || !matchMedia("(hover: hover) and (pointer: fine)").matches)return;
   const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-  const items=arches.map(element=>({
-    element,rect:null,x:0,y:0,angle:0,glow:0,tx:0,ty:0,tAngle:0,tGlow:0
-  }));
-  let mouseX=-2000,mouseY=-2000;
-  let lastMeasure=-Infinity,frameId=0,lastTime=0,isTracking=false;
+  const clamp=(v,low,high)=>Math.min(high,Math.max(low,v));
+  const SVG_NS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(SVG_NS,"svg");
+  svg.setAttribute("aria-hidden","true");
+  svg.setAttribute("width","0");
+  svg.setAttribute("height","0");
+  svg.style.cssText="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none";
+  const defs=document.createElementNS(SVG_NS,"defs");
+  svg.append(defs);
+  document.body.append(svg);
 
-  const isActive=()=>{
+  const items=arches.map((element,index)=>{
+    const clip=document.createElementNS(SVG_NS,"clipPath");
+    clip.id="fluid-arch-mask-"+index;
+    clip.setAttribute("clipPathUnits","objectBoundingBox");
+    const path=document.createElementNS(SVG_NS,"path");
+    clip.append(path);
+    defs.append(clip);
+    return {element,path,id:clip.id,rect:null,ry:.28,edge:.0,target:0,
+      mx:-999,my:-999,shiftX:0,shiftY:0,enabled:false};
+  });
+  let cursorX=-2000,cursorY=-2000,tracking=false,raf=0,last=0,lastMeasure=0;
+  function enabled(){
     const scene=Number(document.body.dataset.currentFrame||1);
-    return scene>=1&&scene<=3&&!reduced.matches &&
-      !document.body.classList.contains("motion-off");
-  };
-  function setValues(item){
-    item.element.style.setProperty("--arch-x",item.x.toFixed(2)+"px");
-    item.element.style.setProperty("--arch-y",item.y.toFixed(2)+"px");
-    item.element.style.setProperty("--arch-turn",item.angle.toFixed(3)+"deg");
-    item.element.style.setProperty("--arch-glow",(item.glow*12).toFixed(2)+"px");
-  }
-  function fadeTargets(){
-    let needsUpdate=false;
-    for(const item of items){
-      if(item.tx||item.ty||item.tAngle||item.tGlow||
-         Math.abs(item.x)>.03||Math.abs(item.y)>.03||
-         Math.abs(item.angle)>.009||Math.abs(item.glow)>.009)
-        needsUpdate=true;
-      item.tx=item.ty=item.tAngle=item.tGlow=0;
-    }
-    if(needsUpdate)schedule();
+    const progress=Number(document.body.dataset.portalProgress||0);
+    return scene===1 && progress<.085 && !document.body.classList.contains("motion-off") &&
+      !reduced.matches && !document.hidden;
   }
   function measure(now){
-    // Layout reads are capped, rather than forced on every animation frame.
-    if(now-lastMeasure<145)return;
+    if(now-lastMeasure<115)return;
     lastMeasure=now;
-    for(const item of items)item.rect=item.element.getBoundingClientRect();
-  }
-  function calculate(now,refreshRects=true){
-    if(!isActive()||!isTracking){fadeTargets();return;}
-    if(refreshRects)measure(now);
-    const progress=clamp(Number(document.body.dataset.portalProgress||0),0,1);
-    // Near the intro the three arches can flex. During the scroll-to-film
-    // transition they settle down, preventing visible gaps in the video.
-    const flex=1-clamp((progress-.28)/.56,0,1);
-    for(const item of items){
-      const rect=item.rect;
-      if(!rect || rect.width<=0 || flex<=0){
-        item.tx=item.ty=item.tAngle=item.tGlow=0;
-        continue;
-      }
-      const outsideX=Math.max(rect.left-mouseX,0,mouseX-rect.right);
-      const outsideY=Math.max(rect.top-mouseY,0,mouseY-rect.bottom);
-      const distance=Math.hypot(outsideX,outsideY);
-      const radius=135;
-      let proximity=clamp(1-distance/radius,0,1);
-      // Smooth approach and departure: no snapping at the radius boundary.
-      proximity=proximity*proximity*(3-2*proximity);
-      const centerX=rect.left+rect.width/2;
-      const centerY=rect.top+rect.height/2;
-      const horizontal=clamp((mouseX-centerX)/Math.max(100,rect.width*.5),-1,1);
-      const vertical=clamp((mouseY-centerY)/Math.max(100,rect.height*.5),-1,1);
-      // The arch edge yields to the cursor, then returns by spring damping.
-      item.tx=horizontal*8*proximity*flex;
-      item.ty=vertical*5*proximity*flex;
-      item.tAngle=horizontal*.95*proximity*flex;
-      item.tGlow=proximity*flex;
+    for(const a of items){
+      a.rect=a.element.getBoundingClientRect();
+      a.ry=Math.min(.38,Math.max(.18,
+        (parseFloat(getComputedStyle(a.element).borderTopLeftRadius.split(" ").pop()) || a.rect.height*.28)/
+        Math.max(1,a.rect.height)));
     }
-    schedule();
   }
-  function animate(now){
-    frameId=0;
-    const dt=lastTime?clamp(now-lastTime,1,50):16.7;
-    lastTime=now;
-    const smooth=1-Math.exp(-dt/115);
-    let moving=false;
-    for(const item of items){
-      item.x+=(item.tx-item.x)*smooth;
-      item.y+=(item.ty-item.y)*smooth;
-      item.angle+=(item.tAngle-item.angle)*smooth;
-      item.glow+=(item.tGlow-item.glow)*smooth;
-      setValues(item);
-      if(Math.abs(item.tx-item.x)>.025||Math.abs(item.ty-item.y)>.025||
-         Math.abs(item.tAngle-item.angle)>.008||Math.abs(item.tGlow-item.glow)>.009)
-        moving=true;
-    }
-    if(moving)frameId=requestAnimationFrame(animate);
-    else lastTime=0;
+  function reset(item){
+    if(!item.enabled)return;
+    item.enabled=false;
+    item.element.style.removeProperty("clip-path");
+    item.element.style.removeProperty("border-radius");
+    item.element.style.removeProperty("--arch-glow");
+    item.element.querySelector(".scenery")?.style.removeProperty("--photo-x");
+    item.element.querySelector(".scenery")?.style.removeProperty("--photo-y");
   }
-  function schedule(){if(!frameId)frameId=requestAnimationFrame(animate);}
-  addEventListener("pointermove",event=>{
-    if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
-    mouseX=event.clientX;mouseY=event.clientY;
-    isTracking=true;
-    // No effect when the pointer is over navigation or interactive controls.
-    const control=event.target instanceof Element &&
-      event.target.closest(".site-header,.site-footer,.portal-navigation,#twenty-hotspot,.gallery-viewport,#globe-shell");
-    if(control){
-      fadeTargets();
+  function neutral(){
+    for(const a of items){a.target=0;a.edge=0;reset(a);}
+    last=0;
+  }
+  function updateTargets(now){
+    if(!enabled()||!tracking){
+      for(const a of items)a.target=0;
+      request();
       return;
     }
-    calculate(performance.now());
+    measure(now);
+    for(const a of items){
+      const r=a.rect;
+      if(!r||r.width<8||r.height<8){a.target=0;continue;}
+      const x=clamp((cursorX-r.left)/r.width,0,1);
+      const topY=r.top+r.height*a.ry*(1-Math.sqrt(Math.max(0,1-Math.pow(2*x-1,2))));
+      const nearTop=Math.hypot(Math.max(0,r.left-cursorX,cursorX-r.right),cursorY-topY);
+      const sideY=clamp(cursorY,r.top+r.height*a.ry,r.bottom);
+      const nearSide=Math.min(Math.hypot(cursorX-r.left,cursorY-sideY),
+                              Math.hypot(cursorX-r.right,cursorY-sideY));
+      const d=Math.min(nearTop,nearSide);
+      a.target=clamp(1-d/112,0,1);
+      a.target=a.target*a.target*(3-2*a.target);
+      a.mx=cursorX;
+      a.my=cursorY;
+    }
+    request();
+  }
+  function outline(a){
+    const r=a.rect;
+    if(!r)return;
+    const w=Math.max(1,r.width),h=Math.max(1,r.height);
+    const intensity=a.edge;
+    const parts=[];
+    // The original semi-elliptical arch, sampled sufficiently finely to
+    // let the contour yield LOCALLY instead of rotating the entire window.
+    for(let i=0;i<=36;i++){
+      const t=i/36;
+      const yy=a.ry*(1-Math.sqrt(Math.max(0,1-Math.pow(2*t-1,2))));
+      const px=r.left+t*w,py=r.top+yy*h;
+      const dist=Math.hypot((px-a.mx)*.83,py-a.my);
+      const fall=Math.exp(-Math.pow(dist/79,2))*intensity;
+      const dx=clamp((a.mx-px)*.12,-8,8)*fall/w;
+      const dy=clamp((a.my-py)*.22,-13,13)*fall/h;
+      const x=clamp(t+dx,0,1),y=clamp(yy+dy,0,1);
+      parts.push((i?"L":"M")+x.toFixed(5)+" "+y.toFixed(5));
+    }
+    // Side surfaces ripple when brushed and then settle elastically.
+    for(let i=1;i<=12;i++){
+      const t=i/12,y=a.ry+(1-a.ry)*t;
+      const px=r.right,py=r.top+y*h;
+      const fall=Math.exp(-Math.pow(Math.hypot(px-a.mx,(py-a.my)*.84)/72,2))*intensity;
+      const bend=clamp((a.mx-px)*.17,-10,10)*fall/w;
+      parts.push("L"+clamp(1+bend,0,1).toFixed(5)+" "+y.toFixed(5));
+    }
+    parts.push("L0 1");
+    for(let i=11;i>=0;i--){
+      const t=i/12,y=a.ry+(1-a.ry)*t;
+      const px=r.left,py=r.top+y*h;
+      const fall=Math.exp(-Math.pow(Math.hypot(px-a.mx,(py-a.my)*.84)/72,2))*intensity;
+      const bend=clamp((a.mx-px)*.17,-10,10)*fall/w;
+      parts.push("L"+clamp(bend,0,1).toFixed(5)+" "+y.toFixed(5));
+    }
+    parts.push("Z");
+    a.path.setAttribute("d",parts.join(" "));
+  }
+  function animate(now){
+    raf=0;
+    if(!enabled()){neutral();return;}
+    const dt=last?clamp(now-last,1,40):16.7;
+    last=now;
+    const spring=1-Math.exp(-dt/105);
+    let alive=false;
+    for(const a of items){
+      a.edge+=(a.target-a.edge)*spring;
+      if(a.edge>.003 || a.target>.003){
+        if(!a.enabled){
+          a.enabled=true;
+          a.element.style.clipPath="url(#"+a.id+")";
+          a.element.style.borderRadius="0";
+        }
+        outline(a);
+        a.element.style.setProperty("--arch-glow",(a.edge*12).toFixed(2)+"px");
+        const scenery=a.element.querySelector(".scenery");
+        if(scenery){
+          scenery.style.setProperty("--photo-x",((a.mx-(a.rect?.left||a.mx)-(a.rect?.width||0)/2)*.011*a.edge).toFixed(2)+"px");
+          scenery.style.setProperty("--photo-y",((a.my-(a.rect?.top||a.my)-(a.rect?.height||0)/2)*.005*a.edge).toFixed(2)+"px");
+        }
+      }else reset(a);
+      if(Math.abs(a.edge-a.target)>.002)alive=true;
+    }
+    if(alive)request();
+    else last=0;
+  }
+  function request(){if(!raf)raf=requestAnimationFrame(animate);}
+  addEventListener("pointermove",event=>{
+    if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
+    tracking=true;
+    cursorX=event.clientX;cursorY=event.clientY;
+    if(event.target instanceof Element && event.target.closest(
+        ".site-header,.site-footer,.portal-navigation,#twenty-hotspot,.gallery-viewport,#globe-shell")){
+      tracking=false;
+    }
+    updateTargets(performance.now());
   },{passive:true});
   document.addEventListener("mouseout",event=>{
-    if(!event.relatedTarget){isTracking=false;fadeTargets();}
+    if(!event.relatedTarget){tracking=false;updateTargets(performance.now());}
   },{passive:true});
-  addEventListener("blur",()=>{isTracking=false;fadeTargets();});
-  addEventListener("resize",()=>{lastMeasure=-Infinity;fadeTargets();},{passive:true});
-  reduced.addEventListener("change",()=>{
-    if(reduced.matches)fadeTargets();
+  addEventListener("blur",()=>{tracking=false;updateTargets(performance.now());});
+  addEventListener("resize",()=>{lastMeasure=0;tracking=false;neutral();},{passive:true});
+  reduced.addEventListener("change",()=>{tracking=false;neutral();});
+  document.getElementById("motion-button")?.addEventListener("click",()=>{
+    tracking=false;neutral();
   });
-  document.getElementById("motion-button")?.addEventListener("click",fadeTargets);
-  // On scroll, release the arches before the three windows merge into
-  // the full-width film. This does not cause repeated layout measurement.
-  let lastProgress=-1;
   new MutationObserver(()=>{
-    if(!isActive()){isTracking=false;fadeTargets();return;}
-    const progress=Number(document.body.dataset.portalProgress||0);
-    if(Math.abs(progress-lastProgress)<.014)return;
-    lastProgress=progress;
-    if(progress>=.84){fadeTargets();return;}
-    if(isTracking)calculate(performance.now(),false);
-  }).observe(document.body,{attributes:true,
-    attributeFilter:["data-current-frame","data-portal-progress"]});
+    if(!enabled()){tracking=false;neutral();}
+  }).observe(document.body,{attributes:true,attributeFilter:["data-current-frame","data-portal-progress","class"]});
 })();
