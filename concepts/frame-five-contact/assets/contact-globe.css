@@ -368,7 +368,7 @@ body.frame-one .paint-cursor-core{
 }
 body.frame-one.paint-cursor-active .paint-cursor.is-visible{opacity:1}
 
-/* Transparent water-like color surrounds the white pointer and fades outwards. */
+/* Purple smoke curls behind the white pointer and fades into transparency. */
 body.frame-one #pointer-pattern{
   pointer-events:none;
   mix-blend-mode:normal;
