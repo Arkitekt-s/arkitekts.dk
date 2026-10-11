@@ -484,7 +484,8 @@
     const from=clamp(position,0,4);
     const stops=[3,2,1,0].filter(stop=>stop<from-.005);
     if(!stops.length){setTarget(0);return;}
-    returnTour={from,stops,started:0,duration:Math.max(1900,from*1325)};
+    // A quicker ~3-second return from scene 05, passing smoothly through each scene.
+    returnTour={from,stops,started:0,duration:Math.max(1350,from*750)};
     target=0;
     document.body.dataset.returnTour="active";
     schedule();
