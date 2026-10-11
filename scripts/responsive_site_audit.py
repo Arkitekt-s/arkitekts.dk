@@ -154,7 +154,9 @@ with sync_playwright() as play:
                 if local404:
                     bad.append("broken local resources "+str(local404[:3]))
                 menu=page.locator('#menu-button')
-                if width<=768 and menu.count() and menu.is_visible():
+                if 761<=width<=1024 and (not menu.count() or not menu.is_visible()):
+                    bad.append("tablet navigation should show a usable menu button")
+                if width<=1024 and menu.count() and menu.is_visible():
                     menu.click(force=True,timeout=2500)
                     page.wait_for_timeout(180)
                     if menu.get_attribute("aria-expanded")!="true":
