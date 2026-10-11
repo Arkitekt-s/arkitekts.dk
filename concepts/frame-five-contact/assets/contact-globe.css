@@ -354,9 +354,22 @@ body.frame-one .paint-cursor{
   will-change:transform;
   box-shadow:0 0 14px rgba(176,46,203,.43);
 }
+/* The reference shows a tiny bright point at the tip of the purple ribbon.
+   Keep the approved square shape from the S. logo around that point. */
+body.frame-one .paint-cursor::after{
+  content:"";
+  position:absolute;
+  width:4px;
+  height:4px;
+  top:3.5px;
+  left:3.5px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 7px rgba(255,255,255,.8);
+}
 body.frame-one.paint-cursor-active .paint-cursor.is-visible{opacity:1}
 
-/* Soft wet-paint ribbons remain on the path briefly after each gesture. */
+/* Triptych-inspired violet liquid ribbon melts behind the mouse. */
 body.frame-one #pointer-pattern{
   pointer-events:none;
   mix-blend-mode:normal;
