@@ -232,3 +232,38 @@ html body.frame-one.frame-five-active .site-footer {
 .frame-stage .scene-eyebrow{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .frame-stage .scene-eyebrow .eyebrow-name,.frame-stage .scene-eyebrow .eyebrow-role{display:block;margin:0;color:inherit}
 .frame-stage .scene-eyebrow .eyebrow-role{font-size:9px;letter-spacing:.15em;opacity:.83}
+
+
+/* Visible, draggable progress scrollbar for the cinematic five-scene page.
+   Unlike a browser scrollbar, this follows the existing scripted journey
+   without changing wheel, video, photo-reel or globe interactions. */
+.journey-scrollbar{
+ position:fixed;z-index:160;top:0;right:0;bottom:0;width:17px;
+ cursor:pointer;touch-action:none;user-select:none;
+ background:linear-gradient(90deg,transparent,rgba(225,202,237,.10));
+}
+.journey-scrollbar::before{
+ content:"";position:absolute;top:0;bottom:0;right:7px;width:2px;
+ background:rgba(236,212,249,.16);
+}
+.journey-scrollbar-thumb{
+ position:absolute;top:0;right:4px;display:block;
+ width:8px;height:clamp(76px,13vh,120px);
+ border-radius:999px;
+ background:rgba(237,218,249,.80);
+ box-shadow:0 0 14px rgba(183,95,213,.26);
+ will-change:transform;
+ transition:background .18s ease,box-shadow .18s ease;
+}
+.journey-scrollbar:hover .journey-scrollbar-thumb,
+.journey-scrollbar:focus-visible .journey-scrollbar-thumb{
+ background:#df8af5;box-shadow:0 0 18px rgba(223,138,245,.54);
+}
+.journey-scrollbar:focus-visible{
+ outline:2px solid #df8af5;outline-offset:-2px;
+}
+@media(max-width:700px){
+ .journey-scrollbar{width:12px}
+ .journey-scrollbar::before{right:5px}
+ .journey-scrollbar-thumb{right:3px;width:6px}
+}
