@@ -1,66 +1,16 @@
-name: Sync published WordPress AI guides
+# WordPress was retired after the GitHub Pages migration.
+# This workflow is intentionally inert. Do not reimport deleted WordPress URLs.
+name: Retired WordPress guide sync
 
 on:
-  schedule:
-    - cron: "17 * * * *"
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    paths:
-      - "scripts/sync_technical_guides.py"
-      - "technical-guides/guides.json"
-      - "technical-guides/*.css"
-      - "technical-guides/*.js"
-      - ".github/workflows/sync-technical-guides.yml"
 
 permissions:
-  contents: write
-  actions: write
-
-concurrency:
-  group: ai-technical-guides-${{ github.head_ref || 'main' }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  sync:
-    name: Mirror published MCP articles into GitHub Pages
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+  retired:
     runs-on: ubuntu-latest
-    timeout-minutes: 14
     steps:
-      - name: Checkout working branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || 'main' }}
-          persist-credentials: true
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install public article parser
-        run: python -m pip install beautifulsoup4==4.14.2
-      - name: Import published WordPress guides, then build standalone HTML
-        run: python scripts/sync_technical_guides.py
-      - name: Validate all new guide links and shared site assets
-        run: python scripts/check_site.py
-      - name: Commit only changed published-guide content
-        id: commit
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add technical-guides/
-          if git diff --cached --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No new published guides."
-          else
-            git commit -m "Sync published AI technical guides from WordPress MCP"
-            git push origin HEAD:${{ github.head_ref || 'main' }}
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Deploy new guides to GitHub Pages
-        if: github.event_name != 'pull_request' && steps.commit.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # GITHUB_TOKEN commits do not trigger push workflows.
-          # workflow_dispatch is permitted and publishes the new HTML.
-          gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+      - name: Confirm retired source
+        run: echo "WordPress no longer hosts the public guides. GitHub Pages is the source of truth."
