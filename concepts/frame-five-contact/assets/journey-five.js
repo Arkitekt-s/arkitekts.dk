@@ -293,6 +293,9 @@
       third.inert=!showThird;
       third.setAttribute("aria-hidden",String(!showThird));
       thirdVisible=showThird;
+      // Phones have no hover. Keep the interactive "10" assembled by
+      // default, rather than showing scattered digits indefinitely.
+      if(showThird && matchMedia("(hover:none), (pointer:coarse)").matches)assembleTen(1);
       if(!showThird)scatterTen();
     }
     document.body.classList.toggle("frame-three-active",showThird);
@@ -700,13 +703,18 @@
     if(!thirdVisible||event.pointerType==="touch")return;
     clearTimeout(digitAutoTimer);assembleTen(1);
   },{passive:true});
-  twenty.addEventListener("pointerleave",scatterTen);
-  twenty.addEventListener("pointercancel",scatterTen);
-  twenty.addEventListener("blur",scatterTen);
+  const returnPieces=()=>{
+    if(!matchMedia("(hover:none), (pointer:coarse)").matches)scatterTen();
+  };
+  twenty.addEventListener("pointerleave",returnPieces);
+  twenty.addEventListener("pointercancel",returnPieces);
+  twenty.addEventListener("blur",returnPieces);
   twenty.addEventListener("click",()=>{
     if(!thirdVisible)return;
     clearTimeout(digitAutoTimer);assembleTen(1);
-    digitAutoTimer=setTimeout(scatterTen,1300);
+    // A phone tap should not scatter the headline after 1.3 seconds.
+    if(!matchMedia("(hover:none), (pointer:coarse)").matches)
+      digitAutoTimer=setTimeout(scatterTen,1300);
   });
 
   // Continuous horizontal photo reel. Each image has an independently
