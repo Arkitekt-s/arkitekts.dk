@@ -298,5 +298,7 @@ body.frame-one.frame-three-active .portal-shade{
   opacity:var(--third-shade-opacity,0);
 }
 
-/* Homepage only: SOHEIL wordmark uses the Let's talk button's magenta. */
-body.frame-one .site-header .site-name{color:#ba00dc}
+/* Homepage only: magenta in scene 01, original white in scenes 02–05. */
+body.frame-one .site-header .site-name{color:#fef8ff;transition:color .22s ease}
+body.frame-one:not([data-current-frame]) .site-header .site-name,
+body.frame-one[data-current-frame="1"] .site-header .site-name{color:#ba00dc}
