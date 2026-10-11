@@ -16,7 +16,8 @@
 
   const isActive=()=>{
     const scene=Number(document.body.dataset.currentFrame||1);
-    return scene>=1&&scene<=3&&!reduced.matches;
+    return scene>=1&&scene<=3&&!reduced.matches &&
+      !document.body.classList.contains("motion-off");
   };
   function setValues(item){
     item.element.style.setProperty("--arch-x",item.x.toFixed(2)+"px");
@@ -114,6 +115,7 @@
   reduced.addEventListener("change",()=>{
     if(reduced.matches)fadeTargets();
   });
+  document.getElementById("motion-button")?.addEventListener("click",fadeTargets);
   // On scroll, release the arches before the three windows merge into
   // the full-width film. This does not cause repeated layout measurement.
   let lastProgress=-1;
