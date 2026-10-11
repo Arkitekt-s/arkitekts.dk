@@ -28,6 +28,10 @@ with sync_playwright() as p:
     for name,(w,h) in SIZES.items():
         ctx=browser.new_context(viewport={"width":w,"height":h},device_scale_factor=1)
         page=ctx.new_page()
+        # Legacy interaction assertions test the original first clip.
+        # Real visitors get a fresh random selection; randomization is tested
+        # separately in homepage_random_video_review.py.
+        page.add_init_script("Math.random = () => 0.05")
         crashes=[]
         page.on("pageerror",lambda error:crashes.append(str(error)))
         response=page.goto(URL,wait_until="domcontentloaded",timeout=30000)
