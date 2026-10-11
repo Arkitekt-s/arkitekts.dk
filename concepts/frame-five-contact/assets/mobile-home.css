@@ -1,0 +1,233 @@
+/* MOBILE ART DIRECTION — 2026-10-11.
+   The desktop cinema is intentionally unchanged.
+   Fix actual phone screenshots: too-small arches, unreadable labels,
+   weak contrast over bright video, cluttered navigation, cropped globe. */
+@media (max-width:760px) and (orientation:portrait){
+  :root{--header-h:68px;--footer-h:54px}
+  html body.frame-one .site-header{
+    height:var(--header-h);
+    grid-template-columns:1fr 1fr auto;
+    padding-inline:clamp(17px,5vw,25px);
+    border-bottom:1px solid rgba(218,153,246,.15)!important;
+    background:linear-gradient(to bottom,rgba(18,9,30,.66),rgba(18,9,30,.04))!important;
+  }
+  .site-header .brand-icon{font-size:36px;line-height:1}
+  .site-header .site-name{font-size:10px;letter-spacing:.22em;padding:0}
+  .site-header .menu-button{
+    width:46px;height:46px;min-height:44px;
+    border-color:rgba(236,184,254,.52);
+    background:rgba(39,17,53,.82);
+    border-radius:11px;
+  }
+  html body.frame-one .site-footer{
+    height:var(--footer-h);min-height:var(--footer-h);
+    grid-template-columns:34px minmax(0,1fr);
+    gap:10px;padding-inline:clamp(17px,5vw,25px);
+    border-top:1px solid rgba(218,153,246,.18)!important;
+    background:linear-gradient(to top,rgba(15,8,24,.83),rgba(15,8,24,.28))!important;
+  }
+  .site-footer .footer-mark{font-size:23px}
+  .site-footer .footer-location{display:none}
+  .site-footer .footer-specialties{
+    justify-self:end;text-align:right;
+    font-size:0!important;line-height:1.3;white-space:nowrap;
+  }
+  .site-footer .footer-specialties i{display:none}
+  .site-footer .footer-specialties::after{
+    content:"LINUX  ·  ANSIBLE  ·  ELASTICSEARCH  ·  KAFKA";
+    font:750 clamp(8px,2.15vw,10px)/1.5 ui-monospace,Consolas,monospace;
+    letter-spacing:.015em;color:#e7d2ed;
+  }
+  body.frame-one .frame-stage{isolation:isolate;overflow:hidden}
+  body.frame-one .frame-stage .scene-eyebrow{
+    left:6%;top:8%;gap:5px;
+    font-size:10px;font-weight:780;line-height:1.4;
+    letter-spacing:.15em;max-width:78%;
+    text-shadow:0 2px 15px rgba(0,0,0,.50);
+  }
+  body.frame-one .frame-stage .scene-eyebrow .eyebrow-role{
+    font-size:9px;letter-spacing:.12em;opacity:.9
+  }
+  /* The artwork is the hero, not a tiny strip in a mostly empty screen.
+     Option A scales this entire box on the GPU; its layout stays fixed. */
+  body.frame-one .panorama{
+    width:92vw;height:min(53dvh,520px);
+    gap:clamp(8px,2.5vw,12px);
+    top:49%;
+  }
+  body.frame-one .panorama .arch{
+    box-shadow:0 25px 75px rgba(0,0,0,.46);
+  }
+  body.frame-one .frame-stage .hero-text{
+    top:51%;
+    width:calc(100vw - 22px);
+    max-width:calc(100vw - 22px);
+    font-size:clamp(36px,10.2vw,54px);
+    font-weight:820;line-height:1.08;
+    letter-spacing:-.08em;
+    text-shadow:0 3px 16px rgba(9,5,20,.70),0 13px 33px rgba(9,5,20,.42);
+  }
+  body.frame-one .frame-stage .hero-text span{overflow:visible}
+  /* A distinct action for changing footage, separate from page navigation. */
+  body.frame-one .frame-stage .hold-scene-control{
+    left:5%;bottom:clamp(111px,16dvh,164px);
+    min-height:42px;
+    padding:11px 13px;font-size:9px;line-height:1.2;
+    letter-spacing:.055em;opacity:1;
+    border:1px solid rgba(248,209,255,.53);
+    background:rgba(25,11,42,.83);
+    backdrop-filter:blur(12px);
+  }
+  body.frame-one .frame-stage .hold-scene-hint{display:none}
+  body.frame-one .frame-stage .scene-tools{top:6%;right:5%}
+  body.frame-one .frame-stage .interaction-note,
+  body.frame-one .frame-stage .corner-coordinate{font-size:8px}
+  /* Always legible and tappable, including 320px phones. */
+  body.frame-one .portal-navigation{
+    right:5%;bottom:calc(var(--footer-h) + 13px)!important;
+    gap:10px;padding:0;
+  }
+  body.frame-one .portal-navigation button{
+    min-width:43px;width:43px;height:43px;
+    background:rgba(23,10,35,.87);
+    border:1px solid rgba(234,184,255,.50);
+    box-shadow:0 8px 28px rgba(5,2,12,.28);
+    font-size:23px;
+  }
+  body.frame-one .portal-steps{gap:8px;font-size:10px;letter-spacing:.06em}
+  body.frame-one .portal-track{width:44px}
+  body.frame-one .wheel-hint{display:none}
+  body.frame-one .journey-scrollbar{display:none}
+  /* One calm, dark gradient across all film chapters.
+     The video remains colorful but text never washes out. */
+  body.frame-one .frame-stage .portal-shade,
+  body.frame-one.frame-three-active .frame-stage .portal-shade{
+    background:linear-gradient(90deg,rgba(7,6,21,.79) 0%,
+      rgba(9,7,24,.64) 48%,rgba(14,9,30,.40) 100%),
+      linear-gradient(0deg,rgba(12,7,22,.48),transparent 50%,rgba(8,5,22,.18));
+  }
+  body.frame-one .frame-stage #chapter-two{
+    left:7%;width:87vw;
+    top:49%;
+    transform:translateY(-47%);
+    text-shadow:0 3px 22px rgba(8,5,20,.4);
+  }
+  body.frame-one .frame-stage #chapter-two .chapter-title{
+    font-size:clamp(54px,13vw,90px);
+    line-height:1.0;margin:0 0 20px;
+    letter-spacing:-.085em;
+    text-shadow:0 7px 24px rgba(5,4,15,.66);
+  }
+  body.frame-one .frame-stage #chapter-two .chapter-description{
+    max-width:315px;
+    font-size:clamp(14px,3.65vw,17px);
+    line-height:1.55;margin-bottom:19px;
+    color:#fcf6ff;
+    text-shadow:0 2px 12px rgba(5,4,13,.82);
+  }
+  body.frame-one .frame-stage #chapter-two .chapter-link{
+    font-size:13px;font-weight:850;min-height:46px;
+    color:#b5ffe7;border-bottom-color:#c3ffed;
+    text-shadow:0 2px 10px rgba(0,0,0,.62);
+  }
+  /* A balanced central number and two readable editorial labels. */
+  body.frame-one .frame-stage #chapter-three:before{
+    background:linear-gradient(90deg,rgba(8,7,22,.56),
+      rgba(14,8,26,.29) 48%,rgba(8,7,22,.56));
+  }
+  body.frame-one .frame-stage #chapter-three .third-composition{
+    width:100%;padding-inline:6%;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:auto auto;
+    row-gap:clamp(17px,3.5dvh,36px);
+    align-content:center;
+    margin-top:0;min-height:0;
+    transform:none;
+  }
+  body.frame-one .frame-stage #chapter-three .twenty-hotspot{
+    grid-column:1/-1;grid-row:1;
+    width:min(89vw,390px);
+    margin:0 auto;
+  }
+  body.frame-one .frame-stage #chapter-three .side-statement{
+    grid-row:2;
+    font-size:clamp(24px,6.8vw,35px);
+    font-weight:550;
+    letter-spacing:-.063em;
+    line-height:1.03;
+    white-space:normal;
+    text-shadow:0 4px 22px rgba(5,2,17,.67);
+  }
+  body.frame-one .frame-stage #chapter-three .side-left{text-align:left;grid-column:1}
+  body.frame-one .frame-stage #chapter-three .side-right{text-align:right;grid-column:2}
+  /* Gallery imagery should occupy the phone, not appear thumbnail-sized. */
+  body.frame-one .frame-four-gallery .gallery-viewport{
+    top:47%;height:48dvh;
+  }
+  body.frame-one .frame-four-gallery .gallery-photo{
+    flex-basis:86vw;width:86vw;
+    height:clamp(220px,66vw,360px);
+  }
+  body.frame-one .frame-four-gallery .gallery-photo + .gallery-photo{margin-left:-21px}
+  body.frame-one .frame-four-gallery .gallery-photo figcaption{bottom:16px;left:15px;right:15px}
+  body.frame-one .frame-four-gallery .gallery-photo figcaption strong{font-size:15px}
+  body.frame-one .frame-four-gallery .gallery-counter{
+    bottom:18%;font-size:11px;gap:13px;
+  }
+  body.frame-one .frame-four-gallery .gallery-controls{
+    right:6%;bottom:10%;
+  }
+  body.frame-one .frame-four-gallery .gallery-controls button{
+    width:46px;height:46px;font-size:22px
+  }
+  body.frame-one .frame-four-gallery .gallery-back{
+    min-height:42px;top:13%;left:6%;font-size:10px;padding:12px 14px;
+  }
+  /* Keep the globe entirely above the fixed footer. */
+  body.frame-one .frame-five-contact .contact-layout{
+    padding:7% 6% 7%;gap:0;
+    justify-content:center;
+  }
+  body.frame-one .frame-five-contact .contact-heading{
+    font-size:clamp(44px,11vw,64px);
+    line-height:.99;margin-bottom:12px;
+  }
+  body.frame-one .frame-five-contact .contact-lead{
+    font-size:clamp(13px,3.5vw,15px);line-height:1.45;
+    margin-bottom:12px;max-width:420px;
+  }
+  body.frame-one .frame-five-contact .contact-links{
+    gap:10px;flex-wrap:wrap;
+  }
+  body.frame-one .frame-five-contact .contact-email{padding:7px 19px 8px 0}
+  body.frame-one .frame-five-contact .contact-email strong{font-size:clamp(18px,5vw,22px)}
+  body.frame-one .frame-five-contact .contact-github{font-size:10px;min-height:42px;display:flex;align-items:center}
+  body.frame-one .frame-five-contact .globe-column{margin-top:8px}
+  body.frame-one .frame-five-contact .globe-shell{
+    width:min(79vw,36dvh,350px);
+  }
+  body.frame-one .frame-five-contact .globe-caption{font-size:9px}
+  body.frame-one .frame-five-contact .globe-tools #globe-state{font-size:9px}
+}
+@media (max-width:360px) and (orientation:portrait){
+  body.frame-one .frame-stage .hero-text{font-size:clamp(32px,10.2vw,37px)}
+  body.frame-one .frame-stage #chapter-two .chapter-title{font-size:clamp(48px,13.5vw,54px)}
+  body.frame-one .frame-stage .hold-scene-control{
+    bottom:clamp(105px,15dvh,140px);
+    padding:10px 10px;font-size:8px;
+  }
+  body.frame-one .frame-stage .scene-eyebrow{font-size:9px;top:7%}
+  body.frame-one .frame-stage .scene-eyebrow .eyebrow-role{font-size:8px}
+  body.frame-one .frame-four-gallery .gallery-photo{width:87vw;flex-basis:87vw;height:clamp(200px,66vw,270px)}
+  body.frame-one .frame-five-contact .contact-heading{font-size:clamp(42px,12vw,48px)}
+  body.frame-one .frame-five-contact .contact-lead{font-size:13px}
+  body.frame-one .frame-five-contact .globe-shell{width:min(75vw,33dvh,260px)}
+}
+@media (max-width:760px) and (orientation:landscape){
+  /* On short landscape phones, favor legibility without covering controls. */
+  body.frame-one .journey-scrollbar{display:none}
+  body.frame-one .site-footer .footer-location{display:none}
+  body.frame-one .frame-stage #chapter-two .chapter-title{font-size:clamp(35px,7vw,54px)}
+  body.frame-one .frame-stage #chapter-two .chapter-description{font-size:12px}
+  body.frame-one .frame-stage #chapter-three .side-statement{font-size:clamp(16px,3vw,22px)}
+}
