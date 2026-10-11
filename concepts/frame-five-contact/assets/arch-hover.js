@@ -41,9 +41,9 @@
     lastMeasure=now;
     for(const a of items){
       a.rect=a.element.getBoundingClientRect();
-      a.ry=Math.min(.38,Math.max(.18,
-        (parseFloat(getComputedStyle(a.element).borderTopLeftRadius.split(" ").pop()) || a.rect.height*.28)/
-        Math.max(1,a.rect.height)));
+      // Match the site's original quarter-ellipse on desktop and phones.
+      // Never re-read radius after we temporarily mask it to zero.
+      a.ry=matchMedia("(max-width: 420px)").matches?.23:.28;
     }
   }
   function reset(item){
