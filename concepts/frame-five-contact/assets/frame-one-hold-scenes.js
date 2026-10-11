@@ -41,7 +41,9 @@
   // Fresh, independent choice for every homepage load. We deliberately do
   // not store the choice: reloading can select any of the three movies.
   // Once chosen, the same film stays active through sections 01, 02 and 03.
-  const initialScene=Math.floor(Math.random()*films.length);
+  const preselected=Number(document.documentElement.dataset.initialHomepageFilm);
+  const initialScene=Number.isInteger(preselected) && preselected>=0 && preselected<films.length
+    ? preselected : Math.floor(Math.random()*films.length);
   document.body.dataset.initialHomepageFilm=String(initialScene);
   const player=document.createElement("video");
   player.id="hold-scene-film";
