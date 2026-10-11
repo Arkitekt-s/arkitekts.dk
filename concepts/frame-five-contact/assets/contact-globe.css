@@ -305,3 +305,46 @@ body.frame-one[data-current-frame="1"] .site-header .site-name{color:#ba00dc}
 /* Keep section controls visible, including the last scene. */
 body.frame-one .portal-steps #portal-current{display:inline-block;min-width:2ch;font-variant-numeric:tabular-nums}
 body.frame-one .portal-navigation button:disabled{opacity:.38;cursor:default}
+
+
+/* Chapter 01 only: invite the visitor to scroll, then disappear in 02.
+   The existing arrow stays in exactly the same header/footer layout. */
+body.frame-one .portal-navigation #next-chapter{
+  position:relative;
+}
+body.frame-one .portal-navigation #next-chapter.is-scroll-invite{
+  animation:soheil-scroll-invite 1.65s ease-in-out infinite;
+  border-color:rgba(238,188,251,.9);
+}
+body.frame-one .portal-navigation #next-chapter.is-scroll-invite::after{
+  content:"SCROLL DOWN";
+  position:absolute;
+  right:-20px;
+  bottom:calc(100% + 14px);
+  white-space:nowrap;
+  pointer-events:none;
+  font:750 9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.13em;
+  color:#f5d9ff;
+  text-shadow:0 2px 8px rgba(11,5,18,.65);
+  animation:soheil-scroll-caption 1.65s ease-in-out infinite;
+}
+@keyframes soheil-scroll-invite{
+  0%,100%{transform:translate3d(0,0,0);box-shadow:0 0 0 0 rgba(199,83,229,0)}
+  42%{transform:translate3d(0,6px,0);box-shadow:0 0 0 7px rgba(199,83,229,.15)}
+  70%{transform:translate3d(0,3px,0);box-shadow:0 0 0 11px rgba(199,83,229,0)}
+}
+@keyframes soheil-scroll-caption{
+  0%,100%{opacity:.62}
+  45%{opacity:1}
+}
+body.frame-one .portal-navigation #next-chapter.is-scroll-invite:hover,
+body.frame-one .portal-navigation #next-chapter.is-scroll-invite:focus-visible{
+  animation-play-state:paused;
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .portal-navigation #next-chapter.is-scroll-invite,
+  body.frame-one .portal-navigation #next-chapter.is-scroll-invite::after{
+    animation:none!important;
+  }
+}
