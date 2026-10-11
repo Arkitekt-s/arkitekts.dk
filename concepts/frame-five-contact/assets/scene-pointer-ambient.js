@@ -33,7 +33,7 @@
   const rgba=(rgb,alpha)=>"rgba("+rgb[0]+","+rgb[1]+","+rgb[2]+","+clamp(alpha,0,1).toFixed(3)+")";
   function resize(){
     width=innerWidth;height=innerHeight;
-    dpr=Math.min(devicePixelRatio||1,1.4);
+    dpr=Math.min(devicePixelRatio||1,1.25);
     canvas.width=Math.round(width*dpr);
     canvas.height=Math.round(height*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -97,7 +97,7 @@
     if(dist<11 && now-lastSample<28)return;
     // Fast cursor movement paints short, continuous clouds, not sparse dots.
     if(last && dist>44 && dist<550){
-      const steps=Math.min(9,Math.floor(dist/35));
+      const steps=Math.min(7,Math.floor(dist/38));
       for(let i=1;i<steps;i++){
         const f=i/steps;
         const nx=last.x+(x-last.x)*f,ny=last.y+(y-last.y)*f;
@@ -105,7 +105,7 @@
       }
     }
     trail.push({x,y,time:now,color:tint(x)});
-    if(trail.length>27)trail.splice(0,trail.length-27);
+    if(trail.length>18)trail.splice(0,trail.length-18);
     lastSample=now;
   }
   addEventListener("pointermove",event=>{
