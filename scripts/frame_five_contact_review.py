@@ -45,8 +45,9 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # The first two scenes have a restrained cursor-lit grid.
-        # Mouse motion must never tilt, zoom, or press-hold the landscape.
+        # Scenes 01–03 use an S-logo square cursor and painterly trail.
+        # Scenes 04–05 and every other page use the default browser cursor.
+        # Mouse movement must never tilt, zoom or hold the landscape.
         if page.locator("#pointer-pattern").count()!=1:
             errors.append(f"{name}: cursor-light canvas missing")
         scene=page.locator("#panorama")
@@ -61,6 +62,15 @@ with sync_playwright() as p:
                     Math.min(c.width-1,Math.round(x*c.width/innerWidth)),
                     Math.min(c.height-1,Math.round(y*c.height/innerHeight)),1,1).data);
             }""",[x,y])
+        if not page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
+            errors.append(f"{name}: square painting cursor missing in scene 01")
+        if page.locator(".paint-cursor").count()!=1:
+            errors.append(f"{name}: branded square cursor element missing")
+        dot=page.locator(".paint-cursor")
+        if dot.evaluate("e=>getComputedStyle(e).backgroundColor")!="rgb(176, 46, 203)":
+            errors.append(f"{name}: cursor does not match magenta S. logo dot")
+        if dot.evaluate("e=>Math.round(e.getBoundingClientRect().width)")!=11:
+            errors.append(f"{name}: S-logo cursor size incorrect")
         page.mouse.move(w*.2,h*.4,steps=6)
         page.wait_for_timeout(220)
         left_color=glow_pixel(w*.2,h*.4)
@@ -101,12 +111,14 @@ with sync_playwright() as p:
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)
-        page.wait_for_timeout(400)
-        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
-            errors.append(f"{name}: ambient pointer did not stop in Frame 03")
+        page.wait_for_function(
+            "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
+            timeout=2500)
+        if not page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
+            errors.append(f"{name}: painter cursor missing in Frame 03")
         ambient_opacity=page.locator("#pointer-pattern").evaluate("e=>parseFloat(getComputedStyle(e).opacity)")
-        if ambient_opacity>.01:
-            errors.append(f"{name}: cursor glow remains visible after Frame 02")
+        if ambient_opacity<.95:
+            errors.append(f"{name}: painterly trail hidden in Frame 03")
         if page.locator(".twenty-piece").first.evaluate("e=>getComputedStyle(e).animationName")!="none":
             errors.append(f"{name}: 10 auto-animates before hover")
         # Reverse interaction: scattered before hover, assembled on entry,
@@ -128,6 +140,13 @@ with sync_playwright() as p:
         if abs(scatter)<1 or abs(assembled)>.05 or abs(scattered_again)<1:
             errors.append(f"{name}: reversed hover failed ({scatter},{assembled},{scattered_again})")
         wheel(page,5);wait(page,2.995)
+        page.wait_for_timeout(280)
+        if page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
+            errors.append(f"{name}: browser cursor did not return in Frame 04")
+        if page.locator(".paint-cursor").evaluate("e=>getComputedStyle(e).opacity")!="0":
+            errors.append(f"{name}: custom cursor visible in Frame 04")
+        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
+            errors.append(f"{name}: paint remains active in Frame 04")
         if page.locator("#portal-current").inner_text().strip()!="04":
             errors.append(f"{name}: section counter did not reach 04")
         gallery=page.locator("#frame-four-gallery")
@@ -165,6 +184,8 @@ with sync_playwright() as p:
         wait(page,3.995)
         if page.locator("#portal-current").inner_text().strip()!="05":
             errors.append(f"{name}: section counter did not reach 05")
+        if page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
+            errors.append(f"{name}: custom cursor active in Frame 05")
         if not page.locator(".portal-navigation").is_visible():
             errors.append(f"{name}: navigation disappeared in final section")
         contact=page.locator("#frame-five-contact")
