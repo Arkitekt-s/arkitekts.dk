@@ -29,6 +29,7 @@
     animationFrame=0;
     if(!sceneActive() || document.hidden){
       ctx.clearRect(0,0,width,height);
+      canvas.dataset.ambientActive="false";
       trail=[];
       return;
     }
@@ -37,6 +38,7 @@
     const fade=Math.min(1,Math.max(0,(930-age)/530));
     if(fade<=0){
       trail=[];
+      canvas.dataset.ambientActive="false";
       ctx.clearRect(0,0,width,height);
       return;
     }
@@ -44,6 +46,7 @@
     px+=(tx-px)*ease;
     py+=(ty-py)*ease;
     ctx.clearRect(0,0,width,height);
+    canvas.dataset.ambientActive="true";
 
     const glow=ctx.createRadialGradient(px,py,0,px,py,112);
     glow.addColorStop(0,"rgba(207,143,244,"+(.115*fade).toFixed(3)+")");
@@ -100,10 +103,11 @@
   },{passive:true});
   addEventListener("resize",resize,{passive:true});
   reduced.addEventListener("change",()=>{
-    if(reduced.matches){ctx.clearRect(0,0,width,height);trail=[];}
+    if(reduced.matches){ctx.clearRect(0,0,width,height);trail=[];canvas.dataset.ambientActive="false";}
   });
   document.addEventListener("visibilitychange",()=>{
-    if(document.hidden){ctx.clearRect(0,0,width,height);trail=[];}
+    if(document.hidden){ctx.clearRect(0,0,width,height);trail=[];canvas.dataset.ambientActive="false";}
   });
+  canvas.dataset.ambientActive="false";
   resize();
 })();
