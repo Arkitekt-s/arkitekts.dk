@@ -524,9 +524,9 @@ body.motion-off .panorama .arch .arch-color-lens{
 }
 
 
-/* Frame 01 — three press-and-hold worlds.
-   The permanent arches and their Silver Glass / elastic edge remain intact.
-   Alternate artwork is a shared live-painted image sliced across all 3 arches. */
+/* Frame 01 — three live cinematic films. Selected video continues
+   as the fullscreen background through Frames 02 and 03.
+   Preserve arch size, Silver Glass, text and scroll transitions. */
 body.frame-one #panorama .arch .hold-scene-paint{
   position:absolute;
   inset:0;
@@ -539,10 +539,10 @@ body.frame-one #panorama .arch .hold-scene-paint{
   pointer-events:none;
   user-select:none;
   transition:opacity .42s ease,visibility .42s;
-  filter:saturate(1.11) contrast(1.03);
+  filter:saturate(.87) contrast(1.03);
 }
-body.frame-one #panorama[data-art-scene="1"] .arch .hold-scene-paint,
-body.frame-one #panorama[data-art-scene="2"] .arch .hold-scene-paint{
+body.frame-one #panorama[data-art-scene="1"][data-art-media-ready="true"] .arch .hold-scene-paint,
+body.frame-one #panorama[data-art-scene="2"][data-art-media-ready="true"] .arch .hold-scene-paint{
   opacity:1;
   visibility:visible;
 }
@@ -627,4 +627,28 @@ body.frame-one.chapter-two-active .hold-scene-hint{
 }
 @media(prefers-reduced-motion:reduce){
   body.frame-one #panorama .arch .hold-scene-paint{transition:none}
+}
+
+
+/* A single HD movie feeds all three curved windows. It crossfades over
+   the default portal-film when the arches open into Frames 02 and 03. */
+body.frame-one .frame-stage .hold-scene-film{
+  position:absolute;
+  z-index:5;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center center;
+  display:block;
+  opacity:0;visibility:hidden;
+  pointer-events:none;
+  user-select:none;
+  background:transparent;
+  filter:saturate(.83) contrast(1.02) brightness(.94);
+  will-change:opacity;
+}
+body.frame-one.frame-three-active .frame-stage .hold-scene-film{
+  filter:saturate(.83) contrast(1.05) brightness(.91);
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .frame-stage .hold-scene-film{transition:none!important}
 }

@@ -120,9 +120,23 @@ with sync_playwright() as p:
                     page.wait_for_function(
                         "(v)=>document.getElementById('panorama')?.dataset.artScene===String(v)",
                         arg=expected, timeout=2500)
-                    page.wait_for_timeout(1000)
+                    page.wait_for_timeout(950)
                     if page.locator("#panorama .hold-scene-paint").count()!=3:
-                        errors.append("desktop: animated artwork not present in all three arches")
+                        errors.append("desktop: cinematic artwork not present in all three arches")
+                    if expected in (1,2):
+                        selected_url=page.locator("#hold-scene-film").get_attribute("src") or ""
+                        if "videos.pexels.com/video-files/" not in selected_url:
+                            errors.append(f"desktop: scene {expected} is not photographic video")
+                # Select the ocean again and confirm it follows through
+                # the entire scroll-controlled editorial journey.
+                page.mouse.move(w*.62,h*.63)
+                page.mouse.down()
+                page.wait_for_timeout(410)
+                page.mouse.up()
+                page.wait_for_function(
+                    "document.getElementById('panorama')?.dataset.artScene==='1'",
+                    timeout=2500)
+                page.wait_for_timeout(900)
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")
@@ -166,6 +180,10 @@ with sync_playwright() as p:
         wheel(page,7);wait(page,.995)
         if page.locator("#portal-current").inner_text().strip()!="02":
             errors.append(f"{name}: section counter did not reach 02")
+        if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
+            errors.append("desktop: selected ocean animation lost entering Section 02")
+        if name=="desktop" and "853862" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
+            errors.append("desktop: ocean video lost from Section 02 full-screen film")
         # Once the arches become one film, masks must not separate.
         if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
             opened_arch=page.locator("#panorama .arch").first
@@ -188,6 +206,10 @@ with sync_playwright() as p:
         wheel(page,7);wait(page,1.995)
         if page.locator("#portal-current").inner_text().strip()!="03":
             errors.append(f"{name}: section counter did not reach 03")
+        if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
+            errors.append("desktop: selected ocean animation lost entering Section 03")
+        if name=="desktop" and "853862" not in (page.locator("#hold-scene-film").get_attribute("src") or ""):
+            errors.append("desktop: ocean video lost from Section 03 full-screen film")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)
