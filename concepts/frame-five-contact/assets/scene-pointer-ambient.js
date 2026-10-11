@@ -101,7 +101,7 @@
     const last=points[points.length-1];
     const alive=clamp((FADE_MS-(now-lastMove))/FADE_MS,0,1);
     if(alive<=0)return;
-    if(points.length<2){
+    if(points.length<2 || Math.hypot(last.x-points[0].x,last.y-points[0].y)<2){
       // Single illuminated head, growing into a ribbon as the cursor moves.
       head(last,alive);
       return;
@@ -134,7 +134,7 @@
     // Rounded leading cap, keeping the liquid shape organic.
     ctx.arc(last.x,last.y,19.2*alive,
       Math.atan2(outline[cap].leftY-last.y,outline[cap].leftX-last.x),
-      Math.atan2(outline[cap].rightY-last.y,outline[cap].rightX-last.x),false);
+      Math.atan2(outline[cap].rightY-last.y,outline[cap].rightX-last.x),true);
     for(let i=outline.length-1;i>=0;i--)ctx.lineTo(outline[i].rightX,outline[i].rightY);
     ctx.closePath();
 
