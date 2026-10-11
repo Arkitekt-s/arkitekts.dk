@@ -363,12 +363,12 @@ body.frame-one .paint-cursor-core{
   transform:translate(-50%,-50%) scale(var(--cursor-scale,1));
   transform-origin:center center;
   transition:transform .18s cubic-bezier(.16,.8,.22,1);
-  box-shadow:0 0 10px rgba(255,255,255,.68);
-  mix-blend-mode:difference;
+  box-shadow:0 0 8px rgba(255,255,255,.46),0 0 14px rgba(191,64,230,.18);
+  mix-blend-mode:normal;
 }
 body.frame-one.paint-cursor-active .paint-cursor.is-visible{opacity:1}
 
-/* Triptych-inspired violet liquid ribbon melts behind the mouse. */
+/* Transparent water-like color surrounds the white pointer and fades outwards. */
 body.frame-one #pointer-pattern{
   pointer-events:none;
   mix-blend-mode:normal;
