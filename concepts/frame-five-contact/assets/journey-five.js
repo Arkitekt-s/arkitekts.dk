@@ -114,38 +114,42 @@
     const lead=windowVideos[0];
     const motionPaused=reduced.matches||document.body.classList.contains("motion-off");
 
-    // When arches are nearly joined, prepare one film with the same source.
-    if(p>.52 && !filmStarted && !motionPaused){
+    // Option A: start the full-screen film before the dissolve becomes visible.
+    // This keeps the same movie playing behind the arches at every scroll speed.
+    if(p>.26 && !filmStarted && !motionPaused){
       filmStarted=true;
       if(lead && lead.readyState>=2){
         try{film.currentTime=lead.currentTime;}catch{}
       }
       film.play().catch(()=>{filmStarted=false;});
     }
-    if(p>.52 && !motionPaused && film.paused && !filmStarted){
+    if(p>.26 && !motionPaused && film.paused && !filmStarted){
       filmStarted=true;
       film.play().catch(()=>{filmStarted=false;});
     }
     if(motionPaused)film.pause();
 
     const ready=film.readyState>=2;
-    const blend=ready?smooth(normalize(p,.70,.95)):0;
-    film.classList.toggle("is-active",blend>.005);
+    // The video tag's matching poster is the fallback if the stream is slow.
+    // Never show a blank frame while waiting for a remote video download.
+    const blend=smooth(normalize(p,.42,.89));
+    film.classList.toggle("is-active",blend>.002);
     film.style.opacity=String(blend);
 
-    // Once the seamless movie is fully opaque, decode just one stream.
-    // Resume and resync all arches when the user scrolls back.
-    if(p>.995 && ready && !windowsPaused){
+    // Only pause the three arch streams after their image is fully covered
+    // in Section 02. On reverse, restart/resync while still hidden behind
+    // the opaque portal film; no visible playback jump at the seam.
+    if(position>1.025 && ready && !windowsPaused){
       windowVideos.forEach(video=>video.pause());
       windowsPaused=true;
-    }else if(p<.975 && windowsPaused){
+    }else if(position<.83 && windowsPaused){
       windowVideos.forEach(video=>{
         try{if(film.readyState>=2)video.currentTime=film.currentTime;}catch{}
         if(!motionPaused)video.play().catch(()=>{});
       });
       windowsPaused=false;
     }
-    if(p<.46 && filmStarted){
+    if(p<.19 && filmStarted){
       film.pause();
       filmStarted=false;
     }
@@ -180,35 +184,24 @@
   function paint(){
     const journey=position;
     const p=Math.min(1,journey);
-    const grow=smooth(normalize(p,.015,.88));
+    // Option A: GPU-composited, modest depth push, NOT a width/height
+    // resize of three 4K video decoders on every animation frame.
+    const grow=smooth(normalize(p,.08,.78));
+    const dissolve=smooth(normalize(p,.42,.89));
     const fillScreen=smooth(normalize(p,.12,.97));
     const head=Math.max(0,initial.head*(1-fillScreen));
     const foot=Math.max(0,initial.foot*(1-fillScreen));
     const sceneHeight=innerHeight-head-foot;
-    // Resizing the video arches is expensive. Once the intro has filled
-    // the screen, all later chapters share the same dimensions.
-    // Avoid hundreds of unnecessary full-viewport layout recalculations.
+    // The arches remain at their original layout size; only their
+    // compositor scale and alpha change. The original interactive arch
+    // silhouettes remain untouched, including on small phones/tablets.
     if(p!==lastRendered){
       stage.style.top=toPx(head);
       stage.style.bottom=toPx(foot);
-      // The landscape travels from the first-frame card to the full-viewport film.
-      panorama.style.width=toPx(lerp(initial.w,innerWidth+2,grow));
-      panorama.style.height=toPx(lerp(initial.h,sceneHeight+2,grow));
-      panorama.style.gap=toPx(lerp(initial.gap,0,grow));
       panorama.style.top=toPx(lerp(initial.top,sceneHeight*.5,grow));
-      if(p>.001){
-        panorama.style.transform="translate3d(-50%,-50%,0) scale(1)";
-      }else{
-        panorama.style.removeProperty("transform");
-      }
-      const round=(1-grow);
-      if(grow>.002){
-        arches.forEach(a=>{
-          a.style.borderRadius=(50*round).toFixed(3)+"% "+(50*round).toFixed(3)+"% 0 0 / "+(28*round).toFixed(3)+"% "+(28*round).toFixed(3)+"% 0 0";
-        });
-      }else{
-        arches.forEach(a=>a.style.removeProperty("border-radius"));
-      }
+      if(p>.001)panorama.style.setProperty("--scene-zoom",(1+.085*grow).toFixed(4));
+      else panorama.style.removeProperty("--scene-zoom");
+      panorama.style.opacity=String(1-dissolve);
     }
     // One uninterrupted, reversible scroll transition from 01 to 02.
     // The outgoing sentence starts drifting up before the arches finish
@@ -388,7 +381,9 @@
       wheelHint.style.opacity=(journey>.06&&journey<.82)?"1":"0";
       wheelHint.innerHTML=p>.82?"SCROLL UP TO RETURN <span>↑</span>":"KEEP SCROLLING TO ENTER <span>↓</span>";
     }
-    document.body.classList.toggle("portal-zoom",grow>.12);
+    // This legacy class abruptly removes arch borders and shadow.
+    // Option A never activates it, so there is no mid-transition flash.
+    document.body.classList.remove("portal-zoom");
     document.body.classList.toggle("chapter-two-active",p>.75);
     document.body.dataset.portalProgress=p.toFixed(4);
     document.documentElement.style.setProperty("--portal-progress",p.toFixed(4));
