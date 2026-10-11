@@ -23,7 +23,7 @@
 
   const MAX_LENGTH=310;       // A short flexible ribbon, not a painted screen.
   const MAX_NODES=72;
-  const FADE_MS=970;          // Trail melts away after the cursor pauses.
+  const FADE_MS=1120;         // Color melts away just after the cursor pauses.
   const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
   let width=0,height=0,scale=1;
   let nodes=[],pending=0,lastMove=-Infinity,lastPoint=null;
@@ -56,8 +56,8 @@
       const dy=Math.max(rect.top-y,0,y-rect.bottom);
       nearest=Math.min(nearest,Math.hypot(dx,dy));
     }
-    // At 50px the cursor begins to grow; on text it becomes ~30px.
-    return clamp(1-nearest/58,0,1);
+    // Growth is subtle: 9px at rest and only about 15.8px near text.
+    return clamp(1-nearest/44,0,1);
   }
 
   function active(){
@@ -135,96 +135,125 @@
               y:p.y*.56+(a.y+b.y)*.22,time:p.time,id:p.id};
     });
   }
+  // A softly translucent water wash: saturated beneath the white cursor,
+  // dissolving outwards to clear alpha with no hard painted edges.
+  function watercolorGlow(x,y,radius,life,phase=0){
+    if(life<=.004)return;
+    const g=ctx.createRadialGradient(x,y,0,x,y,radius);
+    g.addColorStop(0,"rgba(239,47,255,"+(.46*life).toFixed(3)+")");
+    g.addColorStop(.23,"rgba(187,31,244,"+(.30*life).toFixed(3)+")");
+    g.addColorStop(.50,"rgba(145,30,220,"+(.15*life).toFixed(3)+")");
+    g.addColorStop(.78,"rgba(106,32,198,"+(.043*life).toFixed(3)+")");
+    g.addColorStop(1,"rgba(106,32,198,0)");
+    ctx.fillStyle=g;
+    ctx.fillRect(x-radius,y-radius,2*radius,2*radius);
+    // Moving, faint water rings emerge and vanish around the pointer.
+    if(phase>0){
+      const rippleRadius=24+46*phase;
+      ctx.beginPath();
+      ctx.arc(x,y,rippleRadius,0,Math.PI*2);
+      ctx.strokeStyle="rgba(227,139,255,"+
+        (.12*life*(1-phase)*(1-phase)).toFixed(3)+")";
+      ctx.lineWidth=1.6;
+      ctx.stroke();
+    }
+  }
   function ribbon(points,now){
     const last=points[points.length-1];
-    const alive=clamp((FADE_MS-(now-lastMove))/FADE_MS,0,1);
+    const idle=now-lastMove;
+    const alive=clamp((FADE_MS-idle)/FADE_MS,0,1);
     if(alive<=0)return;
+    const travelFade=Math.pow(alive,.85);
     if(points.length<2 || Math.hypot(last.x-points[0].x,last.y-points[0].y)<2){
-      // Single illuminated head, growing into a ribbon as the cursor moves.
-      head(last,alive);
+      head(last,travelFade,now);
       return;
     }
     const smoothed=smoothPoints(points);
-    const outline=[];
+    const cap=smoothed.length-1;
     let total=0;
     const distances=[0];
     for(let i=1;i<smoothed.length;i++){
       total+=Math.hypot(smoothed[i].x-smoothed[i-1].x,smoothed[i].y-smoothed[i-1].y);
       distances.push(total);
     }
-    const cap=points.length-1;
+    const outline=[];
     for(let i=0;i<smoothed.length;i++){
+      const p=smoothed[i];
       const t=total>0?distances[i]/total:i/cap;
       const before=smoothed[Math.max(0,i-1)];
       const after=smoothed[Math.min(cap,i+1)];
       const dx=after.x-before.x,dy=after.y-before.y;
       const mag=Math.max(1,Math.hypot(dx,dy));
       const nx=-dy/mag,ny=dx/mag;
-      // The front is a broad luminous purple head; tail narrows to a tip.
-      const radius=(1.2+19.2*Math.pow(t,.82))*alive;
-      outline.push({x:smoothed[i].x,y:smoothed[i].y,
-        leftX:smoothed[i].x+nx*radius,leftY:smoothed[i].y+ny*radius,
-        rightX:smoothed[i].x-nx*radius,rightY:smoothed[i].y-ny*radius});
+      // Narrow tail and rounded elastic front, without a solid-color edge.
+      const radius=(.7+15.5*Math.pow(t,.9))*travelFade;
+      outline.push({x:p.x,y:p.y,
+        leftX:p.x+nx*radius,leftY:p.y+ny*radius,
+        rightX:p.x-nx*radius,rightY:p.y-ny*radius});
     }
+    // Soft watercolor clouds extend outside the ribbon, with alpha fading
+    // entirely to zero at their edges. Draw sparingly to remain fast.
+    const sampleStep=Math.max(1,Math.floor(smoothed.length/11));
+    for(let i=0;i<smoothed.length;i+=sampleStep){
+      const t=total>0?distances[i]/total:i/cap;
+      const age=clamp(1-(now-smoothed[i].time)/FADE_MS,0,1);
+      watercolorGlow(smoothed[i].x,smoothed[i].y,
+        43+29*t,travelFade*age*(.24+.53*t));
+    }
+
+    // Feathered liquid volume; the center is stronger than the outside.
     ctx.beginPath();
     ctx.moveTo(outline[0].leftX,outline[0].leftY);
     for(let i=1;i<outline.length;i++)ctx.lineTo(outline[i].leftX,outline[i].leftY);
-    // Rounded leading cap, keeping the liquid shape organic.
-    ctx.arc(last.x,last.y,19.2*alive,
+    ctx.arc(last.x,last.y,16.2*travelFade,
       Math.atan2(outline[cap].leftY-last.y,outline[cap].leftX-last.x),
       Math.atan2(outline[cap].rightY-last.y,outline[cap].rightX-last.x),true);
     for(let i=outline.length-1;i>=0;i--)ctx.lineTo(outline[i].rightX,outline[i].rightY);
     ctx.closePath();
-
-    const gradient=ctx.createLinearGradient(
-      smoothed[0].x,smoothed[0].y,last.x,last.y);
-    gradient.addColorStop(0,"rgba(92,0,153,0.08)");
-    gradient.addColorStop(.18,"rgba(119,0,177,"+(.73*alive).toFixed(3)+")");
-    gradient.addColorStop(.68,"rgba(175,0,222,"+(.90*alive).toFixed(3)+")");
-    gradient.addColorStop(1,"rgba(235,23,241,"+(.94*alive).toFixed(3)+")");
-
+    const water=ctx.createLinearGradient(smoothed[0].x,smoothed[0].y,last.x,last.y);
+    water.addColorStop(0,"rgba(87,14,149,0)");
+    water.addColorStop(.28,"rgba(116,12,183,"+(.15*travelFade).toFixed(3)+")");
+    water.addColorStop(.72,"rgba(160,9,217,"+(.35*travelFade).toFixed(3)+")");
+    water.addColorStop(1,"rgba(217,20,249,"+(.62*travelFade).toFixed(3)+")");
     ctx.save();
-    ctx.shadowColor="rgba(199,0,249,"+(.64*alive).toFixed(3)+")";
-    ctx.shadowBlur=30;
-    ctx.fillStyle=gradient;
+    ctx.shadowColor="rgba(175,33,239,"+(.34*travelFade).toFixed(3)+")";
+    ctx.shadowBlur=40;
+    ctx.fillStyle=water;
     ctx.fill();
     ctx.restore();
-    // A bright liquid core gives the ribbon form, unlike a blurred paint stroke.
-    ctx.lineCap="round";
-    ctx.lineJoin="round";
+
+    // Transparent edge, vivid center, lighter at the tail.
     ctx.beginPath();
     for(let i=0;i<smoothed.length;i++){
-      const p=smoothed[i];
-      if(i===0)ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
+      if(i===0)ctx.moveTo(smoothed[i].x,smoothed[i].y);
+      else ctx.lineTo(smoothed[i].x,smoothed[i].y);
     }
-    ctx.strokeStyle="rgba(222,56,249,"+(.18*alive).toFixed(3)+")";
-    ctx.lineWidth=7.5*alive;
+    ctx.lineCap="round";
+    ctx.lineJoin="round";
+    const inner=ctx.createLinearGradient(smoothed[0].x,smoothed[0].y,last.x,last.y);
+    inner.addColorStop(0,"rgba(164,44,216,0)");
+    inner.addColorStop(.48,"rgba(187,36,235,"+(.12*travelFade).toFixed(3)+")");
+    inner.addColorStop(1,"rgba(237,65,255,"+(.48*travelFade).toFixed(3)+")");
+    ctx.lineWidth=5.5*travelFade;
+    ctx.strokeStyle=inner;
     ctx.stroke();
 
-    // Tiny detached splashes appear near the narrowing tail.
-    if(outline.length>18 && alive>.20){
-      const k=Math.max(2,Math.floor(outline.length*.12));
-      const a=smoothed[k],b=smoothed[Math.min(k+3,cap)];
-      const dx=b.x-a.x,dy=b.y-a.y,mag=Math.max(1,Math.hypot(dx,dy));
-      const nx=-dy/mag,ny=dx/mag;
-      // The outer fleck is slightly detached, like the recorded purple splash.
-      ctx.beginPath();
-      ctx.moveTo(a.x+nx*17,a.y+ny*17);
-      ctx.lineTo(b.x+nx*20,b.y+ny*20);
-      ctx.strokeStyle="rgba(195,35,245,"+(.37*alive).toFixed(3)+")";
-      ctx.lineWidth=4*alive;
-      ctx.stroke();
-    }
-    head(last,alive);
+    // Light water ripples are strongest under the pointer and transparent
+    // on the outside. They do not alter the images or page geometry.
+    head(last,travelFade,now);
   }
-  function head(last,alive){
-    const glow=ctx.createRadialGradient(last.x,last.y,0,last.x,last.y,36);
-    glow.addColorStop(0,"rgba(255,93,255,"+(.77*alive).toFixed(3)+")");
-    glow.addColorStop(.48,"rgba(198,18,242,"+(.57*alive).toFixed(3)+")");
-    glow.addColorStop(1,"rgba(198,18,242,0)");
+  function head(last,alive,now){
+    watercolorGlow(last.x,last.y,112,alive,
+      ((now-last.time)%900)/900);
+    const glow=ctx.createRadialGradient(last.x,last.y,0,last.x,last.y,31);
+    glow.addColorStop(0,"rgba(253,105,255,"+(.88*alive).toFixed(3)+")");
+    glow.addColorStop(.34,"rgba(218,52,253,"+(.66*alive).toFixed(3)+")");
+    glow.addColorStop(.75,"rgba(173,25,229,"+(.19*alive).toFixed(3)+")");
+    glow.addColorStop(1,"rgba(173,25,229,0)");
     ctx.fillStyle=glow;
-    ctx.beginPath();ctx.arc(last.x,last.y,36,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.arc(last.x,last.y,31,0,Math.PI*2);
+    ctx.fill();
   }
   function draw(now){
     pending=0;
@@ -252,7 +281,7 @@
     }
     const now=performance.now();
     const near=textProximity(x,y,now);
-    const size=1+2.45*near*near*(3-2*near);
+    const size=1+.75*near*near*(3-2*near);
     dotCore.style.setProperty("--cursor-scale",size.toFixed(3));
     dot.classList.add("is-visible");
     record(x,y,now);
