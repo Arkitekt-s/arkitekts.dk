@@ -1,175 +1,238 @@
-/* Pointer-reactive liquid ARCH MASKS.
- * Keeps the existing layout, videos, text and cinematic scroll untouched.
- * Locally bends the edge closest to the cursor and springs back on exit.
- * Works only in the opening frame, with hover and normal motion enabled.
+/* SOHEIL / ARCH 01 — Elastic, cursor-disturbed arch silhouettes.
+ * Three windows are visibly smaller at rest. Only the edge NEAR the cursor
+ * is pulled inward or outward; the rigid arch box never translates/rotates.
+ * Per-vertex spring physics returns the exact original shape on departure.
+ * Scroll-controlled opening is preserved, and reduced-motion is respected.
  */
 (() => {
   "use strict";
   const arches=[...document.querySelectorAll("#panorama .arch")];
   if(arches.length!==3 || !matchMedia("(hover: hover) and (pointer: fine)").matches)return;
   const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-  const clamp=(v,low,high)=>Math.min(high,Math.max(low,v));
-  const SVG_NS="http://www.w3.org/2000/svg";
-  const svg=document.createElementNS(SVG_NS,"svg");
-  svg.setAttribute("aria-hidden","true");
-  svg.setAttribute("width","0");
-  svg.setAttribute("height","0");
-  svg.style.cssText="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none";
-  const defs=document.createElementNS(SVG_NS,"defs");
-  svg.append(defs);
-  document.body.append(svg);
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const svgNS="http://www.w3.org/2000/svg";
+  const maskSVG=document.createElementNS(svgNS,"svg");
+  maskSVG.style.cssText="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none";
+  maskSVG.setAttribute("aria-hidden","true");
+  const defs=document.createElementNS(svgNS,"defs");
+  maskSVG.append(defs);
+  document.body.append(maskSVG);
 
-  const items=arches.map((element,index)=>{
-    const clip=document.createElementNS(SVG_NS,"clipPath");
-    clip.id="fluid-arch-mask-"+index;
+  // Curved mask keeps a small spare gutter around each silhouette, so the
+  // rubber outline has genuine room to bulge OUT as well as bend IN.
+  const items=arches.map((element,i)=>{
+    const clip=document.createElementNS(svgNS,"clipPath");
+    clip.id="elastic-arch-"+i;
     clip.setAttribute("clipPathUnits","objectBoundingBox");
-    const path=document.createElementNS(SVG_NS,"path");
+    const path=document.createElementNS(svgNS,"path");
     clip.append(path);
     defs.append(clip);
-    return {element,path,id:clip.id,rect:null,ry:.28,edge:.0,target:0,
-      mx:-999,my:-999,shiftX:0,shiftY:0,enabled:false};
+    const border=document.createElementNS(svgNS,"svg");
+    border.classList.add("elastic-arch-outline");
+    border.setAttribute("viewBox","0 0 1 1");
+    border.setAttribute("preserveAspectRatio","none");
+    border.setAttribute("aria-hidden","true");
+    border.style.cssText="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible";
+    const stroke=document.createElementNS(svgNS,"path");
+    stroke.setAttribute("fill","none");
+    stroke.setAttribute("stroke","rgba(250,226,255,.62)");
+    stroke.setAttribute("stroke-width","1.15");
+    stroke.setAttribute("vector-effect","non-scaling-stroke");
+    border.append(stroke);
+    element.append(border);
+    return {element,path,stroke,id:clip.id,rect:null,vertices:[],
+      applied:false, progress:0,active:false};
   });
-  let cursorX=-2000,cursorY=-2000,tracking=false,raf=0,last=0,lastMeasure=0;
-  function enabled(){
-    const scene=Number(document.body.dataset.currentFrame||1);
-    const progress=Number(document.body.dataset.portalProgress||0);
-    return scene===1 && progress<.085 && !document.body.classList.contains("motion-off") &&
-      !reduced.matches && !document.hidden;
+  const CURVE_STEPS=48, SIDE_STEPS=18;
+  let mouseX=-10000,mouseY=-10000,tracking=false;
+  let frame=0,lastFrame=0,lastMeasure=-Infinity,needsMeasure=true;
+  let lastScrollProgress=-1;
+
+  function sceneProgress(){
+    return clamp(Number(document.body.dataset.portalProgress||0),0,1);
   }
-  function measure(now){
-    if(now-lastMeasure<115)return;
-    lastMeasure=now;
+  function available(){
+    return !reduced.matches && !document.body.classList.contains("motion-off") &&
+      !document.hidden && Number(document.body.dataset.currentFrame||1)===1;
+  }
+  function easing(t){t=clamp(t,0,1);return t*t*(3-2*t);}
+
+  function geometry(a,progress){
+    const rect=a.rect;
+    if(!rect||rect.width<8||rect.height<8)return [];
+    const w=rect.width,h=rect.height;
+    const initialGutter=Math.min(14,Math.max(5,w*.068));
+    const topGutter=Math.min(13,Math.max(5,h*.025));
+    // Match the original scroll transition: the opening expands from
+    // three rounded arch windows to one seamless rectangular full-screen film.
+    const growth=easing(clamp((progress-.015)/(.88-.015),0,1));
+    const gap=1-growth;
+    const inset=initialGutter*gap,top=topGutter*gap;
+    const left=inset,right=w-inset;
+    const round=matchMedia("(max-width:470px)").matches?.23:.28;
+    const radius=h*round*gap;
+    const result=[];
+    function vertex(x,y,nx,ny){
+      result.push({x,y,nx,ny,displacement:0,velocity:0});
+    }
+    for(let i=0;i<=CURVE_STEPS;i++){
+      const t=i/CURVE_STEPS;
+      const z=2*t-1;
+      const radiusY=radius*(1-Math.sqrt(Math.max(0,1-z*z)));
+      const x=left+(right-left)*t,y=top+radiusY;
+      const slope=z/Math.sqrt(Math.max(.001,1-z*z));
+      // (slope,-1) is the OUTWARD unit normal for the upper ellipse.
+      const sx=slope*radius*2/Math.max(1,right-left);
+      const inv=1/Math.hypot(sx,1);
+      vertex(x,y,sx*inv,-inv);
+    }
+    for(let i=1;i<=SIDE_STEPS;i++){
+      const f=i/SIDE_STEPS;
+      vertex(right,top+radius+(h-top-radius)*f,1,0);
+    }
+    // Lower edge is not distorted. It stays fixed when the sides flex.
+    vertex(left,h,-1,0);
+    for(let i=SIDE_STEPS-1;i>=0;i--){
+      const f=i/SIDE_STEPS;
+      vertex(left,top+radius+(h-top-radius)*f,-1,0);
+    }
+    return result;
+  }
+  function measure(now,force=false){
+    if(!force && !needsMeasure && now-lastMeasure<100)return;
+    lastMeasure=now;needsMeasure=false;
+    const p=sceneProgress();
     for(const a of items){
-      a.rect=a.element.getBoundingClientRect();
-      // Match the site's original quarter-ellipse on desktop and phones.
-      // Never re-read radius after we temporarily mask it to zero.
-      a.ry=matchMedia("(max-width: 420px)").matches?.23:.28;
+      const r=a.element.getBoundingClientRect();
+      if(!r.width||!r.height)continue;
+      const changed=!a.rect || Math.abs(r.width-a.rect.width)>1 ||
+        Math.abs(r.height-a.rect.height)>1 || Math.abs(p-a.progress)>.008;
+      a.rect=r;
+      if(changed || !a.vertices.length){
+        const next=geometry(a,p);
+        // Keep the spring state across scrolling/resizes.
+        if(next.length===a.vertices.length){
+          next.forEach((v,i)=>{
+            v.displacement=a.vertices[i].displacement;
+            v.velocity=a.vertices[i].velocity;
+          });
+        }
+        a.vertices=next;a.progress=p;
+      }
     }
   }
-  function reset(item){
-    if(!item.enabled)return;
-    item.enabled=false;
-    item.element.style.removeProperty("clip-path");
-    item.element.style.removeProperty("border-radius");
-    item.element.style.removeProperty("--arch-glow");
-    item.element.querySelector(".scenery")?.style.removeProperty("--photo-x");
-    item.element.querySelector(".scenery")?.style.removeProperty("--photo-y");
-  }
-  function neutral(){
-    for(const a of items){a.target=0;a.edge=0;reset(a);}
-    last=0;
-  }
-  function updateTargets(now){
-    if(!enabled()||!tracking){
-      for(const a of items)a.target=0;
-      request();
-      return;
+  function setMask(a,apply){
+    if(a.applied===apply)return;
+    a.applied=apply;
+    if(apply){
+      a.element.style.clipPath="url(#"+a.id+")";
+      a.element.style.borderRadius="0";
+      a.stroke.parentElement.style.display="";
+    }else{
+      a.element.style.removeProperty("clip-path");
+      // The scroll controller owns border-radius outside the intro.
+      a.element.style.removeProperty("border-radius");
+      a.stroke.parentElement.style.display="none";
     }
-    measure(now);
-    for(const a of items){
-      const r=a.rect;
-      if(!r||r.width<8||r.height<8){a.target=0;continue;}
-      const x=clamp((cursorX-r.left)/r.width,0,1);
-      const topY=r.top+r.height*a.ry*(1-Math.sqrt(Math.max(0,1-Math.pow(2*x-1,2))));
-      const nearTop=Math.hypot(Math.max(0,r.left-cursorX,cursorX-r.right),cursorY-topY);
-      const sideY=clamp(cursorY,r.top+r.height*a.ry,r.bottom);
-      const nearSide=Math.min(Math.hypot(cursorX-r.left,cursorY-sideY),
-                              Math.hypot(cursorX-r.right,cursorY-sideY));
-      const d=Math.min(nearTop,nearSide);
-      a.target=clamp(1-d/112,0,1);
-      a.target=a.target*a.target*(3-2*a.target);
-      a.mx=cursorX;
-      a.my=cursorY;
-    }
-    request();
   }
-  function outline(a){
+  function drawMask(a){
     const r=a.rect;
-    if(!r)return;
+    if(!r || !a.vertices.length)return;
     const w=Math.max(1,r.width),h=Math.max(1,r.height);
-    const intensity=a.edge;
-    const parts=[];
-    // The original semi-elliptical arch, sampled sufficiently finely to
-    // let the contour yield LOCALLY instead of rotating the entire window.
-    for(let i=0;i<=36;i++){
-      const t=i/36;
-      const yy=a.ry*(1-Math.sqrt(Math.max(0,1-Math.pow(2*t-1,2))));
-      const px=r.left+t*w,py=r.top+yy*h;
-      const dist=Math.hypot((px-a.mx)*.83,py-a.my);
-      const fall=Math.exp(-Math.pow(dist/79,2))*intensity;
-      const dx=clamp((a.mx-px)*.12,-8,8)*fall/w;
-      const dy=clamp((a.my-py)*.22,-13,13)*fall/h;
-      const x=clamp(t+dx,0,1),y=clamp(yy+dy,0,1);
-      parts.push((i?"L":"M")+x.toFixed(5)+" "+y.toFixed(5));
-    }
-    // Side surfaces ripple when brushed and then settle elastically.
-    for(let i=1;i<=12;i++){
-      const t=i/12,y=a.ry+(1-a.ry)*t;
-      const px=r.right,py=r.top+y*h;
-      const fall=Math.exp(-Math.pow(Math.hypot(px-a.mx,(py-a.my)*.84)/72,2))*intensity;
-      const bend=clamp((a.mx-px)*.17,-10,10)*fall/w;
-      parts.push("L"+clamp(1+bend,0,1).toFixed(5)+" "+y.toFixed(5));
-    }
-    parts.push("L0 1");
-    for(let i=11;i>=0;i--){
-      const t=i/12,y=a.ry+(1-a.ry)*t;
-      const px=r.left,py=r.top+y*h;
-      const fall=Math.exp(-Math.pow(Math.hypot(px-a.mx,(py-a.my)*.84)/72,2))*intensity;
-      const bend=clamp((a.mx-px)*.17,-10,10)*fall/w;
-      parts.push("L"+clamp(bend,0,1).toFixed(5)+" "+y.toFixed(5));
-    }
-    parts.push("Z");
-    a.path.setAttribute("d",parts.join(" "));
+    const commands=a.vertices.map((v,i)=>{
+      const x=clamp((v.x+v.nx*v.displacement)/w,0,1);
+      const y=clamp((v.y+v.ny*v.displacement)/h,0,1);
+      return (i?"L":"M")+x.toFixed(5)+" "+y.toFixed(5);
+    });
+    // Complete silhouette; bottom is a straight unchanging line.
+    commands.push("Z");
+    const d=commands.join(" ");
+    a.path.setAttribute("d",d);
+    a.stroke.setAttribute("d",d);
+    a.element.style.setProperty("--arch-glow","7px");
   }
+
   function animate(now){
-    raf=0;
-    if(!enabled()){neutral();return;}
-    const dt=last?clamp(now-last,1,40):16.7;
-    last=now;
-    const spring=1-Math.exp(-dt/105);
+    frame=0;
+    if(!available()){
+      items.forEach(a=>setMask(a,false));
+      lastFrame=0;return;
+    }
+    const dt=lastFrame?clamp((now-lastFrame)/16.67,.55,1.8):1;
+    lastFrame=now;
+    measure(now);
+    const p=sceneProgress();
+    // Stop deforming before arches merge into one film.
+    const strength=1-easing(clamp((p-.075)/.24,0,1));
     let alive=false;
     for(const a of items){
-      a.edge+=(a.target-a.edge)*spring;
-      if(a.edge>.003 || a.target>.003){
-        if(!a.enabled){
-          a.enabled=true;
-          a.element.style.clipPath="url(#"+a.id+")";
-          a.element.style.borderRadius="0";
-        }
-        outline(a);
-        a.element.style.setProperty("--arch-glow",(a.edge*12).toFixed(2)+"px");
-        const scenery=a.element.querySelector(".scenery");
-        if(scenery){
-          scenery.style.setProperty("--photo-x",((a.mx-(a.rect?.left||a.mx)-(a.rect?.width||0)/2)*.011*a.edge).toFixed(2)+"px");
-          scenery.style.setProperty("--photo-y",((a.my-(a.rect?.top||a.my)-(a.rect?.height||0)/2)*.005*a.edge).toFixed(2)+"px");
-        }
-      }else reset(a);
-      if(Math.abs(a.edge-a.target)>.002)alive=true;
+      if(!a.rect||!a.vertices.length)continue;
+      // Only disable the clip when the rounded arch has fully opened.
+      if(p>=.92){
+        setMask(a,false);
+        continue;
+      }
+      setMask(a,true);
+      for(const v of a.vertices){
+        const dx=mouseX-(a.rect.left+v.x);
+        const dy=mouseY-(a.rect.top+v.y);
+        const dist=Math.hypot(dx,dy);
+        const reach=133;
+        const influence=Math.exp(-Math.pow(dist/reach,2));
+        // Cursor either pulls an outer point outward or presses an inner
+        // point inward. Neither direction is clamped at the old silhouette.
+        const signed=dx*v.nx+dy*v.ny;
+        const amplitude=clamp(signed*.93,-43,43);
+        const target=tracking ? amplitude*influence*strength : 0;
+        // Underdamped spring: bends smoothly, overshoots slightly,
+        // then restores the identical arch contour after the cursor leaves.
+        v.velocity=(v.velocity+(target-v.displacement)*.14*dt)*Math.pow(.74,dt);
+        v.displacement+=v.velocity*dt;
+        if(Math.abs(target-v.displacement)>.07||Math.abs(v.velocity)>.055)
+          alive=true;
+        else{v.displacement=target;v.velocity=0;}
+      }
+      drawMask(a);
     }
-    if(alive)request();
-    else last=0;
+    if(alive)requestFrame();
+    else lastFrame=0;
   }
-  function request(){if(!raf)raf=requestAnimationFrame(animate);}
-  addEventListener("pointermove",event=>{
-    if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
-    tracking=true;
-    cursorX=event.clientX;cursorY=event.clientY;
-    if(event.target instanceof Element && event.target.closest(
-        ".site-header,.site-footer,.portal-navigation,#twenty-hotspot,.gallery-viewport,#globe-shell")){
-      tracking=false;
-    }
-    updateTargets(performance.now());
+  function requestFrame(){if(!frame)frame=requestAnimationFrame(animate);}
+  function move(e){
+    if(e.pointerType!=="mouse"&&e.pointerType!=="pen")return;
+    tracking=!(e.target instanceof Element && e.target.closest(
+      ".site-header,.site-footer,.portal-navigation,#twenty-hotspot,.gallery-viewport,#globe-shell,#journey-scrollbar"));
+    mouseX=e.clientX;mouseY=e.clientY;
+    requestFrame();
+  }
+
+  // Install the REST mask before any movement: no popping on first hover.
+  // The shape is restored by spring physics rather than a mask toggle.
+  if(available()){
+    measure(performance.now(),true);
+    for(const a of items){setMask(a,true);drawMask(a);}
+  }
+  addEventListener("pointermove",move,{passive:true});
+  document.addEventListener("mouseout",e=>{
+    if(!e.relatedTarget){tracking=false;requestFrame();}
   },{passive:true});
-  document.addEventListener("mouseout",event=>{
-    if(!event.relatedTarget){tracking=false;updateTargets(performance.now());}
+  addEventListener("blur",()=>{tracking=false;requestFrame();});
+  addEventListener("resize",()=>{
+    tracking=false;needsMeasure=true;lastMeasure=-Infinity;
+    requestFrame();
   },{passive:true});
-  addEventListener("blur",()=>{tracking=false;updateTargets(performance.now());});
-  addEventListener("resize",()=>{lastMeasure=0;tracking=false;neutral();},{passive:true});
-  reduced.addEventListener("change",()=>{tracking=false;neutral();});
+  reduced.addEventListener("change",()=>{
+    tracking=false;needsMeasure=true;requestFrame();
+  });
   document.getElementById("motion-button")?.addEventListener("click",()=>{
-    tracking=false;neutral();
+    tracking=false;requestFrame();
   });
   new MutationObserver(()=>{
-    if(!enabled()){tracking=false;neutral();}
-  }).observe(document.body,{attributes:true,attributeFilter:["data-current-frame","data-portal-progress","class"]});
+    const p=sceneProgress();
+    if(!available()){tracking=false;requestFrame();return;}
+    if(Math.abs(p-lastScrollProgress)>.006){
+      lastScrollProgress=p;needsMeasure=true;requestFrame();
+    }
+  }).observe(document.body,{attributes:true,
+    attributeFilter:["data-current-frame","data-portal-progress","class"]});
 })();
