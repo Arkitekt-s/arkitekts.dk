@@ -27,7 +27,6 @@ METRICS=r"""() => {
  const pan=document.getElementById('panorama');
  const film=document.getElementById('portal-film');
  const videos=[...document.querySelectorAll('.arch-video')];
- const pr=pan.getBoundingClientRect();
  return {
   progress:Number(document.body.dataset.journeyProgress||0),
   chapter:Number(document.body.dataset.currentFrame||0),
@@ -38,7 +37,7 @@ METRICS=r"""() => {
   panInlineWidth:pan.style.width,panInlineHeight:pan.style.height,
   panInlineGap:pan.style.gap,panInlineTransform:pan.style.transform,
   panScale:pan.style.getPropertyValue('--scene-zoom'),
-  panWidth:pr.width,panHeight:pr.height,
+  panWidth:pan.offsetWidth,panHeight:pan.offsetHeight,
   fullscreenReady:film.readyState>=2,
   videoRates:videos.map(v=>v.playbackRate),
   sceneryAnimation:getComputedStyle(document.querySelector('#panorama .scenery')).animationName,
