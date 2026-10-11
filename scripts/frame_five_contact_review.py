@@ -35,6 +35,8 @@ with sync_playwright() as p:
         if page.locator("#panorama .arch").count()!=3:errors.append(f"{name}: approved arches changed")
         if page.locator("#portal-current").inner_text().strip()!="01":
             errors.append(f"{name}: section counter must start at 01")
+        if not page.locator("#next-chapter").evaluate("e=>e.classList.contains('is-scroll-invite')"):
+            errors.append(f"{name}: section 01 is missing the animated down-arrow cue")
         if page.locator(".twenty-piece").count()!=9:errors.append(f"{name}: number 10 lost a piece")
         if page.locator(".gallery-photo").count()!=7:errors.append(f"{name}: approved gallery missing")
         if page.locator("#frame-five-contact").get_attribute("aria-hidden")!="true":
@@ -48,6 +50,8 @@ with sync_playwright() as p:
         wheel(page,7);wait(page,.995)
         if page.locator("#portal-current").inner_text().strip()!="02":
             errors.append(f"{name}: section counter did not reach 02")
+        if page.locator("#next-chapter").evaluate("e=>e.classList.contains('is-scroll-invite')"):
+            errors.append(f"{name}: section 01 arrow cue did not disappear in section 02")
         if page.locator("#chapter-two").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 02 copy not visible")
         wheel(page,7);wait(page,1.995)
@@ -230,6 +234,21 @@ with sync_playwright() as p:
         page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)<5.1",timeout=5000)
         page.locator("#gallery-next").click(timeout=1800)
         page.wait_for_function("parseFloat(document.body.dataset.galleryIndex||0)>5.9",timeout=5000)
+
+        # The last section's UP arrow should return through 04, 03, 02, 01,
+        # rather than teleporting to the beginning. Check on every viewport.
+        page.keyboard.press("End")
+        page.wait_for_function("parseFloat(document.body.dataset.journeyProgress||0)>3.995",timeout=8000)
+        page.locator("#previous-chapter").click(timeout=2500)
+        page.wait_for_function("document.body.dataset.returnTour==='active'",timeout=2200)
+        for section in ("4","3","2","1"):
+            page.wait_for_function(
+                f"document.body.dataset.currentFrame==='{section}'",timeout=7500)
+        page.wait_for_function("document.body.dataset.returnTour==='complete'",timeout=8500)
+        if abs(float(page.locator("body").get_attribute("data-journey-progress") or 5))>.005:
+            errors.append(f"{name}: return tour did not reach the intro")
+        if not page.locator("#next-chapter").evaluate("e=>e.classList.contains('is-scroll-invite')"):
+            errors.append(f"{name}: the invitation did not return in section 01")
         records.append({"screen":name,"size":[w,h],"globeDots":page.evaluate("window.soheilGlobe?.dotCount()"),
                         "firstYaw":before,"autoYaw":after,"overflow":overflow,"jsErrors":crashes})
         print(f"VERIFIED {name} {w}x{h}: five frames, self-hosted 3D globe, Copenhagen, slow rotation, drag, reset, scroll return")
