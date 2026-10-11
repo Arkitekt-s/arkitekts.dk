@@ -45,6 +45,22 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
+        # Frame 01 is now visual-only. Moving and holding the mouse cannot
+        # tilt the picture, shift scenery or activate the old zoom effect.
+        if page.locator("#pointer-pattern").count():
+            errors.append(f"{name}: obsolete pointer canvas remains on homepage")
+        scene=page.locator("#panorama")
+        initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
+        page.mouse.move(w*.2,h*.4,steps=6)
+        page.mouse.move(w*.75,h*.52,steps=6)
+        page.mouse.down()
+        page.wait_for_timeout(120)
+        if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
+            errors.append(f"{name}: press and hold still zooms the landscape")
+        page.mouse.up()
+        after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
+        if after_pan!=initial_pan:
+            errors.append(f"{name}: moving the mouse still changes the landscape")
         page.mouse.move(w*.58,h*.49)
         # 01–03 now have deliberately longer scroll travel.
         wheel(page,7);wait(page,.995)
