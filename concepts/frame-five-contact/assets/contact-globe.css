@@ -333,9 +333,9 @@ body.frame-one .portal-navigation #next-chapter.is-scroll-invite .next-arrow-ico
   }
 }
 
-/* The S. logo's little magenta square replaces the pointer only
-   inside homepage scenes 01, 02, 03. Never hide the mouse anywhere else.
-   On touch devices or with reduced motion the browser cursor stays native. */
+/* White cursor, like the Triptych reference: small over open space,
+   growing into a soft white disc when close to readable text.
+   Restricted to homepage scenes 01–03; standard cursor elsewhere. */
 body.frame-one.paint-cursor-active,
 body.frame-one.paint-cursor-active *{
   cursor:none!important;
@@ -344,28 +344,27 @@ body.frame-one .paint-cursor{
   position:fixed;
   top:0;
   left:0;
-  width:11px;
-  height:11px;
-  border-radius:0;
-  background:#b02ecb; /* Exact square color from soheil-logo-inverse.svg */
+  width:0;
+  height:0;
   z-index:220;
   pointer-events:none;
   opacity:0;
   will-change:transform;
-  box-shadow:0 0 14px rgba(176,46,203,.43);
 }
-/* The reference shows a tiny bright point at the tip of the purple ribbon.
-   Keep the approved square shape from the S. logo around that point. */
-body.frame-one .paint-cursor::after{
-  content:"";
+body.frame-one .paint-cursor-core{
   position:absolute;
-  width:4px;
-  height:4px;
-  top:3.5px;
-  left:3.5px;
+  top:0;
+  left:0;
+  display:block;
+  width:9px;
+  height:9px;
   border-radius:50%;
   background:#fff;
-  box-shadow:0 0 7px rgba(255,255,255,.8);
+  transform:translate(-50%,-50%) scale(var(--cursor-scale,1));
+  transform-origin:center center;
+  transition:transform .18s cubic-bezier(.16,.8,.22,1);
+  box-shadow:0 0 10px rgba(255,255,255,.68);
+  mix-blend-mode:difference;
 }
 body.frame-one.paint-cursor-active .paint-cursor.is-visible{opacity:1}
 
