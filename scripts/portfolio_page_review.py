@@ -45,8 +45,8 @@ with sync_playwright() as p:
             failures.append(f"{name}: original project titles differ")
         if page.locator(".project-card .project-details").count()!=6:
             failures.append(f"{name}: native case study sections absent")
-        if page.locator('.case-actions a[href^="https://arkitekts.dk/portfolio/"]').count()!=6:
-            failures.append(f"{name}: original case study links missing")
+        if page.locator('.case-actions a[href^="https://arkitekts.dk/portfolio/"]').count():
+            failures.append(f"{name}: retired WordPress links still present")
         if page.locator(".project-card img").count()!=5:
             failures.append(f"{name}: expected five actual screenshot images")
         if page.locator(".app-mockup").count()!=1:
