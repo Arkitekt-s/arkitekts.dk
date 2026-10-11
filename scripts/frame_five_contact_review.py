@@ -52,7 +52,7 @@ with sync_playwright() as p:
             errors.append(f"{name}: cursor-light canvas missing")
         scene=page.locator("#panorama")
         initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
-        # Verify the purple liquid visibly follows the pointer.
+        # Verify the luminous purple smoke visibly follows the pointer.
         # The reference is magenta, not location-dependent rainbow paint.
         def glow_pixel(x,y):
             return page.evaluate("""([x,y]) => {
@@ -90,10 +90,10 @@ with sync_playwright() as p:
         page.mouse.move(w*.2,h*.4,steps=6)
         page.wait_for_timeout(220)
         left_color=glow_pixel(w*.2,h*.4)
-        # Watercolor radiates from vivid center to near-transparent edge.
+        # Smoke is vivid near the cursor and transparent at the outer edge.
         water_edge=glow_pixel(w*.2,h*.4+116)
         if water_edge[3]>left_color[3]*.27:
-            errors.append(f"{name}: water effect has a hard or opaque edge ({left_color},{water_edge})")
+            errors.append(f"{name}: smoke has a hard or opaque edge ({left_color},{water_edge})")
         page.mouse.move(w*.75,h*.52,steps=6)
         page.wait_for_function(
             "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
@@ -104,11 +104,11 @@ with sync_playwright() as p:
             errors.append(f"{name}: cursor color is too faint ({left_color},{right_color})")
         for pixel in (left_color,right_color):
             if pixel[1]>=pixel[0] or pixel[1]>=pixel[2]:
-                errors.append(f"{name}: liquid trail should be purple ({pixel})")
+                errors.append(f"{name}: smoke trail should be purple ({pixel})")
         # The ribbon must fade and clear when the mouse stays still.
         page.wait_for_timeout(1180)
         if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
-            errors.append(f"{name}: liquid ribbon did not fade out")
+            errors.append(f"{name}: smoke did not fade out")
         page.mouse.down()
         page.wait_for_timeout(120)
         if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
