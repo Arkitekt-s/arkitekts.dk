@@ -45,8 +45,8 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # Scenes 01–03 use a logo-square pointer and purple liquid trail.
-        # Scenes 04–05 and every other page use the default browser cursor.
+        # Scenes 01–03 use a white cursor that enlarges near text, plus
+        # a purple liquid trail. Scenes 04–05 keep the native cursor.
         # Mouse movement must never tilt, zoom or hold the landscape.
         if page.locator("#pointer-pattern").count()!=1:
             errors.append(f"{name}: cursor-light canvas missing")
@@ -63,14 +63,30 @@ with sync_playwright() as p:
                     Math.min(c.height-1,Math.round(y*c.height/innerHeight)),1,1).data);
             }""",[x,y])
         if not page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
-            errors.append(f"{name}: square painting cursor missing in scene 01")
+            errors.append(f"{name}: white cursor missing in scene 01")
         if page.locator(".paint-cursor").count()!=1:
-            errors.append(f"{name}: branded square cursor element missing")
-        dot=page.locator(".paint-cursor")
-        if dot.evaluate("e=>getComputedStyle(e).backgroundColor")!="rgb(176, 46, 203)":
-            errors.append(f"{name}: cursor does not match magenta S. logo dot")
-        if dot.evaluate("e=>Math.round(e.getBoundingClientRect().width)")!=11:
-            errors.append(f"{name}: S-logo cursor size incorrect")
+            errors.append(f"{name}: white cursor shell missing")
+        dot=page.locator(".paint-cursor-core")
+        if dot.count()!=1:
+            errors.append(f"{name}: white cursor core missing")
+        else:
+            if dot.evaluate("e=>getComputedStyle(e).backgroundColor")!="rgb(255, 255, 255)":
+                errors.append(f"{name}: cursor is not white")
+            if dot.evaluate("e=>getComputedStyle(e).borderRadius") not in ("50%","4.5px"):
+                errors.append(f"{name}: cursor is not round")
+            # Moving within 50 pixels of a heading should enlarge the cursor.
+            page.mouse.move(2,h*.44,steps=4)
+            page.wait_for_timeout(260)
+            resting_scale=dot.evaluate(
+                "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
+            # The header wordmark is always visible.
+            wordmark=page.locator(".site-header .site-name")
+            wordmark.hover(force=True)
+            page.wait_for_timeout(260)
+            heading_scale=dot.evaluate(
+                "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
+            if heading_scale<3 or heading_scale-resting_scale<1:
+                errors.append(f"{name}: cursor does not expand near text ({resting_scale},{heading_scale})")
         page.mouse.move(w*.2,h*.4,steps=6)
         page.wait_for_timeout(220)
         left_color=glow_pixel(w*.2,h*.4)
