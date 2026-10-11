@@ -19,6 +19,7 @@ class DocumentParser(HTMLParser):
         self.hrefs = []
         self.resources = []
         self.duplicate_ids = set()
+        self.base_href = None
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -26,7 +27,9 @@ class DocumentParser(HTMLParser):
             if a["id"] in self.ids:
                 self.duplicate_ids.add(a["id"])
             self.ids.add(a["id"])
-        if a.get("href"):
+        if tag == "base" and a.get("href"):
+            self.base_href = a["href"]
+        elif a.get("href"):
             self.hrefs.append(a["href"])
         if tag == "script" and a.get("src"):
             self.resources.append(a["src"])
@@ -44,12 +47,27 @@ def main():
         parser.feed(page.read_text(encoding="utf-8"))
         if parser.duplicate_ids:
             errors.append(f"{page.relative_to(ROOT)}: duplicate IDs {sorted(parser.duplicate_ids)}")
+        # Respect the HTML <base> URL when resolving relative resources.
+        # Root-relative links map to the site root, not the document folder.
+        base_dir = page.parent
+        if parser.base_href:
+            base_url = urlsplit(parser.base_href)
+            if base_url.scheme or base_url.netloc:
+                errors.append(f"{page.relative_to(ROOT)}: unexpected external base URL")
+            elif base_url.path:
+                base_path = unquote(base_url.path)
+                base_dir = ((ROOT / base_path.lstrip("/")) if base_path.startswith("/")
+                            else (page.parent / base_path)).resolve()
+                if not base_dir.is_relative_to(ROOT):
+                    errors.append(f"{page.relative_to(ROOT)}: base URL escapes repository")
         for target in parser.hrefs + parser.resources:
             url = urlsplit(target)
             if url.scheme or url.netloc or target.startswith("//"):
                 continue
             if url.path:
-                candidate = (page.parent / unquote(url.path)).resolve()
+                path = unquote(url.path)
+                candidate = ((ROOT / path.lstrip("/")) if path.startswith("/")
+                             else (base_dir / path)).resolve()
                 if not candidate.is_relative_to(ROOT):
                     errors.append(f"{page.relative_to(ROOT)}: link escapes repository: {target}")
                     continue
