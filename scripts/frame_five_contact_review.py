@@ -126,14 +126,19 @@ with sync_playwright() as p:
                 page.mouse.move(region["x"]+region["width"]*.77,
                                 region["y"]+region["height"]*.30,steps=7)
                 page.wait_for_timeout(300)
-                offset=arch.evaluate("e=>parseFloat(e.style.getPropertyValue('--arch-x')||'0')")
-                if abs(offset)<.8 or abs(offset)>8.1:
-                    errors.append(f"{name}: gentle arch reaction missing or excessive ({offset})")
+                # The new liquid interaction bends the SVG clip contour
+                # locally; it must not translate/rotate the entire arch.
+                clip=arch.evaluate("e=>e.style.clipPath")
+                shape=page.locator("#fluid-arch-mask-0 path").get_attribute("d") or ""
+                if "fluid-arch-mask" not in clip or not shape.startswith("M"):
+                    errors.append(f"{name}: local fluid arch mask did not react ({clip})")
+                if arch.evaluate("e=>e.style.getPropertyValue('--arch-x')"):
+                    errors.append(f"{name}: old whole-arch translation is still active")
                 page.mouse.move(2,2,steps=5)
                 page.wait_for_timeout(640)
-                returned=arch.evaluate("e=>parseFloat(e.style.getPropertyValue('--arch-x')||'0')")
-                if abs(returned)>.40:
-                    errors.append(f"{name}: arch failed to return after mouse left ({returned})")
+                returned=arch.evaluate("e=>e.style.clipPath")
+                if returned:
+                    errors.append(f"{name}: arch mask failed to release after mouse left ({returned})")
         page.mouse.move(w*.58,h*.49)
         # 01–03 now have deliberately longer scroll travel.
         wheel(page,7);wait(page,.995)
