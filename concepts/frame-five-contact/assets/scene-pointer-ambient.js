@@ -1,5 +1,5 @@
-/* Viscous violet pointer ribbon based on the movement reference.
- * Desktop scenes 01–03: white cursor + fluid, elastic, translucent trail.
+/* Silver Glass cursor on Frame 01; violet ribbon kept in Frames 02–03.
+ * Opening scene has a clear white pointer with eased movement, no purple. 
  * No button press. Nothing changes the layout or interrupts wheel navigation.
  */
 (() => {
@@ -27,6 +27,30 @@
   let enabled=false,inside=false;
   let textRects=[],textScan=-Infinity,lastScene="";
   let tip={x:-2000,y:-2000};
+  let cursorFrame=0,cursorX=-2000,cursorY=-2000;
+  let targetX=-2000,targetY=-2000,cursorInitialized=false;
+  let observedScene="";
+
+  function cancelSilverCursor(){
+    if(cursorFrame)cancelAnimationFrame(cursorFrame);
+    cursorFrame=0;cursorInitialized=false;
+  }
+  function animateSilverCursor(){
+    cursorFrame=0;
+    if(!active()||(document.body.dataset.currentFrame||"1")!=="1")return;
+    const dx=targetX-cursorX,dy=targetY-cursorY;
+    cursorX+=dx*.33;cursorY+=dy*.33;
+    dot.style.transform="translate3d("+cursorX.toFixed(1)+"px,"+
+      cursorY.toFixed(1)+"px,0)";
+    if(Math.hypot(dx,dy)>.35)cursorFrame=requestAnimationFrame(animateSilverCursor);
+  }
+  function positionSilverCursor(x,y){
+    targetX=x;targetY=y;
+    if(!cursorInitialized||Math.hypot(x-cursorX,y-cursorY)>350){
+      cursorX=x;cursorY=y;cursorInitialized=true;
+    }
+    if(!cursorFrame)cursorFrame=requestAnimationFrame(animateSilverCursor);
+  }
 
   function active(){
     const scene=document.body.dataset.currentFrame||"1";
@@ -48,12 +72,18 @@
     canvas.dataset.ambientActive="false";
   }
   function sync(){
+    const scene=document.body.dataset.currentFrame||"1";
+    if(scene!==observedScene){
+      observedScene=scene;
+      if(scene==="1")clear(); // clear remaining purple when returning home
+      else cancelSilverCursor();
+    }
     const next=active();
     if(next!==enabled){
       enabled=next;
       document.body.classList.toggle("paint-cursor-active",enabled);
       textScan=-Infinity;
-      if(!enabled)clear();
+      if(!enabled){clear();cancelSilverCursor();}
       else dotCore.style.setProperty("--cursor-scale","1");
     }
     dot.classList.toggle("is-visible",enabled&&inside);
@@ -217,6 +247,9 @@
     frame=0;
     if(!active()||document.hidden){clear();return;}
     ctx.clearRect(0,0,width,height);
+    if((document.body.dataset.currentFrame||"1")==="1"){
+      trail=[];canvas.dataset.ambientActive="false";return;
+    }
     trail=trail.filter(p=>now-p.t<LIFE);
     if(trail.length){
       render(now);
@@ -228,19 +261,24 @@
     if(event.pointerType!=="mouse"&&event.pointerType!=="pen")return;
     inside=true;
     const x=event.clientX,y=event.clientY;
-    dot.style.transform="translate3d("+x.toFixed(1)+"px,"+y.toFixed(1)+"px,0)";
     if(!active()){dot.classList.remove("is-visible");return;}
     const now=performance.now();
-    // White point: 9px normally, max 15px near writing (not huge).
+    const scene=document.body.dataset.currentFrame||"1";
     dotCore.style.setProperty("--cursor-scale",(1+.67*textNear(x,y,now)).toFixed(3));
     dot.classList.add("is-visible");
-    record(x,y,now);
+    if(scene==="1"){
+      if(trail.length||frame)clear();
+      positionSilverCursor(x,y);
+    }else{
+      dot.style.transform="translate3d("+x.toFixed(1)+"px,"+y.toFixed(1)+"px,0)";
+      record(x,y,now);
+    }
   },{passive:true});
   document.addEventListener("mouseout",event=>{
-    if(!event.relatedTarget){inside=false;dot.classList.remove("is-visible");}
+    if(!event.relatedTarget){inside=false;dot.classList.remove("is-visible");cancelSilverCursor();}
   },{passive:true});
   addEventListener("blur",()=>{
-    inside=false;dot.classList.remove("is-visible");clear();
+    inside=false;dot.classList.remove("is-visible");clear();cancelSilverCursor();
   });
   addEventListener("resize",()=>{resize();clear();textScan=-Infinity;},{passive:true});
   document.addEventListener("visibilitychange",()=>{

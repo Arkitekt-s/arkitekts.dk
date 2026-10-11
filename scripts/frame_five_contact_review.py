@@ -45,23 +45,15 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # Scenes 01–03 use a white cursor that enlarges near text, plus
-        # a purple liquid trail. Scenes 04–05 keep the native cursor.
+        # Scene 01 uses Silver Glass; scenes 02–03 retain a violet ribbon.
+        # Scenes 04–05 keep the native cursor.
         # Mouse movement must never tilt, zoom or hold the landscape.
         if page.locator("#pointer-pattern").count()!=1:
             errors.append(f"{name}: cursor-light canvas missing")
         scene=page.locator("#panorama")
         initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
-        # Verify the luminous purple smoke visibly follows the pointer.
-        # The reference is magenta, not location-dependent rainbow paint.
-        def glow_pixel(x,y):
-            return page.evaluate("""([x,y]) => {
-                const c=document.getElementById('pointer-pattern');
-                const d=c.getContext('2d');
-                return Array.from(d.getImageData(
-                    Math.min(c.width-1,Math.round(x*c.width/innerWidth)),
-                    Math.min(c.height-1,Math.round(y*c.height/innerHeight)),1,1).data);
-            }""",[x,y])
+        # Validate the approved Silver Glass interaction, not the old
+        # magenta smoke. Video and elastic arch geometry must not change.
         if not page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
             errors.append(f"{name}: white cursor missing in scene 01")
         if page.locator(".paint-cursor").count()!=1:
@@ -74,12 +66,10 @@ with sync_playwright() as p:
                 errors.append(f"{name}: cursor is not white")
             if dot.evaluate("e=>getComputedStyle(e).borderRadius") not in ("50%","4.5px"):
                 errors.append(f"{name}: cursor is not round")
-            # Near text the cursor should grow slightly, never become huge.
             page.mouse.move(2,h*.44,steps=4)
             page.wait_for_timeout(260)
             resting_scale=dot.evaluate(
                 "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
-            # The header wordmark is always visible.
             wordmark=page.locator(".site-header .site-name")
             wordmark.hover(force=True)
             page.wait_for_timeout(260)
@@ -87,28 +77,29 @@ with sync_playwright() as p:
                 "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
             if not 1.48<=heading_scale<=1.83 or heading_scale-resting_scale<.38:
                 errors.append(f"{name}: cursor hover should stay modest ({resting_scale},{heading_scale})")
-        page.mouse.move(w*.2,h*.4,steps=6)
-        page.wait_for_timeout(220)
-        left_color=glow_pixel(w*.2,h*.4)
-        # Smoke is vivid near the cursor and transparent at the outer edge.
-        water_edge=glow_pixel(w*.2,h*.4+116)
-        if water_edge[3]>left_color[3]*.27:
-            errors.append(f"{name}: smoke has a hard or opaque edge ({left_color},{water_edge})")
-        page.mouse.move(w*.75,h*.52,steps=6)
-        page.wait_for_function(
-            "document.getElementById('pointer-pattern')?.dataset.ambientActive==='true'",
-            timeout=3500)
-        page.wait_for_timeout(260)
-        right_color=glow_pixel(w*.75,h*.52)
-        if left_color[3]<35 or right_color[3]<35:
-            errors.append(f"{name}: cursor color is too faint ({left_color},{right_color})")
-        for pixel in (left_color,right_color):
-            if pixel[1]>=pixel[0] or pixel[1]>=pixel[2]:
-                errors.append(f"{name}: smoke trail should be purple ({pixel})")
-        # The ribbon must fade and clear when the mouse stays still.
-        page.wait_for_timeout(1180)
-        if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
-            errors.append(f"{name}: smoke did not fade out")
+        arch_middle=page.locator("#panorama .arch").nth(1)
+        region=arch_middle.bounding_box()
+        if region:
+            mx=region["x"]+region["width"]*.50
+            my=region["y"]+region["height"]*.55
+            page.mouse.move(mx,my,steps=12)
+            page.wait_for_timeout(380)
+            lens=arch_middle.locator(".arch-color-lens")
+            glass_inside=page.locator("body").get_attribute("data-arch-glass-inside")
+            lens_opacity=lens.evaluate("e=>parseFloat(getComputedStyle(e).opacity)")
+            filter_text=lens.evaluate("e=>getComputedStyle(e).backdropFilter")
+            if glass_inside!="true" or lens_opacity<.68:
+                errors.append(f"{name}: Silver Glass did not activate ({glass_inside},{lens_opacity})")
+            if "brightness" not in filter_text or "hue-rotate" in filter_text:
+                errors.append(f"{name}: lens recolors video instead of preserving natural tones")
+            if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
+                errors.append(f"{name}: violet smoke still active in Silver Glass")
+            page.mouse.move(2,2,steps=5)
+            page.wait_for_timeout(950)
+            if lens.evaluate("e=>parseFloat(getComputedStyle(e).opacity)")>.035:
+                errors.append(f"{name}: glass lens did not fade on mouse exit")
+            if page.locator("body").get_attribute("data-arch-glass-inside")!="false":
+                errors.append(f"{name}: cursor did not leave the arch")
         page.mouse.down()
         page.wait_for_timeout(120)
         if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):

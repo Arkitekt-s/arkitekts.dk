@@ -446,13 +446,12 @@ body.frame-one .panorama .arch .elastic-arch-outline{
 }
 
 
-/* Interactive chromatic lens for the moving video inside the opening arches.
-   The original scenery is unchanged when the pointer leaves. The lens is
-   clipped by the existing elastic SVG outline and never captures clicks. */
+/* SILVER GLASS — selected from the interactive reference prototype.
+   Clear white optics preserve the mountain film's natural palette.
+   The lens stays inside the existing elastic arch SVG mask. */
 body.frame-one .panorama .arch .arch-color-lens{
   --lens-x:50%;
   --lens-y:50%;
-  --lens-hue:135deg;
   position:absolute;
   inset:0;
   display:block;
@@ -461,41 +460,53 @@ body.frame-one .panorama .arch .arch-color-lens{
   opacity:0;
   visibility:hidden;
   border-radius:inherit;
-  background:
-    radial-gradient(ellipse 136px 153px at var(--lens-x) var(--lens-y),
-      rgba(245,49,204,.34) 0%,
-      rgba(131,61,248,.24) 22%,
-      rgba(52,181,254,.18) 45%,
-      rgba(255,188,76,.10) 65%,
-      transparent 87%);
-  -webkit-backdrop-filter:hue-rotate(var(--lens-hue)) saturate(2.2) contrast(1.12) brightness(1.055);
-  backdrop-filter:hue-rotate(var(--lens-hue)) saturate(2.2) contrast(1.12) brightness(1.055);
-  -webkit-mask-image:radial-gradient(ellipse 146px 166px at var(--lens-x) var(--lens-y),
-    #000 0%,rgba(0,0,0,.96) 23%,rgba(0,0,0,.68) 49%,transparent 90%);
-  mask-image:radial-gradient(ellipse 146px 166px at var(--lens-x) var(--lens-y),
-    #000 0%,rgba(0,0,0,.96) 23%,rgba(0,0,0,.68) 49%,transparent 90%);
+  background:radial-gradient(ellipse 104px 118px at var(--lens-x) var(--lens-y),
+    rgba(247,252,255,.38) 0%,
+    rgba(221,246,255,.14) 32%,
+    rgba(214,233,255,.07) 53%,
+    transparent 83%);
+  -webkit-backdrop-filter:brightness(1.12) contrast(1.05) saturate(1.06);
+  backdrop-filter:brightness(1.12) contrast(1.05) saturate(1.06);
+  -webkit-mask-image:radial-gradient(ellipse 126px 140px at var(--lens-x) var(--lens-y),
+    #000 5%,transparent 90%);
+  mask-image:radial-gradient(ellipse 126px 140px at var(--lens-x) var(--lens-y),
+    #000 5%,transparent 90%);
   will-change:opacity;
 }
-/* A moving, transparent interference ripple adds a liquid/prismatic look.
-   It is a local overlay, not a permanent filter on the mountain video. */
+/* Small neutral glint, not purple paint or shifting hues. */
 body.frame-one .panorama .arch .arch-color-lens::after{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
-  background:
-    radial-gradient(ellipse 37px 72px at calc(var(--lens-x) - 16px) calc(var(--lens-y) - 13px),
-      rgba(255,234,255,.33),transparent 80%),
-    radial-gradient(ellipse 96px 109px at calc(var(--lens-x) + 24px) calc(var(--lens-y) + 17px),
-      rgba(51,227,255,.20),rgba(164,42,241,.08) 56%,transparent 83%);
-  mix-blend-mode:screen;
+  background:radial-gradient(ellipse 26px 44px at var(--lens-x) var(--lens-y),
+    rgba(255,255,255,.15),transparent 85%);
+}
+/* White 9px cursor and a fine glass-outline ring when inside an arch. */
+body.frame-one[data-current-frame="1"] .paint-cursor-core,
+body.frame-one:not([data-current-frame]) .paint-cursor-core{
+  box-shadow:0 0 9px rgba(255,255,255,.66),0 0 16px rgba(210,231,244,.25);
+}
+body.frame-one .paint-cursor-core::after{
+  content:"";
+  position:absolute;
+  top:50%;left:50%;
+  width:34px;height:34px;
+  margin:-17px 0 0 -17px;
+  border:1px solid rgba(244,250,255,.38);
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+  box-shadow:0 0 13px rgba(239,248,255,.10);
+  transition:opacity .18s ease-out;
+}
+body.frame-one[data-current-frame="1"][data-arch-glass-inside="true"] .paint-cursor-core::after{
+  opacity:1;
 }
 body.motion-off .panorama .arch .arch-color-lens{
   opacity:0!important;
   visibility:hidden!important;
 }
 @media(prefers-reduced-motion:reduce){
-  body.frame-one .panorama .arch .arch-color-lens{
-    display:none!important;
-  }
+  body.frame-one .panorama .arch .arch-color-lens{display:none!important}
 }

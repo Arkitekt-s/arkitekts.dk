@@ -39,7 +39,7 @@
     stroke.setAttribute("stroke-width","1.15");
     stroke.setAttribute("vector-effect","non-scaling-stroke");
     border.append(stroke);
-    // Separate, mouse-local chromatic lens. It recolors LIVE footage below
+    // Separate, neutral Silver Glass lens. It brightens LIVE footage below
     // without modifying the movie, SVG mask, or approved earlier frames.
     const lens=document.createElement("span");
     lens.className="arch-color-lens";
@@ -48,7 +48,7 @@
     element.append(lens);
     element.append(border);
     return {element,path,stroke,lens,id:clip.id,rect:null,vertices:[],
-      applied:false,progress:0,active:false,color:0,colorX:50,colorY:50};
+      applied:false,progress:0,active:false,color:0,colorX:50,colorY:50,lensX:null,lensY:null};
   });
   const CURVE_STEPS=48, SIDE_STEPS=18;
   let mouseX=-10000,mouseY=-10000,tracking=false;
@@ -178,6 +178,7 @@
   }
   function clearColor(a){
     a.color=0;
+    a.lensX=null;a.lensY=null;
     a.lens.style.opacity="0";
     a.lens.style.visibility="hidden";
   }
@@ -185,6 +186,8 @@
     frame=0;
     if(!available()){
       items.forEach(a=>{setMask(a,false);clearColor(a);});
+      if(document.body.dataset.archGlassInside!=="false")
+        document.body.dataset.archGlassInside="false";
       lastFrame=0;return;
     }
     const dt=lastFrame?clamp((now-lastFrame)/16.67,.55,1.8):1;
@@ -193,7 +196,7 @@
     const p=sceneProgress();
     // Stop deforming before arches merge into one film.
     const strength=1-easing(clamp((p-.075)/.24,0,1));
-    let alive=false;
+    let alive=false,anyGlassInside=false;
     for(const a of items){
       if(!a.rect||!a.vertices.length)continue;
       // Only disable the clip when the rounded arch has fully opened.
@@ -224,24 +227,28 @@
       }
       drawMask(a);
 
-      // Color follows the cursor only INSIDE this particular arch.
-      // It gradually releases both on exit and during the scroll-to-film.
+      // Selected style 01: a clear glass lens, with no hue rotation.
+      // Ease the lens independently of the original elastic outline.
       const fadeWithScroll=1-easing(clamp((p-.08)/.20,0,1));
       const inside=fadeWithScroll>.001&&pointerInside(a);
-      const colorTarget=inside ? fadeWithScroll : 0;
+      if(inside)anyGlassInside=true;
+      const glassTarget=inside?fadeWithScroll:0;
       const previous=a.color;
-      const colorEase=1-Math.exp(-dt*16.67/(inside?105:235));
-      a.color+=(colorTarget-a.color)*colorEase;
-      if(Math.abs(colorTarget-a.color)<.003)a.color=colorTarget;
-
+      const colorEase=1-Math.exp(-dt*16.67/(inside?110:220));
+      a.color+=(glassTarget-a.color)*colorEase;
+      if(Math.abs(glassTarget-a.color)<.003)a.color=glassTarget;
       if(inside){
-        a.colorX=clamp((mouseX-a.rect.left)/a.rect.width*100,0,100);
-        a.colorY=clamp((mouseY-a.rect.top)/a.rect.height*100,0,100);
-        // Pointer position changes the color mix, like moving a liquid prism.
-        const hue=105+a.colorX*.92+a.colorY*.28;
-        a.lens.style.setProperty("--lens-x",a.colorX.toFixed(2)+"%");
-        a.lens.style.setProperty("--lens-y",a.colorY.toFixed(2)+"%");
-        a.lens.style.setProperty("--lens-hue",hue.toFixed(2)+"deg");
+        const x=clamp((mouseX-a.rect.left)/a.rect.width*100,0,100);
+        const y=clamp((mouseY-a.rect.top)/a.rect.height*100,0,100);
+        if(a.lensX===null){a.lensX=x;a.lensY=y;}
+        else{
+          const follow=1-Math.exp(-dt*16.67/42);
+          a.lensX+=(x-a.lensX)*follow;
+          a.lensY+=(y-a.lensY)*follow;
+          if(Math.abs(x-a.lensX)>.09||Math.abs(y-a.lensY)>.09)alive=true;
+        }
+        a.lens.style.setProperty("--lens-x",a.lensX.toFixed(2)+"%");
+        a.lens.style.setProperty("--lens-y",a.lensY.toFixed(2)+"%");
       }
       if(a.color>.003){
         a.lens.style.visibility="visible";
@@ -249,10 +256,14 @@
       }else{
         a.lens.style.opacity="0";
         a.lens.style.visibility="hidden";
+        a.lensX=null;a.lensY=null;
       }
-      if(Math.abs(colorTarget-a.color)>.003 || Math.abs(previous-a.color)>.003)
+      if(Math.abs(glassTarget-a.color)>.003 || Math.abs(previous-a.color)>.003)
         alive=true;
     }
+    const glassState=anyGlassInside?"true":"false";
+    if(document.body.dataset.archGlassInside!==glassState)
+      document.body.dataset.archGlassInside=glassState;
     if(alive)requestFrame();
     else lastFrame=0;
   }
