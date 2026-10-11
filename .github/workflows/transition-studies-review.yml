@@ -1,0 +1,35 @@
+name: Private transition concept browser review
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'previews/transitions/**'
+      - 'scripts/transition_studies_review.py'
+      - '.github/workflows/transition-studies-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    name: Three motion concepts on mobile, tablet, desktop
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chromium
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Exercise motion previews on four screen sizes
+        run: python scripts/transition_studies_review.py
+      - name: Upload concept screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-transition-concepts
+          path: screenshots/transition-studies/
+          retention-days: 14
+          if-no-files-found: ignore
