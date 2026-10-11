@@ -1,6 +1,6 @@
 /* Cinematic Frame 01: AI, server and coding footage via press-and-hold.
  * The selected first AI film continues into Frames 02 and 03, then pauses behind
- * Frames 04–05. All three movies run at calm 70% playback speed.
+ * Frames 04–05. All three movies run at calm 50% playback speed.
  * The hold transition is a translucent organic, marbled liquid wave.
  * Only the film changes; the title and all Section 01 layout stay fixed.
  * The approved scroll timeline, arch springs and typography
@@ -47,7 +47,7 @@
   player.disablePictureInPicture=true;
   player.setAttribute("aria-hidden","true");
   player.setAttribute("tabindex","-1");
-  const FILM_SPEED=.70;
+  const FILM_SPEED=.50;
   // The same reduced speed carries from three windows into the full screen.
   const originalMovies=[
     ...document.querySelectorAll("#panorama .arch-video"),
