@@ -402,3 +402,32 @@ body.frame-one .panorama .arch{
     box-shadow:0 32px 70px #08031373;
   }
 }
+
+
+/* Frame 01 refinement: leave more negative space around the three arches.
+   The staged JS expansion still takes over when the visitor scrolls. */
+body.frame-one .panorama{
+  width:min(810px,64vw);
+  height:min(495px,62vh);
+  gap:clamp(18px,2.4vw,47px);
+}
+/* The luminous edge follows the actual SVG silhouette, not its box. */
+body.frame-one .panorama .arch{
+  transform:none;
+  transition:box-shadow .18s ease-out;
+}
+body.frame-one .panorama .arch .elastic-arch-outline{
+  filter:drop-shadow(0 0 2px rgba(222,123,252,.38));
+}
+@media(max-width:1100px){
+  body.frame-one .panorama{width:72vw;height:min(455px,56vh);gap:2.9vw}
+}
+@media(max-width:760px){
+  body.frame-one .panorama{width:86vw;height:50vh;gap:3vw}
+}
+@media(max-width:470px){
+  body.frame-one .panorama{width:85vw;height:41vh;gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.frame-one .panorama .arch .elastic-arch-outline{display:none!important}
+}
