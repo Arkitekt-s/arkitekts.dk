@@ -25,10 +25,15 @@
     item.element.style.setProperty("--arch-glow",(item.glow*12).toFixed(2)+"px");
   }
   function fadeTargets(){
+    let needsUpdate=false;
     for(const item of items){
+      if(item.tx||item.ty||item.tAngle||item.tGlow||
+         Math.abs(item.x)>.03||Math.abs(item.y)>.03||
+         Math.abs(item.angle)>.009||Math.abs(item.glow)>.009)
+        needsUpdate=true;
       item.tx=item.ty=item.tAngle=item.tGlow=0;
     }
-    schedule();
+    if(needsUpdate)schedule();
   }
   function measure(now){
     // Layout reads are capped, rather than forced on every animation frame.
@@ -36,9 +41,9 @@
     lastMeasure=now;
     for(const item of items)item.rect=item.element.getBoundingClientRect();
   }
-  function calculate(now){
+  function calculate(now,refreshRects=true){
     if(!isActive()||!isTracking){fadeTargets();return;}
-    measure(now);
+    if(refreshRects)measure(now);
     const progress=clamp(Number(document.body.dataset.portalProgress||0),0,1);
     // Near the intro the three arches can flex. During the scroll-to-film
     // transition they settle down, preventing visible gaps in the video.
@@ -109,7 +114,16 @@
   reduced.addEventListener("change",()=>{
     if(reduced.matches)fadeTargets();
   });
+  // On scroll, release the arches before the three windows merge into
+  // the full-width film. This does not cause repeated layout measurement.
+  let lastProgress=-1;
   new MutationObserver(()=>{
-    if(!isActive()){isTracking=false;fadeTargets();}
-  }).observe(document.body,{attributes:true,attributeFilter:["data-current-frame"]});
+    if(!isActive()){isTracking=false;fadeTargets();return;}
+    const progress=Number(document.body.dataset.portalProgress||0);
+    if(Math.abs(progress-lastProgress)<.014)return;
+    lastProgress=progress;
+    if(progress>=.84){fadeTargets();return;}
+    if(isTracking)calculate(performance.now(),false);
+  }).observe(document.body,{attributes:true,
+    attributeFilter:["data-current-frame","data-portal-progress"]});
 })();
