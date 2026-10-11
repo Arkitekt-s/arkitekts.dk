@@ -117,28 +117,41 @@ with sync_playwright() as p:
         after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
         if after_pan!=initial_pan:
             errors.append(f"{name}: moving the mouse still changes the landscape")
-        # Arches react subtly as the cursor approaches, then spring home.
-        # Do not make the whole panorama move or interfere with smoke/10.
+        # The new silhouette bends in/out WITHOUT translating the rigid arch.
+        # An always-present REST mask avoids jumping on first contact.
         if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
+            import re, math
             arch=page.locator("#panorama .arch").first
             region=arch.bounding_box()
             if region:
-                page.mouse.move(region["x"]+region["width"]*.77,
-                                region["y"]+region["height"]*.30,steps=7)
-                page.wait_for_timeout(300)
-                # The new liquid interaction bends the SVG clip contour
-                # locally; it must not translate/rotate the entire arch.
-                clip=arch.evaluate("e=>e.style.clipPath")
-                shape=page.locator("#fluid-arch-mask-0 path").get_attribute("d") or ""
-                if "fluid-arch-mask" not in clip or not shape.startswith("M"):
-                    errors.append(f"{name}: local fluid arch mask did not react ({clip})")
-                if arch.evaluate("e=>e.style.getPropertyValue('--arch-x')"):
-                    errors.append(f"{name}: old whole-arch translation is still active")
+                mask=page.locator("#elastic-arch-0 path")
+                def points():
+                    return [(float(x),float(y)) for x,y in re.findall(
+                        r"[ML]([0-9.]+) ([0-9.]+)",mask.get_attribute("d") or "")]
+                def shift(before,after):
+                    if not before or len(before)!=len(after):return -1
+                    return max(math.hypot((x-u)*region["width"],(y-v)*region["height"])
+                               for (x,y),(u,v) in zip(before,after))
                 page.mouse.move(2,2,steps=5)
-                page.wait_for_timeout(640)
-                returned=arch.evaluate("e=>e.style.clipPath")
-                if returned:
-                    errors.append(f"{name}: arch mask failed to release after mouse left ({returned})")
+                page.wait_for_timeout(900)
+                rest=points()
+                page.mouse.move(region["x"]+region["width"]*.77,
+                                region["y"]+region["height"]*.30,steps=8)
+                page.wait_for_timeout(370)
+                bent=points()
+                distortion=shift(rest,bent)
+                if distortion<6 or distortion>54:
+                    errors.append(f"{name}: arch did not flex enough without tearing ({distortion:.1f}px)")
+                if "elastic-arch-0" not in arch.evaluate("e=>e.style.clipPath"):
+                    errors.append(f"{name}: new arch silhouette mask missing")
+                if arch.evaluate("e=>e.style.getPropertyValue('--arch-x')"):
+                    errors.append(f"{name}: rigid arch translation reappeared")
+                page.mouse.move(2,2,steps=5)
+                page.wait_for_timeout(1100)
+                returned=points()
+                residual=shift(rest,returned)
+                if residual<0 or residual>1.3:
+                    errors.append(f"{name}: arch contour did not restore ({residual:.1f}px)")
         page.mouse.move(w*.58,h*.49)
         # 01–03 now have deliberately longer scroll travel.
         wheel(page,7);wait(page,.995)
