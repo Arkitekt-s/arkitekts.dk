@@ -237,6 +237,7 @@ with sync_playwright() as p:
 
         # The last section's UP arrow should return through 04, 03, 02, 01,
         # rather than teleporting to the beginning. Check on every viewport.
+        page.evaluate("document.activeElement?.blur()")
         page.keyboard.press("End")
         page.wait_for_function("parseFloat(document.body.dataset.journeyProgress||0)>3.995",timeout=8000)
         page.locator("#previous-chapter").click(timeout=2500)
