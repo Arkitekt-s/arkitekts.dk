@@ -73,11 +73,23 @@ MEASURE = r"""() => {
         overflowX:getComputedStyle(el).overflowX};
     });
   const clippedText=[...document.querySelectorAll('h1,h2,h3,p,button,a')]
-    .filter(el=>visible(el) && el.clientWidth>=32 && el.scrollWidth>el.clientWidth+10
-      && ['hidden','clip'].includes(getComputedStyle(el).overflowX))
+    .filter(el=>visible(el) && !el.matches('a.project-visual') &&
+      el.clientWidth>=32 && el.scrollWidth>el.clientWidth+10 &&
+      ['hidden','clip'].includes(getComputedStyle(el).overflowX))
     .slice(0,8)
     .map(el=>({tag:el.tagName.toLowerCase(),text:(el.innerText||'').trim().slice(0,65),
       width:el.clientWidth,scrollWidth:el.scrollWidth}));
+  // Portfolio cards have a clipped decorative :after ring (right:-18%).
+  // It increases scrollWidth but never clips the card's actual content.
+  // Instead verify that its visible number and category labels fit.
+  const clippedCardLabels=[...document.querySelectorAll('a.project-visual')].flatMap(card=>{
+    const c=card.getBoundingClientRect();
+    return [...card.querySelectorAll('.project-number,.project-type')].filter(visible)
+      .filter(el=>{
+        const r=el.getBoundingClientRect();
+        return r.left<c.left-3 || r.right>c.right+3;
+      }).map(el=>({text:el.textContent.trim(),cardWidth:Math.round(c.width)}));
+  });
   const title = document.querySelector('h1');
   const titleRect = title?.getBoundingClientRect();
   const headingVisible = !title || !visible(title) ||
@@ -85,7 +97,7 @@ MEASURE = r"""() => {
   const header = document.querySelector('.site-header');
   return {vw,scrollWidth:Math.max(root.scrollWidth,body.scrollWidth),horizontal,
     pageHeight:Math.round(root.scrollHeight),headingVisible,
-    clippedText,offscreenElements:large,
+    clippedText,clippedCardLabels,offscreenElements:large,
     headerVisible:!!(header && visible(header)),
     menuButtonVisible:!!(document.querySelector('#menu-button') && visible(document.querySelector('#menu-button'))),
     mainCount:document.querySelectorAll('main').length,
@@ -137,6 +149,8 @@ with sync_playwright() as play:
                     bad.append(f"expected 1 main, found {geom['mainCount']}")
                 if geom["clippedText"]:
                     bad.append("clipped text: "+str(geom["clippedText"][:3]))
+                if geom["clippedCardLabels"]:
+                    bad.append("clipped portfolio labels: "+str(geom["clippedCardLabels"][:3]))
                 if local404:
                     bad.append("broken local resources "+str(local404[:3]))
                 menu=page.locator('#menu-button')
