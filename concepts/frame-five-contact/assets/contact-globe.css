@@ -694,3 +694,24 @@ body.frame-one .frame-stage .hold-scene-film{
     transition:none!important;
   }
 }
+
+
+/* Google DeepMind AI film: matching still fallback across the three
+   continuous arch windows. The natural mountain photo no longer flashes
+   while the first AI video loads. Only the first selected scene changes.
+   The approved Silver Glass, arch shape and typography stay untouched. */
+body.frame-one[data-frame-one-art="0"] .panorama .distant-mountains{
+  background-image:
+    linear-gradient(180deg,rgba(10,10,24,.13),rgba(7,11,28,.05) 54%,rgba(6,8,23,.18)),
+    url("https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600");
+  background-size:100% 100%,330% 100%;
+  background-position:center,var(--slice);
+  filter:saturate(.88) contrast(1.02);
+}
+body.frame-one[data-frame-one-art="0"] .panorama .light-haze,
+body.frame-one[data-frame-one-art="0"] .panorama .near-clouds{
+  opacity:.08;
+}
+body.frame-one[data-frame-one-art="0"] .panorama .arch-video{
+  filter:saturate(.88) contrast(1.01) brightness(.97);
+}

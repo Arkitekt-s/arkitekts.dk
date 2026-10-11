@@ -1,5 +1,5 @@
 /* Homepage media and navigation controller.
- * Mouse position and press/hold no longer change the opening landscape.
+ * First scene is Google DeepMind's AI animation on Pexels.
  * Keep the continuous video, optional pause control and mobile menu.
  */
 (() => {
@@ -38,12 +38,12 @@
   reduced.addEventListener("change", updatePause);
   updatePause();
 
-  // All three arches show synchronized sections of one genuinely moving movie.
-  // Two public-footage sources provide resilience if a CDN has a temporary fault.
+  // All three arches share synchronized sections of the AI film.
+  // 1440p and 4K versions handle a temporary video file problem.
   const videos = Array.from(document.querySelectorAll(".arch-video"));
   const liveText = $("#live-status span");
-  const primary = new URL("../frame-one-live/assets/mountain-loop.webm", location.href).href;
-  const backup = new URL("../frame-one-live/assets/mountain-loop.mp4", location.href).href;
+  const primary = "https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4";
+  const backup = "https://videos.pexels.com/video-files/18069232/18069232-uhd_3840_2160_24fps.mp4";
   let sourceIndex = 0;
   let live = false;
   let movieFailure = false;
@@ -76,31 +76,31 @@
     videos.forEach(v=>{
       v.classList.remove("is-playing");
       v.pause();
-      v.removeAttribute("poster");
+      // Keep the actual AI still image visible while the backup loads.
       v.src=backup;
       v.load();
     });
-    setVideoStatus("TRYING BACKUP LANDSCAPE FOOTAGE…","loading");
+    setVideoStatus("LOADING BACKUP AI FILM…","loading");
     startVideo();
     videoTimer=setTimeout(()=>{
-      if(!live){setVideoStatus("MOUNTAIN PHOTO / LIVE VIDEO UNAVAILABLE","unavailable");}
+      if(!live){setVideoStatus("AI IMAGE / LIVE VIDEO UNAVAILABLE","unavailable");}
     },11500);
   }
   let videoCanPlay=false;
   if(videos.length){
-    setVideoStatus("LOADING LIVE LANDSCAPE…","loading");
+    setVideoStatus("LOADING AI FILM…","loading");
     const lead=videos[0];
     videos.forEach((v,index)=>{
       v.addEventListener("error",()=>{
         if(sourceIndex===0)changeVideoSource();
-        else if(index===0){movieFailure=true;setVideoStatus("MOUNTAIN PHOTO / LIVE VIDEO UNAVAILABLE","unavailable");}
+        else if(index===0){movieFailure=true;setVideoStatus("AI IMAGE / LIVE VIDEO UNAVAILABLE","unavailable");}
       });
       v.addEventListener("playing",()=>{
         if(index===0){
           live=true;
           videoCanPlay=true;
           clearTimeout(videoTimer);
-          setVideoStatus("REAL MOUNTAIN FOOTAGE / LIVE","live");
+          setVideoStatus("AI MOTION / LIVE","live");
           videos.forEach(vv=>vv.classList.add("is-playing"));
         }
       });
@@ -118,13 +118,27 @@
     startVideo();
   }
 
-  // Explicitly pause or resume only the landscape video.
+  // The full-screen film uses the same source as the three arches.
+  // If the smaller version fails, retry the confirmed 4K Pexels file.
+  const portalFilm=document.getElementById("portal-film");
+  let portalBackup=false;
+  portalFilm?.addEventListener("error",()=>{
+    if(portalBackup)return;
+    portalBackup=true;
+    portalFilm.src=backup;
+    portalFilm.load();
+    if(!pausedByUser&&!reducedVideo()&&
+       Number(document.body.dataset.portalProgress||0)>.48)
+      portalFilm.play().catch(()=>{});
+  },true);
+
+  // Pause or resume the AI video.
   pauseButton?.addEventListener("click",()=>{
     if(pausedByUser){videos.forEach(v=>v.play().catch(()=>{}));startVideo();}
-    else{videos.forEach(v=>v.pause());setVideoStatus("MOTION PAUSED / MOUNTAIN PHOTO","paused");}
+    else{videos.forEach(v=>v.pause());setVideoStatus("MOTION PAUSED / AI IMAGE","paused");}
   });
   reduced.addEventListener("change",()=>{
-    if(reducedVideo()){videos.forEach(v=>v.pause());setVideoStatus("REDUCED MOTION / MOUNTAIN PHOTO","paused");}
+    if(reducedVideo()){videos.forEach(v=>v.pause());setVideoStatus("REDUCED MOTION / AI IMAGE","paused");}
     else startVideo();
   });
   document.addEventListener("visibilitychange",()=>{
@@ -132,9 +146,9 @@
     else if(!pausedByUser&&!reducedVideo())startVideo();
   });
 
-  // Media failure is acknowledged, but the CSS mountain gradient remains readable.
+  // The corresponding Pexels still image remains readable if video fails.
   const mountain = new Image();
   mountain.addEventListener("load", () => { document.body.dataset.landscapeLoaded = "true"; });
   mountain.addEventListener("error", () => { document.body.dataset.landscapeLoaded = "false"; });
-  mountain.src = "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85";
+  mountain.src = "https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=2000";
 })();

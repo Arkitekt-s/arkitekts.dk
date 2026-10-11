@@ -33,6 +33,17 @@ with sync_playwright() as p:
         response=page.goto(URL,wait_until="domcontentloaded",timeout=30000)
         if response.status!=200:errors.append(f"{name}: HTTP {response.status}")
         if page.locator("#panorama .arch").count()!=3:errors.append(f"{name}: approved arches changed")
+        # User-selected scene 01 must be Martina Stiftinger's AI animation,
+        # including all three arched windows and the fullscreen portal.
+        for media in page.locator("#panorama .arch-video").all():
+            source=media.locator("source").first.get_attribute("src") or ""
+            if "18069232" not in source:
+                errors.append(f"{name}: a first-scene arch is not the AI film")
+        portal_source=page.locator("#portal-film source").first.get_attribute("src") or ""
+        if "18069232" not in portal_source:
+            errors.append(f"{name}: Section 02/03 fullscreen source is not the AI film")
+        if "AI Visualisation" not in (page.locator("#hold-scene-control").get_attribute("aria-label") or ""):
+            errors.append(f"{name}: first-scene selector label is not the AI film")
         if page.locator("#portal-current").inner_text().strip()!="01":
             errors.append(f"{name}: section counter must start at 01")
         if not page.locator("#next-chapter").evaluate("e=>e.classList.contains('is-scroll-invite')"):
@@ -105,7 +116,7 @@ with sync_playwright() as p:
             errors.append(f"{name}: press and hold still zooms the landscape")
         page.mouse.up()
         # Desktop: each real press-and-hold triggers exactly ONE new art world.
-        # 00 mountain → 01 tidal ink → 02 liquid aurora → 00 mountain.
+        # 00 AI motion → 01 real server room → 02 coding desk → 00 AI motion.
         # The liquid wipe must finish before another hold is counted.
         if name=="desktop":
             control=page.locator("#hold-scene-control")
@@ -125,9 +136,9 @@ with sync_playwright() as p:
                         errors.append("desktop: wave canvas does not cover header and footer")
                 original_title=page.locator(".hero-text").inner_text()
                 original_position=page.locator(".hero-text").bounding_box()
-                mountain_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
-                if abs(mountain_rate-.70)>.02:
-                    errors.append(f"desktop: mountain film did not slow down ({mountain_rate})")
+                opening_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
+                if abs(opening_rate-.70)>.02:
+                    errors.append(f"desktop: AI film did not slow down ({opening_rate})")
                 for expected in (1,2,0):
                     page.mouse.move(w*.62,h*.63)
                     page.mouse.down()

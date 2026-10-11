@@ -1,10 +1,11 @@
-/* Cinematic Frame 01: three real scenic films selected by press-and-hold.
- * The chosen film continues into Frames 02 and 03, then pauses behind
+/* Cinematic Frame 01: AI, server and coding footage via press-and-hold.
+ * The selected first AI film continues into Frames 02 and 03, then pauses behind
  * Frames 04–05. All three movies run at calm 70% playback speed.
  * The hold transition is a translucent organic, marbled liquid wave.
  * Only the film changes; the title and all Section 01 layout stay fixed.
  * The approved scroll timeline, arch springs and typography
  * are untouched. Alternate clips licensed by Pexels (free video license):
+ * https://www.pexels.com/video/an-artist-s-animation-of-artificial-intelligence-ai-this-video-represents-how-ai-powered-tools-can-support-us-and-save-time-it-was-created-by-martina-stiftinger-as-part-of-the-visualis-18069232/
  * https://www.pexels.com/video/database-storage-of-a-server-5028622/
  * https://www.pexels.com/video/dark-room-coding-on-multiple-monitors-34160292/
  */
@@ -20,7 +21,7 @@
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
   const ease=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
   const films=[
-    {name:"Mountain Film"},
+    {name:"AI Visualisation · Google DeepMind"},
     {
       name:"Professional Data Center",
       url:"https://videos.pexels.com/video-files/5028622/5028622-hd_1920_1080_25fps.mp4",
