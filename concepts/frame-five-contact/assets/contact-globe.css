@@ -307,18 +307,23 @@ body.frame-one .portal-steps #portal-current{display:inline-block;min-width:2ch;
 body.frame-one .portal-navigation button:disabled{opacity:.38;cursor:default}
 
 
-/* Only the downward arrow moves in scene 01.
-   The circle, its border, the progress bar and the page layout stay fixed. */
+/* Scene 01: a slow, sequential downwards pulse, like a car's turn signal.
+   The circular button stays fixed. Only its arrow glows and travels down,
+   fading before restarting. No caption, no bouncing circle, no other scenes. */
 body.frame-one .portal-navigation #next-chapter .next-arrow-icon{
   display:inline-block;
   will-change:transform,opacity;
 }
 body.frame-one .portal-navigation #next-chapter.is-scroll-invite .next-arrow-icon{
-  animation:soheil-arrow-down 1.3s cubic-bezier(.42,0,.25,1) infinite;
+  animation:soheil-arrow-down 2.4s ease-in-out infinite;
 }
 @keyframes soheil-arrow-down{
-  0%,100%{transform:translate3d(0,-4px,0);opacity:.65}
-  55%{transform:translate3d(0,5px,0);opacity:1}
+  0%{transform:translate3d(0,-5px,0);opacity:.22}
+  22%{transform:translate3d(0,-2px,0);opacity:.45}
+  58%{transform:translate3d(0,5px,0);opacity:1}
+  73%{transform:translate3d(0,7px,0);opacity:1}
+  92%{transform:translate3d(0,7px,0);opacity:.2}
+  100%{transform:translate3d(0,-5px,0);opacity:.22}
 }
 @media(prefers-reduced-motion:reduce){
   body.frame-one .portal-navigation #next-chapter.is-scroll-invite .next-arrow-icon{
