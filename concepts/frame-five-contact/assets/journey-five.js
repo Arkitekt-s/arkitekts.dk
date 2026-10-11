@@ -79,6 +79,7 @@
   let lastRendered=-1;
   let previousFrameTime=0;
   let displayedSection=0;
+  let returnTour=null;
   let scrollbarTravel=0,scrollbarPercent=-1,scrollbarScene=-1;
 
   function measure(){
@@ -370,6 +371,7 @@
       if(currentLabel)currentLabel.textContent=String(visibleSection).padStart(2,"0");
       if(sectionTrack)sectionTrack.setAttribute("aria-valuenow",String(visibleSection));
       if(rail)rail.setAttribute("aria-label","Section "+visibleSection+" of 5");
+      if(nextSectionButton)nextSectionButton.setAttribute("aria-label",visibleSection===1?"Scroll down to explore the website":"Go to the next section");
       displayedSection=visibleSection;
     }
     if(rail){
@@ -377,7 +379,10 @@
       rail.style.opacity="1";
     }
     if(prevSectionButton)prevSectionButton.disabled=target<=.001;
-    if(nextSectionButton)nextSectionButton.disabled=target>=3.999;
+    if(nextSectionButton){
+      nextSectionButton.disabled=target>=3.999 && !returnTour;
+      nextSectionButton.classList.toggle("is-scroll-invite",visibleSection===1 && !returnTour);
+    }
     if(fill)fill.style.transform="scaleX("+clamp(journey/4,0,1).toFixed(4)+")";
     if(wheelHint){
       wheelHint.style.opacity=(journey>.06&&journey<.82)?"1":"0";
@@ -401,7 +406,29 @@
     const follow=1-Math.exp(-dt/108);
     const galleryFollow=1-Math.exp(-dt/84);
     const pointerFollow=1-Math.exp(-dt/108);
-    if(reduced.matches)position=target;
+    if(returnTour){
+      // A single smooth trip from scene 05 through 04, 03 and 02 to 01.
+      // Passing through each anchor slows slightly, like cinematic scrolling.
+      const trip=returnTour;
+      if(!trip.started)trip.started=now;
+      let distance=clamp((now-trip.started)/trip.duration,0,1)*trip.from;
+      let previous=trip.from;
+      position=0;
+      for(const destination of trip.stops){
+        const length=previous-destination;
+        if(distance<=length){
+          position=lerp(previous,destination,smooth(distance/length));
+          break;
+        }
+        distance-=length;
+        previous=destination;
+      }
+      if(now-trip.started>=trip.duration){
+        position=target=0;
+        returnTour=null;
+        document.body.dataset.returnTour="complete";
+      }
+    }else if(reduced.matches)position=target;
     else position+=(target-position)*follow;
     if(Math.abs(target-position)<.0006)position=target;
     if(!reelDragging)galleryPosition+=(galleryTarget-galleryPosition)*(reduced.matches?1:galleryFollow);
@@ -432,15 +459,28 @@
       }
     }
     if(position!==target || galleryPosition!==galleryTarget ||
-       galleryPointer!==galleryPointerTarget || galleryAutoExit)
+       galleryPointer!==galleryPointerTarget || galleryAutoExit || returnTour)
       frame=requestAnimationFrame(frameStep);
   }
   function schedule(){
     if(!frame)frame=requestAnimationFrame(frameStep);
   }
   function setTarget(value){
+    // A manual wheel, swipe, key or scrub always takes over immediately.
+    if(returnTour){returnTour=null;document.body.dataset.returnTour="cancelled";}
     target=clamp(value,0,4);
     if(reduced.matches)position=target;
+    schedule();
+  }
+  function startReturnTour(){
+    cancelGalleryExit();
+    if(reduced.matches){setTarget(0);return;}
+    const from=clamp(position,0,4);
+    const stops=[3,2,1,0].filter(stop=>stop<from-.005);
+    if(!stops.length){setTarget(0);return;}
+    returnTour={from,stops,started:0,duration:Math.max(1900,from*1325)};
+    target=0;
+    document.body.dataset.returnTour="active";
     schedule();
   }
   function cancelGalleryExit(){
@@ -594,6 +634,11 @@
   // Chapter controls move exactly one section at a time.
   // The Frame 04 → 05 control still shows the full photo sequence first.
   function navigateSection(direction){
+    // The last section's UP arrow is a full, visible return to the intro.
+    if(direction<0 && position>=3.49){
+      startReturnTour();
+      return;
+    }
     if(galleryAutoExit){
       if(direction>0)return;
       cancelGalleryExit();
@@ -735,7 +780,13 @@
     img?.addEventListener("error",()=>photo.classList.add("image-fallback"));
   });
 
-  reduced.addEventListener("change",()=>{if(reduced.matches)position=target;schedule();});
+  reduced.addEventListener("change",()=>{
+    if(reduced.matches){
+      if(returnTour){returnTour=null;target=0;document.body.dataset.returnTour="complete";}
+      position=target;
+    }
+    schedule();
+  });
   let resizeTimer=0;
   addEventListener("resize",()=>{
     clearTimeout(resizeTimer);
