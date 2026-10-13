@@ -84,14 +84,15 @@ with sync_playwright() as p:
             if path=="/technical-guides/":
                 if "04—01" not in page.locator(".guides-section-heading").inner_text():
                     failures.append(f"{device}: wrong technical guides subsection number")
-            if w>760:
-                header=page.locator(".site-header").bounding_box()
+            header=page.locator(".site-header").bounding_box()
+            expected_header=73 if w<=760 else (78 if w<=1024 else 100)
+            if not header or abs(header["height"]-expected_header)>1 or abs(header["y"])>1:
+                failures.append(f"{device} {path}: fixed header geometry incorrect: {header}")
+            if w>1024:
                 for a in nav.all():
                     link=a.bounding_box()
                     if link and (link["x"]<0 or link["x"]+link["width"]>w+1):
                         failures.append(f"{device} {path}: menu item outside viewport {link}")
-                if header and abs(header["height"]-100)>1:
-                    failures.append(f"{device} {path}: fixed header height changed")
             else:
                 button=page.locator("#menu-button")
                 button.click()
