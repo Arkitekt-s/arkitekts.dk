@@ -32,7 +32,7 @@ with sync_playwright() as pw:
         if page.locator("#film").count()!=1:fails.append("%s: expected one real video" % device)
         for mode in ("a","b","c"):
             page.locator(".choice[data-mode='%s']"%mode).click()
-            for chapter,val in ((1,0),(2,1000),(3,2000)):
+            for chapter,val in ((1,0),('transition',550),(2,1000),(3,2000)):
                 page.locator("#scrub").evaluate("(el, val) => {el.value=String(val);el.dispatchEvent(new Event('input',{bubbles:true}));}",val)
                 page.wait_for_timeout(90)
                 item=page.evaluate("""() => ({
