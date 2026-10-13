@@ -31,23 +31,23 @@ with sync_playwright() as playwright:
                 "document.querySelector('#panorama')?.dataset.artScene!==undefined",timeout=10000)
             initial=page.evaluate("""() => {
               const pan=document.getElementById('panorama');
-              const v=document.getElementById('hold-scene-film');
+              const v=document.getElementById('arch-morph-video');
               const chooser=document.getElementById('hold-scene-control');
               return {chosen:Number(pan.dataset.artScene),
                 initial:Number(document.body.dataset.initialHomepageFilm),
                 label:chooser?.getAttribute('aria-label'),
                 altSrc:v?.getAttribute('src')||'',
                 originalSrc:document.querySelector('.arch-video source')?.src||'',
-                poster:getComputedStyle(pan.querySelector('.distant-mountains')).backgroundImage,
-                hiddenOriginal:getComputedStyle(pan.querySelector('.arch-video')).visibility==='hidden',
+                poster:document.getElementById('arch-morph-poster')?.src||'',
+                hiddenOriginal:getComputedStyle(pan).visibility==='hidden',
                 progress:Number(document.body.dataset.journeyProgress||0)};
             }""")
             if response.status!=200:FAIL.append(f"{device} film {selected}: HTTP {response.status}")
             if initial["chosen"]!=selected or initial["initial"]!=selected:
                 FAIL.append(f"{device} film {selected}: random choice incorrect {initial}")
-            if selected and CLIPS[selected] not in initial["altSrc"]:
+            if CLIPS[selected] not in initial["altSrc"]:
                 FAIL.append(f"{device} film {selected}: wrong alternative URL {initial['altSrc']}")
-            if selected and (CLIPS[selected] not in initial["poster"] or not initial["hiddenOriginal"]):
+            if CLIPS[selected] not in initial["poster"] or not initial["hiddenOriginal"]:
                 FAIL.append(f"{device} film {selected}: startup poster or default-film bleed")
             if CLIPS[0] not in initial["originalSrc"]:
                 FAIL.append(f"{device} film {selected}: original clip source changed unexpectedly")
@@ -61,8 +61,8 @@ with sync_playwright() as playwright:
                 current=int(page.locator("#panorama").get_attribute("data-art-scene"))
                 if current!=selected:
                     FAIL.append(f"{device}: film switched in section {chapter}, from {selected} to {current}")
-                currentSrc=page.locator("#hold-scene-film").get_attribute("src") or ""
-                if selected and CLIPS[selected] not in currentSrc:
+                currentSrc=page.locator("#arch-morph-video").get_attribute("src") or ""
+                if CLIPS[selected] not in currentSrc:
                     FAIL.append(f"{device}: section {chapter} changed film {selected}")
             page.locator("#previous-chapter").evaluate("(b)=>b.click()")
             page.wait_for_function("Number(document.body.dataset.journeyProgress)<1.012",timeout=15000)
