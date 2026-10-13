@@ -37,7 +37,7 @@ const $=id=>document.getElementById(id);
 const e={stage:$("stage"),shape:$("mask-shape"),outline:$("outline"),edge:$("edge-shape"),one:$("text-one"),two:$("text-two"),three:$("text-three"),label:$("frame-indicator"),scrub:$("scrub"),modeName:$("mode-name"),status:$("status"),poster:$("poster"),film:$("film"),filmName:$("film-name")};
 const videos=[
 {name:"GOOGLE DEEPMIND",src:"https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4",poster:"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},
-{name:"SYNTHID AI",src:"https://videos.pexels.com/video-files/25744122/11904079_1920_1080_30fps.mp4",poster:"https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&w=1600"},
+{name:"SYNTHID AI",src:"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",poster:"https://images.pexels.com/videos/25744122/ai-artificial-intelligence-computer-data-25744122.jpeg?auto=compress&w=1600"},
 {name:"AI DIFFUSION",src:"https://videos.pexels.com/video-files/18069165/18069165-uhd_2160_2160_24fps.mp4",poster:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
 let mode="a",progress=0,currentToken=0,raf=0;
 const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>{x=clamp(x);return x*x*(3-2*x)},mix=(a,b,t)=>a+(b-a)*t,fmt=n=>Math.round(n*100)/100;

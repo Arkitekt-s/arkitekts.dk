@@ -10,10 +10,11 @@ root=Path(__file__).resolve().parents[1]
 http=ThreadingHTTPServer(("127.0.0.1",0),partial(SimpleHTTPRequestHandler,directory=str(root)))
 Thread(target=http.serve_forever,daemon=True).start()
 sources=[
-"https://videos.pexels.com/video-files/25744122/11904079_1920_1080_30fps.mp4",
 "https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
-"https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&w=1600"
+"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
+"https://images.pexels.com/videos/25744122/ai-artificial-intelligence-computer-data-25744122.jpeg?auto=compress&w=1600"
 ]
+# The formerly used 1080p rendition returns 403; audit only the verified 4K.
 for url in sources:
  try:
   req=urllib.request.Request(url,headers={"Range":"bytes=0-4095","User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"})

@@ -13,8 +13,8 @@ const reduced=matchMedia("(prefers-reduced-motion: reduce)");
 const clips=[
   {url:"https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4",
    poster:"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},
-  {url:"https://videos.pexels.com/video-files/25744122/11904079_1920_1080_30fps.mp4",
-   poster:"https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&w=1600"},
+  {url:"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
+   poster:"https://images.pexels.com/videos/25744122/ai-artificial-intelligence-computer-data-25744122.jpeg?auto=compress&w=1600"},
   {url:"https://videos.pexels.com/video-files/18069165/18069165-uhd_2160_2160_24fps.mp4",
    poster:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}
 ];
@@ -220,14 +220,22 @@ function pauseLegacy(){
    if(v) v.pause();
  }
 }
+// Retry after media metadata arrives. Previously the first play() could
+// reject before the remote clip was ready and lastPlay blocked all retries.
+let nextPlaybackAttempt=0;
 function playback(){
  const progress=Number(document.body.dataset.journeyProgress||0);
  const shouldPlay=!document.hidden&&!reduced.matches&&
   !document.body.classList.contains("motion-off")&&progress<2.82;
- if(shouldPlay!==lastPlay){
-   lastPlay=shouldPlay;
-   if(shouldPlay){film.play().catch(()=>{});}
-   else film.pause();
+ if(!shouldPlay){
+   if(lastPlay||!film.paused)film.pause();
+   lastPlay=false;return;
+ }
+ const now=performance.now();
+ if(!lastPlay || (film.paused&&film.readyState>=2&&now>=nextPlaybackAttempt)){
+   if(now<nextPlaybackAttempt)return;
+   lastPlay=true;nextPlaybackAttempt=now+1000;
+   film.play().catch(()=>{lastPlay=false;});
  }
 }
 function choose(id){
@@ -238,7 +246,7 @@ function choose(id){
  const source=clips[id];
  film.classList.remove("is-ready");
  poster.src=source.poster;
- film.pause();lastPlay=false;
+ film.pause();lastPlay=false;nextPlaybackAttempt=0;
  film.poster=source.poster;
  film.src=source.url;film.load();
  film.playbackRate=.50;
@@ -250,7 +258,8 @@ function choose(id){
 film.addEventListener("loadeddata",()=>{
  film.playbackRate=.50;film.classList.add("is-ready");playback();
 });
-film.addEventListener("playing",()=>{film.playbackRate=.50});
+film.addEventListener("canplay",()=>{playback();});
+film.addEventListener("playing",()=>{film.playbackRate=.50;lastPlay=true;});
 document.addEventListener("homepage-film-changed",e=>choose(e.detail?.scene));
 document.addEventListener("visibilitychange",playback);
 reduced.addEventListener("change",playback);
