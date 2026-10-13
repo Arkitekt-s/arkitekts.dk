@@ -43,3 +43,29 @@ body[data-arch-morph-enabled="true"] .arch-morph-mask-defs{
 @media(prefers-reduced-motion:reduce){
  body[data-arch-morph-enabled="true"] .arch-morph-media{will-change:auto}
 }
+
+/* Original Silver Glass optical lens now follows the *visible* single-video
+   arch mask. It is clipped by the exact same SVG as the selected film. */
+body[data-arch-morph-enabled="true"] .arch-morph-lens{
+  --lens-x:50%;--lens-y:50%;
+  position:absolute;inset:0;z-index:3;pointer-events:none;
+  opacity:0;visibility:hidden;will-change:opacity;
+  background:radial-gradient(ellipse 104px 118px at var(--lens-x) var(--lens-y),
+    rgba(247,252,255,.38) 0%,rgba(221,246,255,.14) 32%,
+    rgba(214,233,255,.07) 53%,transparent 83%);
+  -webkit-backdrop-filter:brightness(1.12) contrast(1.05) saturate(1.06);
+  backdrop-filter:brightness(1.12) contrast(1.05) saturate(1.06);
+  -webkit-mask-image:radial-gradient(ellipse 126px 140px at var(--lens-x) var(--lens-y),
+    #000 5%,transparent 90%);
+  mask-image:radial-gradient(ellipse 126px 140px at var(--lens-x) var(--lens-y),
+    #000 5%,transparent 90%);
+}
+body[data-arch-morph-enabled="true"] .arch-morph-lens::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 26px 44px at var(--lens-x) var(--lens-y),
+    rgba(255,255,255,.15),transparent 85%);
+}
+body.motion-off .arch-morph-lens{opacity:0!important;visibility:hidden!important}
+@media(prefers-reduced-motion:reduce){
+  body[data-arch-morph-enabled="true"] .arch-morph-lens{display:none!important}
+}

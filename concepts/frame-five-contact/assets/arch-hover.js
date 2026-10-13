@@ -6,6 +6,9 @@
  */
 (() => {
   "use strict";
+  // The visible arches now share a single SVG film mask. Its own spring
+  // controller owns pointer interaction; do not animate the hidden legacy arches.
+  if(document.body.dataset.archMorphEnabled==="true")return;
   const arches=[...document.querySelectorAll("#panorama .arch")];
   if(arches.length!==3 || !matchMedia("(hover: hover) and (pointer: fine)").matches)return;
   const reduced=matchMedia("(prefers-reduced-motion: reduce)");
