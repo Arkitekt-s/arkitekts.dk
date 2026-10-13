@@ -41,6 +41,10 @@ METRICS=r"""() => {
   fullscreenReady:film.readyState>=2,
   videoRates:videos.map(v=>v.playbackRate),
   sceneryAnimation:getComputedStyle(document.querySelector('#panorama .scenery')).animationName,
+  morphReady:document.body.dataset.archMorphEnabled==="true",
+  morphProgress:Number(document.querySelector('#arch-morph-media')?.dataset.morphProgress||-1),
+  maskedPathCount:(document.querySelector('#live-arch-morph-path')?.getAttribute('d')||'').split('M').length-1,
+  maskedVideoCount:document.querySelectorAll('#arch-morph-media video').length,
   horizontalOverflow:Math.max(document.body.scrollWidth,document.documentElement.scrollWidth)-innerWidth,
   jsMode:getComputedStyle(document.querySelector('.site-header')).position
  }
@@ -61,11 +65,13 @@ def check_metrics(name,label,values,baseline):
     if not all(abs(rate-.50)<.01 for rate in values["videoRates"]):
         failures.append(f"{name} {label}: film speed changed {values['videoRates']}")
     if progress>.96:
-        if values["panOpacity"]>.05 or values["filmOpacity"]<.99 or not values["filmVisible"]:
-            failures.append(f"{name} {label}: dissolve left a visible seam: {values['panOpacity']}/{values['filmOpacity']}")
+        if not values["morphReady"] or values["morphProgress"]<.99:
+            failures.append(f"{name} {label}: arches have not fully unfolded")
+        if values["maskedPathCount"]!=3 or values["maskedVideoCount"]!=1:
+            failures.append(f"{name} {label}: missing continuous one-video mask")
     if progress<.04:
-        if values["panOpacity"]<.98 or values["filmOpacity"]>.03:
-            failures.append(f"{name} {label}: opening scene not restored: {values['panOpacity']}/{values['filmOpacity']}")
+        if not values["morphReady"] or values["morphProgress"]>.02:
+            failures.append(f"{name} {label}: three-arch mask not restored")
 
 with sync_playwright() as play:
     browser=play.chromium.launch(headless=True,args=["--disable-dev-shm-usage"])
