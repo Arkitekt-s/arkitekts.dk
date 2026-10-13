@@ -89,6 +89,45 @@ with sync_playwright() as p:
                 failures.append(f"{device}/{selected}: horizontal overflow")
             if selected==1:
                 page.screenshot(path=str(OUT/f"{device}-01.png"),animations="disabled")
+                # On desktop restore the original near-cursor elastic arch
+                # movement and neutral Silver Glass hover highlight.
+                # Test the VISIBLE mask rather than the retired panorama.
+                if device=="desktop":
+                    page.wait_for_timeout(250)
+                    startPath=page.locator("#live-arch-morph-path").get_attribute("d") or ""
+                    center=page.locator("#panorama .arch").nth(1).evaluate(
+                        "(a)=>{const r=a.getBoundingClientRect();return {x:r.right-18,y:r.top+r.height*.46}}")
+                    page.mouse.move(center["x"],center["y"])
+                    page.wait_for_timeout(850)
+                    moved=page.locator("#live-arch-morph-path").get_attribute("d") or ""
+                    glass=page.evaluate("""() => ({
+                      inside:document.body.dataset.archGlassInside,
+                      opacity:Number(getComputedStyle(document.getElementById('arch-morph-lens')).opacity),
+                      visible:getComputedStyle(document.getElementById('arch-morph-lens')).visibility,
+                    })""")
+                    if moved==startPath:
+                        failures.append("desktop: moving the mouse doesn't bend the visible arches")
+                    if glass["inside"]!="true" or glass["opacity"]<.5 or glass["visible"]!="visible":
+                        failures.append(f"desktop: original Silver Glass hover missing {glass}")
+                    page.screenshot(path=str(OUT/"desktop-elastic-hover.png"),animations="disabled")
+                    page.mouse.move(4,4)
+                    page.wait_for_timeout(1300)
+                    settled=page.locator("#live-arch-morph-path").get_attribute("d") or ""
+                    from re import findall
+                    def path_distance(a,b):
+                        xa=[float(x) for x in findall(r"-?\\d+(?:\\.\\d+)?",a)]
+                        xb=[float(x) for x in findall(r"-?\\d+(?:\\.\\d+)?",b)]
+                        return sum(abs(x-y) for x,y in zip(xa,xb)) if len(xa)==len(xb) else 999999
+                    displacement=path_distance(moved,startPath)
+                    restored=path_distance(settled,startPath)
+                    if displacement<3:
+                        failures.append(f"desktop: elastic motion too subtle: {displacement}")
+                    if restored>displacement*.25:
+                        failures.append(f"desktop: spring did not return to rest: {restored}/{displacement}")
+                    if page.evaluate("document.body.dataset.archGlassInside")!="false":
+                        failures.append("desktop: Silver Glass ring stayed active after mouse left")
+                    print("ELASTIC-HOVER "+json.dumps({"distortion":displacement,"return":restored,
+                        "lens":glass,"backToRest":restored<displacement*.25}),flush=True)
                 page.mouse.wheel(0,225)
                 page.wait_for_timeout(720)
                 midway=page.evaluate(METRICS)
