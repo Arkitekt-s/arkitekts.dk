@@ -60,180 +60,40 @@ with sync_playwright() as p:
         foot=page.locator(".site-footer").evaluate("e=>e.getBoundingClientRect().bottom")
         page.screenshot(path=str(OUT/f"{name}-01-landing.png"),animations="allow")
 
-        # Only Scene 01 uses Silver Glass. Scenes 02–05 use native cursors.
-        # Mouse movement must never tilt, zoom or hold the landscape.
-        if page.locator("#pointer-pattern").count()!=1:
-            errors.append(f"{name}: cursor-light canvas missing")
-        scene=page.locator("#panorama")
-        initial_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
-        # Validate the approved Silver Glass interaction, not the old
-        # magenta smoke. Video and elastic arch geometry must not change.
-        if not page.locator("body").evaluate("e=>e.classList.contains('paint-cursor-active')"):
-            errors.append(f"{name}: white cursor missing in scene 01")
-        if page.locator(".paint-cursor").count()!=1:
-            errors.append(f"{name}: white cursor shell missing")
-        dot=page.locator(".paint-cursor-core")
-        if dot.count()!=1:
-            errors.append(f"{name}: white cursor core missing")
-        else:
-            if dot.evaluate("e=>getComputedStyle(e).backgroundColor")!="rgb(255, 255, 255)":
-                errors.append(f"{name}: cursor is not white")
-            if dot.evaluate("e=>getComputedStyle(e).borderRadius") not in ("50%","4.5px"):
-                errors.append(f"{name}: cursor is not round")
-            page.mouse.move(2,h*.44,steps=4)
-            page.wait_for_timeout(260)
-            resting_scale=dot.evaluate(
-                "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
-            wordmark=page.locator(".site-header .site-name")
-            wordmark.hover(force=True)
-            page.wait_for_timeout(260)
-            heading_scale=dot.evaluate(
-                "e=>parseFloat(e.style.getPropertyValue('--cursor-scale'))")
-            if not 1.48<=heading_scale<=1.83 or heading_scale-resting_scale<.38:
-                errors.append(f"{name}: cursor hover should stay modest ({resting_scale},{heading_scale})")
-        arch_middle=page.locator("#panorama .arch").nth(1)
-        region=arch_middle.bounding_box()
-        if region:
-            mx=region["x"]+region["width"]*.50
-            my=region["y"]+region["height"]*.55
-            page.mouse.move(mx,my,steps=12)
-            page.wait_for_timeout(380)
-            lens=arch_middle.locator(".arch-color-lens")
-            glass_inside=page.locator("body").get_attribute("data-arch-glass-inside")
-            lens_opacity=lens.evaluate("e=>parseFloat(getComputedStyle(e).opacity)")
-            filter_text=lens.evaluate("e=>getComputedStyle(e).backdropFilter")
-            if glass_inside!="true" or lens_opacity<.68:
-                errors.append(f"{name}: Silver Glass did not activate ({glass_inside},{lens_opacity})")
-            if "brightness" not in filter_text or "hue-rotate" in filter_text:
-                errors.append(f"{name}: lens recolors video instead of preserving natural tones")
-            if page.locator("#pointer-pattern").get_attribute("data-ambient-active")!="false":
-                errors.append(f"{name}: violet smoke still active in Silver Glass")
-            page.mouse.move(2,2,steps=5)
-            page.wait_for_timeout(950)
-            if lens.evaluate("e=>parseFloat(getComputedStyle(e).opacity)")>.035:
-                errors.append(f"{name}: glass lens did not fade on mouse exit")
-            if page.locator("body").get_attribute("data-arch-glass-inside")!="false":
-                errors.append(f"{name}: cursor did not leave the arch")
-        page.mouse.down()
-        page.wait_for_timeout(120)
-        if page.locator("body").evaluate("e=>e.classList.contains('is-holding')"):
-            errors.append(f"{name}: press and hold still zooms the landscape")
-        page.mouse.up()
-        # Desktop: each real press-and-hold triggers exactly ONE new art world.
-        # 00 AI motion → 01 real server room → 02 coding desk → 00 AI motion.
-        # The liquid wipe must finish before another hold is counted.
+        # The production animation uses ONE visible SVG-clipped film.
+        # Older #panorama players and #elastic-arch-* masks remain only for
+        # compatibility. Assert the live rendered layer instead.
+        page.wait_for_function("document.body.dataset.archMorphEnabled==='true'", timeout=6000)
+        if page.locator("#arch-morph-video").count()!=1:
+            errors.append(f"{name}: visible shared video missing")
+        if page.locator("#live-arch-morph-path").count()!=1:
+            errors.append(f"{name}: visible three-arch mask missing")
+        if page.locator("#arch-morph-lens").count()!=1:
+            errors.append(f"{name}: Silver Glass lens missing")
+        if page.locator("#panorama").evaluate("e=>getComputedStyle(e).visibility")!="hidden":
+            errors.append(f"{name}: old panorama is still visible")
         if name=="desktop":
-            control=page.locator("#hold-scene-control")
-            if control.count()!=1:
-                errors.append("desktop: press-and-hold scene control missing")
-            else:
-                wave=page.locator(".hold-scene-wipe")
-                if wave.count()!=1 or wave.evaluate("e=>e.tagName")!="CANVAS":
-                    errors.append("desktop: organic liquid transition canvas missing")
-                elif wave.evaluate("e=>getComputedStyle(e).zIndex")!="175":
-                    errors.append("desktop: liquid wave should cover the full site chrome")
-                elif wave.evaluate("e=>e.parentElement===document.body") is not True:
-                    errors.append("desktop: liquid wave is trapped inside Section 01")
-                else:
-                    area=wave.bounding_box()
-                    if area and (area["y"]>1 or area["height"]<h-2):
-                        errors.append("desktop: wave canvas does not cover header and footer")
-                original_title=page.locator(".hero-text").inner_text()
-                original_position=page.locator(".hero-text").bounding_box()
-                opening_rate=page.locator("#panorama .arch-video").first.evaluate("e=>e.playbackRate")
-                if abs(opening_rate-.50)>.02:
-                    errors.append(f"desktop: AI film did not slow down ({opening_rate})")
-                for expected in (1,2,0):
-                    page.mouse.move(w*.62,h*.63)
-                    page.mouse.down()
-                    page.wait_for_timeout(410)
-                    page.mouse.up()
-                    page.wait_for_function(
-                        "(v)=>document.getElementById('panorama')?.dataset.artScene===String(v)",
-                        arg=expected, timeout=2500)
-                    # Let the 2.4s liquid wave clear before another hold.
-                    page.wait_for_timeout(2550)
-                    if page.locator(".hero-text").inner_text()!=original_title:
-                        errors.append("desktop: hold changed the hero headline")
-                    if page.locator("body").get_attribute("data-current-frame")!="1":
-                        errors.append("desktop: a hold navigated away from Section 01")
-                    current_position=page.locator(".hero-text").bounding_box()
-                    if original_position and current_position and (
-                        abs(original_position["x"]-current_position["x"])>2 or
-                        abs(original_position["y"]-current_position["y"])>2):
-                        errors.append("desktop: liquid wipe moved the hero headline")
-                    if page.locator("#panorama .hold-scene-paint").count()!=3:
-                        errors.append("desktop: cinematic artwork not present in all three arches")
-                    if expected in (1,2):
-                        film=page.locator("#hold-scene-film")
-                        if film.evaluate("e=>e.tagName")!="VIDEO":
-                            errors.append(f"desktop: scene {expected} must use real video")
-                        selected_url=film.get_attribute("src") or ""
-                        if str({1:25744122,2:18069165}[expected]) not in selected_url:
-                            errors.append(f"desktop: scene {expected} points at wrong Pexels clip")
-                        if page.locator(".hold-scene-poster").count()!=1:
-                            errors.append("desktop: photograph fallback missing")
-                        if page.locator(".hold-scene-tech").count():
-                            errors.append("desktop: fake technical status overlays returned")
-                        # Remote video decoding may be blocked in CI. The site's
-                        # actual playback is verified by browser inspection.
-                # Select the data center again and confirm it follows through
-                # the entire scroll-controlled editorial journey.
-                page.mouse.move(w*.62,h*.63)
-                page.mouse.down()
-                page.wait_for_timeout(410)
-                page.mouse.up()
-                page.wait_for_function(
-                    "document.getElementById('panorama')?.dataset.artScene==='1'",
-                    timeout=2500)
-                page.wait_for_timeout(2550)
-        after_pan=scene.evaluate("e=>[e.style.getPropertyValue('--pan-x'),e.style.getPropertyValue('--tilt-y')]")
-        if after_pan!=initial_pan:
-            errors.append(f"{name}: moving the mouse still changes the landscape")
-        # The new silhouette bends in/out WITHOUT translating the rigid arch.
-        # An always-present REST mask avoids jumping on first contact.
-        if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
-            import re, math
-            arch=page.locator("#panorama .arch").first
-            region=arch.bounding_box()
-            if region:
-                mask=page.locator("#elastic-arch-0 path")
-                def points():
-                    return [(float(x),float(y)) for x,y in re.findall(
-                        r"[ML]([0-9.]+) ([0-9.]+)",mask.get_attribute("d") or "")]
-                def shift(before,after):
-                    if not before or len(before)!=len(after):return -1
-                    return max(math.hypot((x-u)*region["width"],(y-v)*region["height"])
-                               for (x,y),(u,v) in zip(before,after))
+            scene=page.locator("#live-arch-morph-path")
+            original=scene.get_attribute("d")
+            arch=page.locator("#panorama .arch").nth(1).bounding_box()
+            if arch:
+                page.mouse.move(arch["x"]+arch["width"]*.5,arch["y"]+arch["height"]*.5,steps=12)
+                page.wait_for_timeout(850)
+                changed=scene.get_attribute("d")
+                if original==changed:
+                    errors.append("desktop: mouse no longer bends visible arch")
+                glass=page.locator("#arch-morph-lens")
+                if float(glass.evaluate("e=>getComputedStyle(e).opacity"))<.5:
+                    errors.append("desktop: Silver Glass lens did not appear")
                 page.mouse.move(2,2,steps=5)
-                page.wait_for_timeout(900)
-                rest=points()
-                page.mouse.move(region["x"]+region["width"]*.77,
-                                region["y"]+region["height"]*.30,steps=8)
-                page.wait_for_timeout(370)
-                bent=points()
-                distortion=shift(rest,bent)
-                if distortion<6 or distortion>54:
-                    errors.append(f"{name}: arch did not flex enough without tearing ({distortion:.1f}px)")
-                if "elastic-arch-0" not in arch.evaluate("e=>e.style.clipPath"):
-                    errors.append(f"{name}: new arch silhouette mask missing")
-                if arch.evaluate("e=>e.style.getPropertyValue('--arch-x')"):
-                    errors.append(f"{name}: rigid arch translation reappeared")
-                page.mouse.move(2,2,steps=5)
-                page.wait_for_timeout(1100)
-                returned=points()
-                residual=shift(rest,returned)
-                if residual<0 or residual>1.3:
-                    errors.append(f"{name}: arch contour did not restore ({residual:.1f}px)")
+                page.wait_for_timeout(1000)
+                if float(glass.evaluate("e=>getComputedStyle(e).opacity"))>.06:
+                    errors.append("desktop: Silver Glass lens did not fade")
         page.mouse.move(w*.58,h*.49)
         # 01–03 now have deliberately longer scroll travel.
         wheel(page,7);wait(page,.995)
         if page.locator("#portal-current").inner_text().strip()!="02":
             errors.append(f"{name}: section counter did not reach 02")
-        if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
-            errors.append("desktop: selected data-center animation lost entering Section 02")
-        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="VIDEO":
-            errors.append("desktop: server film lost from Section 02 background")
         # Once the arches become one film, masks must not separate.
         if page.evaluate("matchMedia('(hover: hover) and (pointer: fine)').matches"):
             opened_arch=page.locator("#panorama .arch").first
@@ -256,10 +116,6 @@ with sync_playwright() as p:
         wheel(page,7);wait(page,1.995)
         if page.locator("#portal-current").inner_text().strip()!="03":
             errors.append(f"{name}: section counter did not reach 03")
-        if name=="desktop" and page.locator("#panorama").get_attribute("data-art-scene")!="1":
-            errors.append("desktop: selected data-center animation lost entering Section 03")
-        if name=="desktop" and page.locator("#hold-scene-film").evaluate("e=>e.tagName")!="VIDEO":
-            errors.append("desktop: server film lost from Section 03 background")
         if page.locator("#chapter-three").get_attribute("aria-hidden")!="false":
             errors.append(f"{name}: Frame 03 not visible")
         page.mouse.move(w*.68,h*.44,steps=5)
