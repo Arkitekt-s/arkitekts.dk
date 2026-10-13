@@ -1,0 +1,54 @@
+name: Produce browser-compatible second homepage movie
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-second-homepage-film.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  transcode:
+    name: Preserve original SynthID video in local browser-compatible MP4
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Inspect source video
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -version | head -n 1
+          mkdir -p /tmp/original /tmp/converted
+          curl --fail --location --retry 3 --connect-timeout 15 --max-time 240             'https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4'             --output /tmp/original/synthid-4k.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_name,width,height,pix_fmt             -of json /tmp/original/synthid-4k.mp4
+          file /tmp/original/synthid-4k.mp4
+      - name: Transcode the same film to universal H.264
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/videos
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/original/synthid-4k.mp4             -vf 'scale=1920:1080:flags=lanczos,fps=24,format=yuv420p'             -an -c:v libx264 -profile:v main -level:v 4.0             -preset fast -crf 24 -maxrate 4200k -bufsize 8400k             -movflags +faststart             assets/videos/synthid-ai-25744122.mp4
+          curl --fail --location --retry 2 --connect-timeout 15             'https://images.pexels.com/videos/25744122/ai-artificial-intelligence-computer-data-25744122.jpeg?auto=compress&w=1600'             --output assets/videos/synthid-ai-25744122.jpg
+          ffprobe -v error -show_entries stream=codec_name,width,height,pix_fmt             -show_entries format=duration,size -of json assets/videos/synthid-ai-25744122.mp4
+          python3 - <<'PY'
+          from pathlib import Path
+          v=Path('assets/videos/synthid-ai-25744122.mp4')
+          img=Path('assets/videos/synthid-ai-25744122.jpg')
+          assert 100_000<v.stat().st_size<85_000_000,v.stat().st_size
+          assert img.stat().st_size>1000
+          print("Transcoded playable H.264 clip:",v.stat().st_size,"bytes")
+          PY
+      - name: Commit local movie and matching cover image
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/videos/synthid-ai-25744122.mp4 assets/videos/synthid-ai-25744122.jpg
+          if git diff --cached --quiet; then echo 'Asset already committed'; exit 0; fi
+          git commit -m 'Host original video 2 as browser-compatible H264 with local poster'
+          git pull --rebase origin main
+          git push origin HEAD:main
