@@ -1,0 +1,28 @@
+name: Arch mouse color preview checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'previews/arch-hover-color/**'
+      - 'scripts/arch_hover_color_preview_review.py'
+      - '.github/workflows/arch-hover-color-preview-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser
+        run: |
+          pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Verify JavaScript
+        run: node --check previews/arch-hover-color/hover-previews.js
+      - name: Exercise three mouse-hover alternatives
+        run: python scripts/arch_hover_color_preview_review.py
