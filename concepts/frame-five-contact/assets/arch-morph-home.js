@@ -13,8 +13,8 @@ const reduced=matchMedia("(prefers-reduced-motion: reduce)");
 const clips=[
   {url:"https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4",
    poster:"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},
-  {url:"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
-   poster:"https://images.pexels.com/videos/25744122/ai-artificial-intelligence-computer-data-25744122.jpeg?auto=compress&w=1600"},
+  {url:"/assets/videos/synthid-ai-25744122.mp4",
+   poster:"/assets/videos/synthid-ai-25744122.jpg"},
   {url:"https://videos.pexels.com/video-files/18069165/18069165-uhd_2160_2160_24fps.mp4",
    poster:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}
 ];

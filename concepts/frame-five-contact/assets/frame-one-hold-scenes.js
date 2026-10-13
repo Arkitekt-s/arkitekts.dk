@@ -25,9 +25,9 @@
     {
       name:"Visualising AI · SynthID Watermarking · Zünc Studio",
       // Pexels 25744122: HD delivery with the confirmed 4K download as backup.
-      url:"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
-      backup:"https://videos.pexels.com/video-files/25744122/11904079_3840_2160_30fps.mp4",
-      poster:"https://images.pexels.com/videos/25744122/ai-artificial-intelligence-computer-data-25744122.jpeg?auto=compress&w=1600",
+      url:"/assets/videos/synthid-ai-25744122.mp4",
+      backup:"/assets/videos/synthid-ai-25744122.mp4",
+      poster:"/assets/videos/synthid-ai-25744122.jpg",
       fallback:"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85"
     },
     {
