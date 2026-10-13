@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><title>Real arch-to-film motion previews · arkitekts.dk</title>
+<style>
+:root{color-scheme:dark;--line:#ffffff25}*{box-sizing:border-box}html{background:#110b1a;font-family:Inter,Arial,Helvetica,sans-serif}body{margin:0;color:#fff;background:radial-gradient(ellipse at 40% 0%,#2c173a,#100a19 62%);min-width:290px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #ffb7f5;outline-offset:4px}a{color:inherit}.wrap{max-width:1450px;margin:auto;padding:0 clamp(15px,3vw,50px) 50px}.mast{height:77px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.mast b{font-size:31px;letter-spacing:-.13em}.mast b span{color:#ed41ff}.mast small{font:750 10px ui-monospace,Consolas,monospace;letter-spacing:.16em;color:#d7b5e5}.intro{padding:35px 0 26px}.intro .overline{color:#e3abf4;font:780 10px ui-monospace,Consolas,monospace;letter-spacing:.16em}.intro h1{font-size:clamp(30px,4.9vw,68px);letter-spacing:-.07em;line-height:1.03;margin:10px 0;font-weight:700}.intro em{color:#edb6fd;font-family:Georgia,serif;font-weight:400}.intro p{max-width:790px;color:#d2c1dd;font-size:13px;line-height:1.7;margin:0}.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}.viewer{min-width:0;background:#201427;border:1px solid #654772;box-shadow:0 20px 60px #0007}.viewer-head{padding:14px;display:flex;justify-content:space-between;gap:8px;font:760 9px ui-monospace,Consolas,monospace;letter-spacing:.12em;border-bottom:1px solid var(--line)}.viewer-head span:last-child{color:#c7add3}.stage{height:clamp(360px,48vw,640px);position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 50% 55%,#62335a,#170d28 75%)}.stage:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0f0a1c,#2e193e 80%)}.media{position:absolute;inset:0;z-index:1;clip-path:url(#arch-mask);-webkit-clip-path:url(#arch-mask);background:linear-gradient(120deg,#1c263a,#58496d 60%,#29213e)}.media img,.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.media video{opacity:0}.media video.ready{opacity:1}.over-film{position:absolute;inset:0;pointer-events:none;z-index:2;background:linear-gradient(90deg,#0b061985,transparent 65%),linear-gradient(0deg,#140a1d73,transparent 62%)}.gridlines{position:absolute;inset:0;z-index:3;pointer-events:none;background-image:linear-gradient(to right,#fff1 1px,transparent 1px);background-size:8.3333% 100%;opacity:.6}.outlines{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;filter:drop-shadow(0 0 7px #f6afff82)}.outlines path{fill:none;stroke:#f3d1ffad;stroke-width:1.8}.chrome{position:absolute;z-index:12;inset:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}.chrome-top,.chrome-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 3.5%;height:56px;border-bottom:1px solid #ffffff25;background:#120b1b6e}.chrome-bottom{height:45px;border-top:1px solid #ffffff25;border-bottom:0}.chrome-top b{font-size:25px;letter-spacing:-.11em}.chrome-top b span{color:#e944fe}.chrome small{font:770 clamp(7px,.72vw,10px) ui-monospace,Consolas,monospace;letter-spacing:.11em;color:#ecd9f5}.title{position:absolute;z-index:9;top:50%;left:0;right:0;text-align:center;pointer-events:none;text-shadow:0 9px 37px #070312ae;will-change:transform,opacity}.one{font-size:clamp(38px,5.8vw,94px);font-weight:830;line-height:1.1;letter-spacing:-.085em;transform:translateY(-50%)}.one span,.two h2 span{display:block}.one em{font:italic 400 1em Georgia,serif}.one b{color:#e640ff}.two{left:8%;right:8%;text-align:left;opacity:0;transform:translateY(-45%)}.two h2{font-size:clamp(43px,6.6vw,100px);margin:0 0 18px;line-height:1;font-weight:790;letter-spacing:-.08em}.two h2 em{font-family:Georgia,serif;font-weight:400;color:#f0baff}.two p{font-size:clamp(12px,1.2vw,16px);line-height:1.6;max-width:410px;color:#f4e8f8}.three{opacity:0;transform:translateY(-46%);display:flex;justify-content:center;align-items:center;gap:clamp(12px,3vw,50px)}.three strong{font-size:clamp(145px,23vw,315px);line-height:.83;letter-spacing:-.15em;padding-right:.1em}.three small{font:750 clamp(9px,1.4vw,18px)/1.5 ui-monospace,Consolas,monospace;letter-spacing:.1em}.frame-indicator{position:absolute;right:4%;bottom:62px;z-index:11;font:750 9px ui-monospace,Consolas,monospace;letter-spacing:.13em}.controls{padding:13px 15px 16px;display:grid;gap:13px}.buttons,.film-chooser{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.buttons button{min-height:42px;background:#34213e;color:#f8eaff;border:1px solid #77588a;border-radius:4px;padding:9px 12px;font-size:11px;font-weight:750}.buttons button.primary{background:#c036e1;border-color:#df83f8;color:#1a0b20}.status{font:730 9px ui-monospace,Consolas,monospace;letter-spacing:.1em;color:#e2c6ed}.scrub{display:flex;align-items:center;gap:12px;font:800 11px ui-monospace,Consolas,monospace}.scrub input{width:100%;accent-color:#e04afd;min-height:33px}.film-chooser span{font:750 9px ui-monospace,Consolas,monospace;letter-spacing:.09em;color:#d7c4df}.film-chooser button{min-height:36px;min-width:39px;background:#301d3b;color:#eee2f4;border:1px solid #7c558e;border-radius:4px;font:750 10px ui-monospace,Consolas,monospace}.film-chooser button[aria-pressed=true]{background:#80518d;border-color:#eaa6ff}.choices{display:flex;flex-direction:column;gap:10px}.choice{border:1px solid #644970;background:#211629;color:#fff;text-align:left;padding:19px 17px;border-radius:3px}.choice[aria-pressed=true]{border-color:#eba4fc;box-shadow:inset 3px 0 0 #e865f6;background:#392344}.choice .eyebrow{color:#e2abf4;font:750 10px ui-monospace,Consolas,monospace;letter-spacing:.15em}.choice h3{font-size:21px;letter-spacing:-.045em;margin:14px 0 7px}.choice p{font-size:12px;line-height:1.6;color:#d0bfd7;margin:0}.footer-note{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-top:20px;color:#baa9c6;font-size:12px;line-height:1.6}.footer-note strong{color:#fff}.footer-note a{white-space:nowrap;text-underline-offset:5px}
+@media(max-width:1030px){.layout{grid-template-columns:1fr}.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.stage{height:clamp(380px,60vw,580px)}}
+@media(max-width:670px){.mast{height:66px}.mast small{font-size:8px}.intro{padding:25px 0}.intro h1{font-size:clamp(30px,8.3vw,48px)}.choices{grid-template-columns:1fr}.choice{padding:16px}.choice h3{margin:9px 0 6px}.stage{height:clamp(380px,108vw,495px)}.chrome-top{height:51px}.chrome-bottom{height:42px}.chrome small{font-size:7px;letter-spacing:0}.one{font-size:clamp(37px,9.7vw,56px)}.two h2{font-size:clamp(52px,13vw,72px)}.two p{font-size:12px;max-width:290px}.three{gap:9px}.three strong{font-size:clamp(130px,31vw,180px)}.three small{font-size:clamp(8px,2.1vw,12px);letter-spacing:.03em}.frame-indicator{bottom:54px}.footer-note{display:block}.footer-note a{display:inline-block;margin-top:12px}}
+</style></head><body><div class="wrap">
+<header class="mast"><b>S<span>.</span></b><small>SOHEIL · MOTION DESIGN LAB</small></header>
+<section class="intro"><div class="overline">NEW PREVIEWS · REAL ARCH TRANSITIONS</div><h1>Make the film <em>emerge from the arches.</em></h1><p>Your screenshot shows an overlapping full-screen layer. These three new prototypes use <strong>one video inside a changing arch mask</strong>. Drag the timeline to see the actual shape, choose A/B/C, then replay. The live homepage remains unchanged.</p></section>
+<div class="layout"><div class="viewer">
+<div class="viewer-head"><span id="mode-name">OPTION A · THREE ARCHES UNFOLD</span><span>SINGLE MOVING FILM</span></div>
+<div class="stage" id="stage">
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><clipPath id="arch-mask" clipPathUnits="userSpaceOnUse"><path id="mask-shape"></path></clipPath></defs></svg>
+<div class="media" id="media"><img id="poster" alt="" src="https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&amp;w=1600"><video id="film" muted loop playsinline preload="metadata" disablepictureinpicture aria-hidden="true"></video></div>
+<div class="over-film"></div><div class="gridlines"></div><svg class="outlines" id="outline" aria-hidden="true"><path id="edge-shape"></path></svg>
+<div class="title one" id="text-one"><span>I make complex</span><span>systems <em>work</em><b>.</b></span></div>
+<div class="title two" id="text-two"><h2><span>Curiosity.</span><span>Code.</span><span><em>Delivery.</em></span></h2><p>I'm Soheil. I build and automate platforms that work in the real world.</p></div>
+<div class="title three" id="text-three"><small>BUILDING<br>RELIABLE</small><strong>10</strong><small>SYSTEMS<br>THAT LAST</small></div>
+<div class="chrome"><div class="chrome-top"><b>S<span>.</span></b><small>SOHEIL FATTAHIEH</small><small>PROFILE · PORTFOLIO · SKILLS</small></div><div class="chrome-bottom"><small>LINUX · ANSIBLE · ELASTICSEARCH · KAFKA</small><small>COPENHAGEN · DENMARK</small></div></div>
+<div class="frame-indicator" id="frame-indicator">01 / 03</div>
+</div>
+<div class="controls"><div class="buttons"><button type="button" id="part-12">01 → 02</button><button type="button" id="part-23">02 → 03</button><button type="button" class="primary" id="play-all">REPLAY ALL ↻</button><span class="status" id="status" role="status">READY TO PREVIEW</span></div>
+<div class="scrub"><span>01</span><input type="range" min="0" max="2000" value="0" step="1" id="scrub" aria-label="Inspect the arch expansion timeline"><span>03</span></div>
+<div class="film-chooser"><span>SELECT FILM</span><button data-video="0" aria-pressed="false">01</button><button data-video="1" aria-pressed="true">02</button><button data-video="2" aria-pressed="false">03</button><span id="film-name">SYNTHID AI</span></div></div>
+</div>
+<aside class="choices" aria-label="Choose a transition">
+<button type="button" data-mode="a" class="choice" aria-pressed="true"><span class="eyebrow">OPTION A · RECOMMENDED</span><h3>Three arches unfold</h3><p>All three arch openings stretch outward, join seamlessly, and become the entire screen.</p></button>
+<button type="button" data-mode="b" class="choice" aria-pressed="false"><span class="eyebrow">OPTION B · MINIMAL</span><h3>Center arch opens</h3><p>The two side arches recede. The middle doorway expands into a single full-screen film.</p></button>
+<button type="button" data-mode="c" class="choice" aria-pressed="false"><span class="eyebrow">OPTION C · CINEMATIC</span><h3>Staggered arch rise</h3><p>The center arch grows first. The other arches rise behind it, then join into a complete picture.</p></button>
+</aside></div>
+<div class="footer-note"><span><strong>Not published to your homepage.</strong> These demos use your existing AI film sources, but make the physical arch opening itself expand. The smooth text transition to section 3 remains.</span><a href="https://arkitekts.dk/">RETURN TO WEBSITE ↗</a></div>
+</div>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const e={stage:$("stage"),shape:$("mask-shape"),outline:$("outline"),edge:$("edge-shape"),one:$("text-one"),two:$("text-two"),three:$("text-three"),label:$("frame-indicator"),scrub:$("scrub"),modeName:$("mode-name"),status:$("status"),poster:$("poster"),film:$("film"),filmName:$("film-name")};
+const videos=[
+{name:"GOOGLE DEEPMIND",src:"https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4",poster:"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},
+{name:"SYNTHID AI",src:"https://videos.pexels.com/video-files/25744122/11904079_1920_1080_30fps.mp4",poster:"https://images.pexels.com/videos/25744122/pexels-photo-25744122.jpeg?auto=compress&w=1600"},
+{name:"AI DIFFUSION",src:"https://videos.pexels.com/video-files/18069165/18069165-uhd_2160_2160_24fps.mp4",poster:"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
+let mode="a",progress=0,currentToken=0,raf=0;
+const clamp=x=>Math.max(0,Math.min(1,x)),smooth=x=>{x=clamp(x);return x*x*(3-2*x)},mix=(a,b,t)=>a+(b-a)*t,fmt=n=>Math.round(n*100)/100;
+function arch(x,y,w,bottom,curve){
+ const mid=x+w/2;
+ return "M"+fmt(x)+","+fmt(bottom)+" L"+fmt(x)+","+fmt(y+curve)+" C"+fmt(x)+","+fmt(y+curve*.25)+" "+fmt(x+w*.15)+","+fmt(y)+" "+fmt(mid)+","+fmt(y)+" C"+fmt(x+w*.85)+","+fmt(y)+" "+fmt(x+w)+","+fmt(y+curve*.25)+" "+fmt(x+w)+","+fmt(y+curve)+" L"+fmt(x+w)+","+fmt(bottom)+" Z";
+}
+function pathAt(p){
+ const W=e.stage.clientWidth,H=e.stage.clientHeight;
+ const width=W*(W<600?.235:.19),gap=W*(W<600?.038:.035);
+ const left=(W-(width*3+gap*2))/2,y=H*.22,bottom=H*.88,unit=smooth(p);
+ let paths=[];
+ for(let i=0;i<3;i++){
+  const center=left+width*(i+.5)+gap*i;
+  let t=unit,w=width,x=center,top=y,low=bottom,curve=H*.105;
+  if(mode==="a"){
+   x=mix(center,W*(i+.5)/3,t);w=mix(width,W/3+5,t);
+   top=mix(y,-18,t);low=mix(bottom,H+18,t);curve=mix(H*.105,0,smooth((t-.67)/.33));
+  }else if(mode==="b"){
+   if(i===1){
+    t=smooth((unit-.06)/.94);x=mix(center,W/2,t);w=mix(width,W+48,t);
+    top=mix(y,-22,t);low=mix(bottom,H+22,t);curve=mix(H*.105,0,smooth((t-.66)/.34));
+   }else{
+    t=smooth(unit/.62);w=Math.max(.1,width*(1-t));
+    top=mix(y,y+H*.23,t);low=mix(bottom,y+H*.24,t);curve=Math.max(0,mix(H*.105,0,t));
+   }
+  }else{
+   const delay=i===1?0:i===0?.16:.27;
+   t=smooth((unit-delay)/(1-delay));x=mix(center,W*(i+.5)/3,t);
+   w=mix(width,W/3+5,t);top=mix(y,-18,t);low=mix(bottom,H+18,t);
+   curve=mix(H*.105,0,smooth((t-.57)/.43));
+  }
+  paths.push(arch(x-w/2,top,w,low,curve));
+ }
+ return paths.join(" ");
+}
+function draw(){
+ const W=e.stage.clientWidth,H=e.stage.clientHeight;
+ e.outline.setAttribute("viewBox","0 0 "+W+" "+H);
+ const p=clamp(progress),path=pathAt(p);
+ e.shape.setAttribute("d",path);e.edge.setAttribute("d",path);
+ e.outline.style.opacity=String(1-smooth((p-.6)/.35));
+ const leave=smooth((progress-.20)/.47),enter=smooth((progress-.71)/.29);
+ const leave2=smooth((progress-1.16)/.31),enter3=smooth((progress-1.46)/.42);
+ e.one.style.opacity=String(1-leave);
+ e.one.style.transform="translateY(calc(-50% - "+fmt(leave*18)+"px))";
+ e.two.style.opacity=String(enter*(1-leave2));
+ e.two.style.transform="translateY(calc(-45% - "+fmt(enter*12+leave2*19)+"px))";
+ e.three.style.opacity=String(enter3);
+ e.three.style.transform="translateY(calc(-45% + "+fmt((1-enter3)*22)+"px))";
+ e.label.textContent=progress<.8?"01 / 03":progress<1.49?"02 / 03":"03 / 03";
+ e.scrub.value=String(Math.round(progress*1000));
+}
+function stop(){currentToken++;cancelAnimationFrame(raf);raf=0;e.status.textContent="PAUSED · DRAG TO INSPECT"}
+function set(v){progress=Math.max(0,Math.min(2,v));draw()}
+function play(start,end,duration){
+ stop();set(start);const token=++currentToken,t0=performance.now();
+ e.status.textContent="PLAYING · ARCHES TO FULL-SCREEN";
+ function frame(now){
+  if(token!==currentToken)return;
+  const k=clamp((now-t0)/duration);set(mix(start,end,smooth(k)));
+  if(k<1)raf=requestAnimationFrame(frame);else e.status.textContent="COMPLETE · COMPARE ANOTHER OPTION";
+ }
+ raf=requestAnimationFrame(frame);
+}
+function choose(modeName){
+ mode=modeName;document.querySelectorAll(".choice").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+ const label={a:"OPTION A · THREE ARCHES UNFOLD",b:"OPTION B · CENTER ARCH OPENS",c:"OPTION C · STAGGERED ARCH RISE"};
+ e.modeName.textContent=label[mode];play(0,2,7900);
+}
+function film(index){
+ const selected=videos[index];e.filmName.textContent=selected.name;
+ e.film.classList.remove("ready");e.poster.src=selected.poster;
+ e.film.pause();e.film.src=selected.src;e.film.load();e.film.playbackRate=.5;
+ e.film.play().catch(()=>{});
+ document.querySelectorAll("[data-video]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.video)===index)));
+}
+e.film.addEventListener("playing",()=>{e.film.playbackRate=.5;e.film.classList.add("ready")});
+e.film.addEventListener("loadeddata",()=>{e.film.playbackRate=.5;e.film.classList.add("ready")});
+e.film.addEventListener("error",()=>e.film.classList.remove("ready"));
+document.querySelectorAll(".choice").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.mode)));
+document.querySelectorAll("[data-video]").forEach(b=>b.addEventListener("click",()=>film(Number(b.dataset.video))));
+$("part-12").addEventListener("click",()=>play(0,1,4600));
+$("part-23").addEventListener("click",()=>play(1,2,3300));
+$("play-all").addEventListener("click",()=>play(0,2,7900));
+e.scrub.addEventListener("input",()=>{stop();set(Number(e.scrub.value)/1000)});
+addEventListener("resize",draw,{passive:true});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)e.film.pause();else e.film.play().catch(()=>{})});
+film(1);set(0);
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches)setTimeout(()=>play(0,2,7900),600);
+})();
+</script></body></html>
