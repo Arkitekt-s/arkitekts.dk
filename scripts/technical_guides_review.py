@@ -49,7 +49,7 @@ with sync_playwright() as p:
             if actual!=path:issues.append(f"{device}: Guides header link {i} is {actual}")
         box=page.locator(".site-header").bounding_box()
         footer=page.locator(".site-footer").bounding_box()
-        head_h=73 if width<=760 else 100
+        head_h=73 if width<=760 else (78 if width<=1024 else 100)
         foot_h=65 if width<=760 else 80
         if not box or abs(box["height"]-head_h)>1 or abs(box["y"])>1:
             issues.append(f"{device}: fixed header geometry {box}")
@@ -66,7 +66,7 @@ with sync_playwright() as p:
             issues.append(f"{device}: library headline clipped {headline}")
         page.evaluate("window.scrollTo({top:0,behavior:'instant'})")
         page.screenshot(path=str(OUT/f"{device}-library.png"),animations="disabled")
-        if width<=760:
+        if width<=1024:
             menu=page.locator("#menu-button")
             menu.click()
             if menu.get_attribute("aria-expanded")!="true":issues.append(f"{device}: menu not opened")
@@ -104,8 +104,13 @@ with sync_playwright() as p:
             if res.status!=200:issues.append(f"{device}: guide {slug} HTTP {res.status}")
             detail.wait_for_function("document.body.dataset.guideReady==='true'",timeout=6000)
             if detail.locator("h1").count()!=1:issues.append(f"{device}: article {slug} has wrong h1 count")
-            if detail.locator("h1").inner_text().rstrip(" .\n")!=item["title"]:
-                issues.append(f"{device}: guide title changed {slug}")
+            article_title=detail.locator("h1").inner_text().rstrip(" .\n")
+            # A search-intent-focused title can differ from the library card title.
+            expected_title=("MongoDB vs Firebase Firestore vs Elasticsearch"
+                            if slug=="document-databases-mongodb-elasticsearch-and-firebase"
+                            else item["title"])
+            if article_title!=expected_title:
+                issues.append(f"{device}: guide title unexpected {slug}: {article_title!r}")
             if detail.locator(".guide-article-body").count()!=1:
                 issues.append(f"{device}: missing article content on {slug}")
             if detail.locator("a.guide-contents-back").get_attribute("href")!="../":
