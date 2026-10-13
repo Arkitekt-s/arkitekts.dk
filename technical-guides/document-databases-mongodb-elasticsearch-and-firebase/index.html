@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8f6fb"><meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="description" content="Teknisk guide til dokumentdatabaser, MongoDB, Elasticsearch og Firebase. Forstå data, søgning og valg af databaser til IT-systemer."><title>Dokumentdatabaser | MongoDB, Elasticsearch og Firebase</title>
+<meta name="description" content="MongoDB vs Firebase Firestore vs Elasticsearch: compare document storage, real-time sync, search, costs and architecture trade-offs with practical examples."><title>MongoDB vs Firebase vs Elasticsearch: What to Choose?</title>
 <link rel="icon" href="../../assets/soheil-favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../contact/contact.css">
-<link rel="stylesheet" href="../guides.css"><link rel="stylesheet" href="../article.css"><script defer src="../article.js"></script><link rel="canonical" href="https://arkitekts.dk/technical-guides/document-databases-mongodb-elasticsearch-and-firebase/"><meta property="og:locale" content="da_DK"><meta property="og:description" content="Teknisk guide til dokumentdatabaser, MongoDB, Elasticsearch og Firebase. Forstå data, søgning og valg af databaser til IT-systemer."><link rel="stylesheet" href="../../assets/name-hover.css">
+<link rel="stylesheet" href="../guides.css"><link rel="stylesheet" href="../article.css"><script defer src="../article.js"></script><link rel="canonical" href="https://arkitekts.dk/technical-guides/document-databases-mongodb-elasticsearch-and-firebase/"><meta property="og:locale" content="da_DK"><meta property="og:description" content="MongoDB vs Firebase Firestore vs Elasticsearch: compare document storage, real-time sync, search and architecture trade-offs."><link rel="stylesheet" href="../../assets/name-hover.css">
 <script defer src="../../assets/name-hover.js"></script>
 </head><body class="guides-page">
 <a class="skip-link" href="#content">Skip to content</a>
@@ -25,8 +25,8 @@
  <span>GUIDE 01 / 11</span></nav>
 <section class="guide-article-hero" aria-labelledby="article-title">
  <div><p class="guides-kicker"><i></i> 01 / TECHNICAL GUIDE <span>—</span> DATABASES</p>
- <h1 id="article-title">Document Databases: MongoDB, Elasticsearch and Firebase<span>.</span></h1>
- <p class="guide-article-intro">A practical comparison of document storage, full-text search and real-time application data.</p>
+ <h1 id="article-title">MongoDB vs Firebase Firestore vs Elasticsearch<span>.</span></h1>
+ <p class="guide-article-intro">Which should you use: MongoDB, Google Cloud Firestore (Firebase), or Elasticsearch? Compare data storage, real-time updates, search and production trade-offs.</p>
  <ul class='guide-tags'><li>MongoDB</li><li>Elasticsearch</li><li>Firebase</li></ul>
  <div class="guide-article-actions"><a href="#article-content">START READING <span aria-hidden="true">↓</span></a>
  
@@ -34,7 +34,7 @@
  </div><div class="guide-article-number" aria-hidden="true">01</div>
 </section>
 <div class="guide-reader" id="article-content">
- <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#mongodb">MongoDB <span aria-hidden="true">↗</span></a><a href="#elasticsearch">Elasticsearch <span aria-hidden="true">↗</span></a><a href="#firebase-firestore">Firebase Firestore <span aria-hidden="true">↗</span></a><a href="#compare-technologies">Compare Technologies <span aria-hidden="true">↗</span></a><a href="#architecture-example">Architecture Example <span aria-hidden="true">↗</span></a><a href="#takeaways">Key Takeaways <span aria-hidden="true">↗</span></a></nav>
+ <aside class="guide-contents"><p>ON THIS PAGE</p><nav aria-label="Article table of contents"><a href="#mongodb">MongoDB <span aria-hidden="true">↗</span></a><a href="#elasticsearch">Elasticsearch <span aria-hidden="true">↗</span></a><a href="#firebase-firestore">Firebase Firestore <span aria-hidden="true">↗</span></a><a href="#compare-technologies">Compare Technologies <span aria-hidden="true">↗</span></a><a href="#mongodb-vs-firestore">MongoDB vs Firestore: Decision Guide <span aria-hidden="true">↗</span></a><a href="#architecture-example">Architecture Example <span aria-hidden="true">↗</span></a><a href="#takeaways">Key Takeaways <span aria-hidden="true">↗</span></a></nav>
    <a class="guide-contents-back" href="../">← ALL GUIDES</a></aside>
  <article class="guide-article-body" aria-label="Technical article content"><section>
 <div><div>🍃</div><div><h2 id="mongodb">MongoDB</h2><div>Flexible Document Storage</div></div></div>
@@ -62,10 +62,10 @@
 <thead><tr><th>Feature</th><th>MongoDB</th><th>Elasticsearch</th><th>Firebase</th></tr></thead>
 <tbody>
 <tr><td>Document model</td><td>✓</td><td>✓</td><td>✓</td></tr>
-<tr><td>Real-time updates</td><td></td><td></td><td>✓</td></tr>
-<tr><td>Full-text search</td><td></td><td>✓</td><td></td></tr>
+<tr><td>Built-in client real-time sync</td><td>Custom implementation; change streams for backend consumers</td><td>Not a client sync service</td><td>Snapshot listeners</td></tr>
+<tr><td>Advanced full-text search</td><td>Atlas Search (or a separate search service)</td><td>Core capability</td><td>Typically a separate search service</td></tr>
 <tr><td>Scalability</td><td>✓</td><td>✓</td><td>✓</td></tr>
-<tr><td>Offline support</td><td></td><td></td><td>✓</td></tr>
+<tr><td>Mobile/web offline SDK support</td><td>Application-dependent</td><td>Not designed for offline mobile apps</td><td>Firestore client SDK persistence</td></tr>
 <tr><td>Best use case</td><td>Flexible apps</td><td>Search &amp; logs</td><td>Mobile apps</td></tr>
 </tbody>
 </table>
@@ -76,6 +76,20 @@
 <div><span>👥</span>Users</div><div>←</div><div><span>🔥</span>Firebase</div>
 </div>
 <div>A modern application can use MongoDB for flexible storage, Elasticsearch for search and analytics, and Firebase for real-time user experience.</div>
+</section>
+<section aria-labelledby="mongodb-vs-firestore">
+<h2 id="mongodb-vs-firestore">MongoDB vs Firebase Firestore: Which database should you choose?</h2>
+<p><strong>Short answer:</strong> choose MongoDB for a backend-owned document database with flexible queries, aggregation and application-controlled APIs. Choose Google Cloud Firestore when mobile or web clients need built-in real-time listeners, managed infrastructure and offline SDK support. Choose Elasticsearch primarily for search and analytics, rather than as the only transactional database.</p>
+<h3>Is Firebase the same as Firestore?</h3>
+<p>No. Firebase is an application development platform; <strong>Cloud Firestore</strong> is its document database offering. Firebase also includes services such as authentication and hosting. Comparing “Firebase vs MongoDB” usually means comparing Firestore with MongoDB, not the whole Firebase platform.</p>
+<h3>Can MongoDB provide real-time updates?</h3>
+<p>Yes, MongoDB change streams let supported applications react to database changes, but client synchronization normally requires your own backend and delivery layer. Firestore's client SDKs provide built-in snapshot listeners and local caching/offline behavior. The security model also differs: Firestore client access commonly relies on Security Rules, while MongoDB applications typically enforce authorization in the API/backend.</p>
+<h3>Which is better for search: MongoDB, Firestore or Elasticsearch?</h3>
+<p>Elasticsearch specializes in full-text relevance, tokenization, filtering and aggregations. MongoDB Atlas Search also supports advanced text search. Firestore supports indexed document queries, but advanced full-text relevance usually calls for a separate search system. Use a search index when users need rich text search; maintain a clear source of truth for application records.</p>
+<h3>What about costs and scale?</h3>
+<p>There is no universal cheapest option. Firestore pricing is influenced by document reads, writes, deletes, storage and network use; MongoDB cost depends on deployment, storage, compute and workload; Elasticsearch cost depends on indexing, storage, search workload and infrastructure. Model a realistic workload, including read frequency, indexes, retention and traffic peaks, before deciding.</p>
+<h3>Production architecture: use one system or combine them?</h3>
+<p>For many projects, <strong>one database is enough</strong>. Add Elasticsearch only if search/analytics requirements justify maintaining a separate index and handling synchronization delays. A typical backend design is MongoDB as system of record, with selected changes indexed into Elasticsearch. An alternative is Firestore for app data and real-time clients; it does not automatically require MongoDB. For event-driven synchronization, see the <a href="../java-apache-kafka-building-scalable-backend-systems/">Java and Apache Kafka architecture guide</a>.</p>
 </section>
 <section>
 <h2 id="takeaways">Key Takeaways</h2>
