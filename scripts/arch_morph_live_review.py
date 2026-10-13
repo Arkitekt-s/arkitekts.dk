@@ -115,8 +115,8 @@ with sync_playwright() as p:
                     settled=page.locator("#live-arch-morph-path").get_attribute("d") or ""
                     from re import findall
                     def path_distance(a,b):
-                        xa=[float(x) for x in findall(r"-?\\d+(?:\\.\\d+)?",a)]
-                        xb=[float(x) for x in findall(r"-?\\d+(?:\\.\\d+)?",b)]
+                        xa=[float(x) for x in findall(r"-?\d+(?:\.\d+)?",a)]
+                        xb=[float(x) for x in findall(r"-?\d+(?:\.\d+)?",b)]
                         return sum(abs(x-y) for x,y in zip(xa,xb)) if len(xa)==len(xb) else 999999
                     displacement=path_distance(moved,startPath)
                     restored=path_distance(settled,startPath)
