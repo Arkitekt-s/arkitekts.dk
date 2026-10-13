@@ -288,7 +288,9 @@
     // The baseline video must not play behind the selected alternative.
     // Resume the shared original film if the user manually cycles to 01.
     for(const base of originalMovies){
-      if(scene!==0){base.pause();continue;}
+      if(document.body.dataset.archMorphEnabled==="true" || scene!==0){
+        base.pause();continue;
+      }
       if(!reduced.matches && !document.body.classList.contains("motion-off"))
         base.play().catch(()=>{});
     }
