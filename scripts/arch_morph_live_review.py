@@ -55,7 +55,9 @@ METRICS="""() => {
  }
 }"""
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,args=["--disable-dev-shm-usage"])
+    # Branded Chrome includes H.264; the stripped Playwright Chromium
+    # build cannot decode MP4 even when the video file is valid.
+    browser=p.chromium.launch(channel="chrome",headless=True,args=["--disable-dev-shm-usage"])
     devices=[("small-phone",320,720),("phone",390,844),
              ("tablet",768,1024),("desktop",1440,900)]
     for device,w,h in devices:
