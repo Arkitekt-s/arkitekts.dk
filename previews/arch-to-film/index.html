@@ -141,6 +141,13 @@ $("play-all").addEventListener("click",()=>play(0,2,7900));
 e.scrub.addEventListener("input",()=>{stop();set(Number(e.scrub.value)/1000)});
 addEventListener("resize",draw,{passive:true});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)e.film.pause();else e.film.play().catch(()=>{})});
+// Direct shareable links select A/B/C without altering the public homepage.
+const requestedOption=new URLSearchParams(location.search).get("option");
+if(["a","b","c"].includes(requestedOption)){
+ mode=requestedOption;
+ document.querySelectorAll(".choice").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+ e.modeName.textContent=({a:"OPTION A · THREE ARCHES UNFOLD",b:"OPTION B · CENTER ARCH OPENS",c:"OPTION C · STAGGERED ARCH RISE"})[mode];
+}
 film(1);set(0);
 if(!matchMedia("(prefers-reduced-motion: reduce)").matches)setTimeout(()=>play(0,2,7900),600);
 })();
