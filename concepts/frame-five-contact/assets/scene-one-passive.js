@@ -61,6 +61,9 @@
   }
   function startVideo() {
     if (!videos.length) return;
+    if(document.body.dataset.archMorphEnabled==="true"){
+      videos.forEach(v=>v.pause());return;
+    }
     // Another video is selected for this visit. Do not decode three
     // unused 4K copies behind the selected film on mobile devices.
     if (usingAlternate()) {
@@ -79,6 +82,7 @@
     });
   }
   function changeVideoSource() {
+    if(document.body.dataset.archMorphEnabled==="true")return;
     if(sourceIndex>0 || usingAlternate())return;
     sourceIndex=1;
     movieFailure=false;

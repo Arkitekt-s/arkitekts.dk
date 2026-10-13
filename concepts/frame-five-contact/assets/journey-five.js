@@ -110,6 +110,7 @@
   }
 
   function syncFilms(p){
+    if(document.body.dataset.archMorphEnabled==="true")return;
     if(!film)return;
     const lead=windowVideos[0];
     const motionPaused=reduced.matches||document.body.classList.contains("motion-off");
@@ -212,6 +213,9 @@
       else panorama.style.removeProperty("--scene-zoom");
       panorama.style.opacity=String(1-dissolve);
     }
+    // Option A physically opens all three arches in a single video mask.
+    // It uses the same eased scroll timeline and reverses without a film swap.
+    window.__arkitektsMorph?.paint(position);
     // One uninterrupted, reversible scroll transition from 01 to 02.
     // The outgoing sentence starts drifting up before the arches finish
     // opening. Every value is derived from scroll progress, not a timer.

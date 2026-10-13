@@ -252,6 +252,9 @@
     videoLoop=0;
   }
   function showFilm(){
+    if(document.body.dataset.archMorphEnabled==="true"){
+      player.pause();stopRender();return;
+    }
     if(scene===0)return;
     const p=progress();
     // Option A: alternate movie and poster dissolve over the same window
@@ -291,6 +294,15 @@
     }
     status();
     lastOpacity=-1;lastVisible=false;
+    if(document.body.dataset.archMorphEnabled==="true"){
+      // The video in the expanding SVG arch mask is the only decoded film.
+      stopRender();player.pause();player.removeAttribute("src");player.load();
+      player.style.opacity="0";player.style.visibility="hidden";
+      photo.style.opacity="0";photo.style.visibility="hidden";
+      panorama.dataset.artMediaReady="true";
+      document.dispatchEvent(new CustomEvent("homepage-film-changed",{detail:{scene}}));
+      return;
+    }
     if(scene===0){
       stopRender();player.pause();
       player.style.opacity="0";player.style.visibility="hidden";

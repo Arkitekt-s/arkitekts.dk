@@ -1,0 +1,45 @@
+/* Option A: one film, three physically expanding arch openings.
+   The old three-player panorama/portal crossfade remains in the DOM for
+   compatibility but is never painted when the arch morph is enabled. */
+body[data-arch-morph-enabled="true"] #panorama{opacity:0!important;visibility:hidden!important;pointer-events:auto}
+body[data-arch-morph-enabled="true"] #portal-film,
+body[data-arch-morph-enabled="true"] #hold-scene-film,
+body[data-arch-morph-enabled="true"] .hold-scene-poster{opacity:0!important;visibility:hidden!important}
+body[data-arch-morph-enabled="true"] .arch-morph-media{
+ position:absolute;inset:0;z-index:5;display:block;pointer-events:none;
+ overflow:hidden;isolation:isolate;
+ background:linear-gradient(120deg,#251332,#321b47 60%,#180e28);
+ will-change:clip-path;
+}
+body[data-arch-morph-enabled="true"] .arch-morph-media > img,
+body[data-arch-morph-enabled="true"] .arch-morph-media > video{
+ display:block;position:absolute;inset:0;width:100%;height:100%;
+ object-fit:cover;object-position:center center;pointer-events:none;
+}
+body[data-arch-morph-enabled="true"] .arch-morph-media > img{
+ opacity:1;filter:saturate(.87) contrast(1.01);
+}
+body[data-arch-morph-enabled="true"] .arch-morph-media > video{
+ opacity:0;filter:saturate(.87) contrast(1.01);will-change:opacity;
+}
+body[data-arch-morph-enabled="true"] .arch-morph-media > video.is-ready{opacity:1}
+body[data-arch-morph-enabled="true"] .arch-morph-outline{
+ position:absolute;inset:0;width:100%;height:100%;z-index:5;
+ pointer-events:none;overflow:visible;filter:drop-shadow(0 0 4px #dd94f677);
+}
+body[data-arch-morph-enabled="true"] .arch-morph-outline path{
+ fill:none;stroke:rgba(232,209,250,.42);stroke-width:1.3;
+}
+body[data-arch-morph-enabled="true"] .arch-morph-mask-defs{
+ width:0;height:0;position:absolute;overflow:hidden;pointer-events:none;
+}
+@media(max-width:760px){
+ body[data-arch-morph-enabled="true"] .arch-morph-outline path{stroke-width:.9}
+ body[data-arch-morph-enabled="true"] .arch-morph-media > video,
+ body[data-arch-morph-enabled="true"] .arch-morph-media > img{
+   object-position:center center;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-arch-morph-enabled="true"] .arch-morph-media{will-change:auto}
+}
