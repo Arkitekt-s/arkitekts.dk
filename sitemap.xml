@@ -15,7 +15,7 @@
   <url><loc>https://arkitekts.dk/technical-guides/ansible-enterprise-guide-automation-playbooks-roles-and-production-architecture/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
   <url><loc>https://arkitekts.dk/technical-guides/ci-cd-enterprise-guide-github-actions-jenkins-gitlab-ci-and-production-pipelines/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
   <url><loc>https://arkitekts.dk/technical-guides/docker-cheat-sheet-containers-images-and-production-architecture-8/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
-  <url><loc>https://arkitekts.dk/technical-guides/document-databases-mongodb-elasticsearch-and-firebase/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
+  <url><loc>https://arkitekts.dk/technical-guides/document-databases-mongodb-elasticsearch-and-firebase/</loc><lastmod>2026-10-13</lastmod><priority>0.7</priority></url>
   <url><loc>https://arkitekts.dk/technical-guides/git-and-github-enterprise-guide-version-control-branching-ci-cd-and-production-workflows/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
   <url><loc>https://arkitekts.dk/technical-guides/hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
   <url><loc>https://arkitekts.dk/technical-guides/helm-enterprise-guide-kubernetes-package-management-charts-and-production-architecture/</loc><lastmod>2026-10-11</lastmod><priority>0.7</priority></url>
