@@ -105,19 +105,34 @@ function play(start,end,duration){
 }
 function choose(modeName){
  mode=modeName;document.querySelectorAll(".choice").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+ // On narrow phones the choice cards sit below the stage. Bring the animation
+ // back into view after a selection so users can actually compare each option.
+ if(innerWidth<=1030)e.stage.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth",block:"center"});
  const label={a:"OPTION A · THREE ARCHES UNFOLD",b:"OPTION B · CENTER ARCH OPENS",c:"OPTION C · STAGGERED ARCH RISE"};
  e.modeName.textContent=label[mode];play(0,2,7900);
 }
 function film(index){
  const selected=videos[index];e.filmName.textContent=selected.name;
  e.film.classList.remove("ready");e.poster.src=selected.poster;
- e.film.pause();e.film.src=selected.src;e.film.load();e.film.playbackRate=.5;
+ e.film.pause();e.film.dataset.fallback="false";e.film.src=selected.src;e.film.load();e.film.playbackRate=.5;
+ clearTimeout(filmSwitch);filmSwitch=setTimeout(showFallback,5500);
  e.film.play().catch(()=>{});
  document.querySelectorAll("[data-video]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.video)===index)));
 }
 e.film.addEventListener("playing",()=>{e.film.playbackRate=.5;e.film.classList.add("ready")});
 e.film.addEventListener("loadeddata",()=>{e.film.playbackRate=.5;e.film.classList.add("ready")});
-e.film.addEventListener("error",()=>e.film.classList.remove("ready"));
+// The original local landscape loop is a small, reliable fallback for
+// browsers where the external Pexels movie cannot load. Only the preview
+// changes; the homepage retains its three original video sources.
+const localFallback="../../concepts/frame-one-live/assets/mountain-loop.mp4";
+let filmSwitch=0;
+function showFallback(){
+ if(e.film.classList.contains("ready")||e.film.dataset.fallback==="true")return;
+ e.film.dataset.fallback="true";e.film.src=localFallback;e.film.load();
+ e.film.playbackRate=.5;e.film.play().catch(()=>{});
+ e.filmName.textContent+=" · LOCAL PREVIEW FALLBACK";
+}
+e.film.addEventListener("error",()=>{e.film.classList.remove("ready");showFallback()});
 document.querySelectorAll(".choice").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.mode)));
 document.querySelectorAll("[data-video]").forEach(b=>b.addEventListener("click",()=>film(Number(b.dataset.video))));
 $("part-12").addEventListener("click",()=>play(0,1,4600));
