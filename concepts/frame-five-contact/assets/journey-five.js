@@ -414,7 +414,11 @@
     // No CSS animation competes with the scroll-driven section positions.
     const dt=previousFrameTime?clamp(now-previousFrameTime,1,48):16.67;
     previousFrameTime=now;
-    const follow=1-Math.exp(-dt/108);
+    // Approved option B: slow only the 02 -> 03 transition.
+    // This matches the tested cinematic preview. The arches, interaction,
+    // video playback, and every other section keep their original timing.
+    const cinematic=target>1.04 && position>=.84 && position<2.01;
+    const follow=1-Math.exp(-dt/(cinematic?315:108));
     const galleryFollow=1-Math.exp(-dt/84);
     const pointerFollow=1-Math.exp(-dt/108);
     if(returnTour){
