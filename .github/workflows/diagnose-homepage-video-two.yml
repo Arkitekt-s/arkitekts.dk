@@ -1,0 +1,26 @@
+name: Diagnose video 2 source and loading
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/diagnose_homepage_video_two.py'
+      - '.github/workflows/diagnose-homepage-video-two.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    name: Probe real Pexels source and video element
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Diagnose film 2 loading
+        run: python scripts/diagnose_homepage_video_two.py
