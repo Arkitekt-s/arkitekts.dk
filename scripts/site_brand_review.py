@@ -85,7 +85,9 @@ with sync_playwright() as p:
                 if "04—01" not in page.locator(".guides-section-heading").inner_text():
                     failures.append(f"{device}: wrong technical guides subsection number")
             header=page.locator(".site-header").bounding_box()
-            expected_header=73 if w<=760 else (78 if w<=1024 else 100)
+            # The cinematic landing page intentionally uses a 68px portrait header.
+            expected_header=(68 if path=="/concepts/frame-five-contact/" and w<=760
+                             else 73 if w<=760 else 78 if w<=1024 else 100)
             if not header or abs(header["height"]-expected_header)>1 or abs(header["y"])>1:
                 failures.append(f"{device} {path}: fixed header geometry incorrect: {header}")
             if w>1024:
