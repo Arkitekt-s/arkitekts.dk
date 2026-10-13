@@ -88,6 +88,29 @@ with sync_playwright() as p:
             if stage0["scrollWidth"]>stage0["viewport"]+3:
                 failures.append(f"{device}/{selected}: horizontal overflow")
             if selected==1:
+                # Regression: the former Pexels HD URL returned 403, while
+                # its full-resolution copy could not decode in Chromium.
+                # The locally hosted H.264 version must load and play.
+                try:
+                    page.wait_for_function("""() => {
+                      const v=document.getElementById('arch-morph-video');
+                      const p=document.getElementById('arch-morph-poster');
+                      return v?.readyState>=2 && v.videoWidth===1920 &&
+                        p?.naturalWidth>200 && !v.error;
+                    }""",timeout=13000)
+                    beforeTime=page.locator("#arch-morph-video").evaluate("(v)=>v.currentTime")
+                    page.wait_for_timeout(650)
+                    playback=page.locator("#arch-morph-video").evaluate("""v=>({
+                      time:v.currentTime,width:v.videoWidth,paused:v.paused,
+                      ready:v.readyState,src:v.currentSrc,error:v.error?.code||0
+                    })""")
+                    if playback["paused"] or playback["time"]<=beforeTime+.03:
+                        failures.append(f"{device}: video 2 is decoded but not playing: {playback}")
+                    if "/assets/videos/synthid-ai-25744122.mp4" not in playback["src"]:
+                        failures.append(f"{device}: video 2 not hosted locally: {playback}")
+                    print("VIDEO-2-PLAYBACK "+device+" "+json.dumps(playback),flush=True)
+                except Exception as err:
+                    failures.append(f"{device}: video 2 not decodable: {err}")
                 page.screenshot(path=str(OUT/f"{device}-01.png"),animations="disabled")
                 # On desktop restore the original near-cursor elastic arch
                 # movement and neutral Silver Glass hover highlight.
@@ -143,6 +166,12 @@ with sync_playwright() as p:
                 failures.append(f"{device}/{selected}: film changes during 01→02")
             if selected==1:page.screenshot(path=str(OUT/f"{device}-02.png"),animations="disabled")
             page.locator("#next-chapter").evaluate("(button)=>button.click()")
+            if selected==1:
+                page.wait_for_timeout(260)
+                slowed=float(page.evaluate("Number(document.body.dataset.journeyProgress)"))
+                if not (1.10<slowed<1.90):
+                    failures.append(f"{device}: approved B 02→03 slow timing missing: {slowed}")
+                print("OPTION-B-SLOWDOWN "+device+" "+str(slowed),flush=True)
             page.wait_for_function("Number(document.body.dataset.journeyProgress)>1.994",timeout=14000)
             stage2=page.evaluate(METRICS)
             if stage2["morph"]<.999 or stage2["selected"]!=selected:
