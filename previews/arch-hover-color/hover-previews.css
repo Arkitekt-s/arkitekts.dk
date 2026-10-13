@@ -1,0 +1,30 @@
+/* Isolated interactive previews. Never loaded by the public homepage. */
+#hover-study-controls{position:fixed;z-index:8000;top:78px;right:clamp(10px,3vw,48px);
+ width:min(310px,calc(100vw - 20px));padding:15px 16px;
+ border-radius:14px;border:1px solid rgba(242,183,255,.48);
+ background:rgba(18,8,32,.84);box-shadow:0 12px 50px #0009;
+ backdrop-filter:blur(18px);color:white;font:700 11px/1.4 ui-monospace,Consolas,monospace}
+.study-head{font-size:10px;letter-spacing:.1em;color:#edc2f9}
+.study-head span{opacity:.7}
+#hover-study-controls nav{display:flex;gap:8px;margin:14px 0 10px}
+#hover-study-controls nav a{flex:1;display:flex;align-items:center;justify-content:center;
+ min-height:44px;border:1px solid #a879bb;color:white;text-decoration:none;
+ border-radius:7px;background:#3a214a;font-size:17px}
+#hover-study-controls nav a[aria-current=page]{background:#c456e0;color:#15031f;border-color:#f2aaff}
+#hover-study-controls p{font-size:11px;line-height:1.5;color:#e6d1ee;margin:0 0 11px}
+#hover-study-controls .study-live{color:#efc0ff;font-size:10px;text-decoration:none}
+#hover-study-controls .study-live:hover{text-decoration:underline}
+body.hover-study-mode .arch-morph-media{transition:filter .26s ease-out}
+body.hover-study-mode .hover-study-glow{position:absolute;inset:0;z-index:7;pointer-events:none;
+ opacity:0;transition:opacity .25s ease;
+ background:radial-gradient(circle 135px at var(--hover-x,50%) var(--hover-y,50%),
+ var(--hover-highlight,rgba(204,87,235,.34)),transparent 78%);
+ mix-blend-mode:screen}
+body.hover-study-mode[data-hovered="true"] .hover-study-glow{opacity:1}
+body.hover-study-mode[data-hovered="true"] .arch-morph-outline{filter:drop-shadow(0 0 13px var(--hover-glow,#e3a0ff))}
+body.hover-study-mode #hover-study-controls{user-select:none}
+@media(max-width:760px){#hover-study-controls{top:73px;right:8px;padding:11px 12px;width:min(240px,calc(100vw - 16px))}
+ #hover-study-controls p{font-size:10px}.study-head span{display:none}}
+@media(prefers-reduced-motion:reduce){
+ body.hover-study-mode .arch-morph-media,body.hover-study-mode .hover-study-glow{transition:none}
+}
