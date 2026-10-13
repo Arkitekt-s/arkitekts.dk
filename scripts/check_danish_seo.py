@@ -69,6 +69,24 @@ def main():
             errors.append(f"Noindex on public page: {url}")
         if p.danish_sections != 1:
             errors.append(f"Expected one Danish context section on {url}; got {p.danish_sections}")
+    # Keep every old indexed technical article URL working after the WordPress move.
+    # An instant meta refresh is supported as a permanent move on static GitHub Pages.
+    for url in urls:
+        path = urlparse(url).path.strip("/")
+        if not path.startswith("technical-guides/"):
+            continue
+        slug = path.removeprefix("technical-guides/").strip("/")
+        if not slug:
+            continue
+        old_page = ROOT / slug / "index.html"
+        if not old_page.is_file():
+            errors.append(f"Missing legacy article redirect: /{slug}/")
+            continue
+        old_html = old_page.read_text(encoding="utf-8")
+        expected_refresh = f'content="0; url={url}"'
+        expected_canonical = f'rel="canonical" href="{url}"'
+        if expected_refresh not in old_html or expected_canonical not in old_html:
+            errors.append(f"Broken or incorrect legacy article redirect: /{slug}/")
     legacy = ROOT / "concepts/frame-five-contact/index.html"
     old = legacy.read_text(encoding="utf-8")
     if 'noindex,follow' not in old or 'location.replace' not in old or "<video" in old:
