@@ -48,7 +48,7 @@ with sync_playwright() as p:
         footer=page.locator(".site-footer")
         head=header.bounding_box()
         foot=footer.bounding_box()
-        header_height=73 if w<=760 else 100
+        header_height=73 if w<=760 else (78 if w<=1024 else 100)
         footer_height=65 if w<=760 else 80
         if not head or abs(head["y"])>1 or abs(head["height"]-header_height)>1:
             failures.append(f"{name}: header geometry {head}")
@@ -65,7 +65,7 @@ with sync_playwright() as p:
         overflow=page.evaluate("document.documentElement.scrollWidth-innerWidth")
         if overflow>2:failures.append(f"{name}: horizontal overflow {overflow}")
         page.screenshot(path=str(OUT/f"{name}-hero.png"),animations="disabled")
-        if w<=760:
+        if w<=1024:
             toggle=page.locator("#menu-button")
             toggle.click()
             if toggle.get_attribute("aria-expanded")!="true":
@@ -111,7 +111,7 @@ with sync_playwright() as p:
         home=ctx.new_page()
         home.goto(BASE+"/concepts/frame-five-contact/",wait_until="domcontentloaded")
         for selector in [".site-name",".footer-specialties",".footer-location"]:
-            if page.locator(selector).inner_text()!=home.locator(selector).inner_text():
+            if " ".join((page.locator(selector).text_content() or "").split()) != " ".join((home.locator(selector).text_content() or "").split()):
                 failures.append(f"{name}: Skills header/footer differs from homepage: {selector}")
         if not home.locator('a[href="../../software-skills/"]').count():
             failures.append(f"{name}: homepage has no Skills navigation")
