@@ -5,7 +5,7 @@ on:
     paths:
       - 'previews/liquid-fluid-realistic/**'
       - 'scripts/realistic_liquid_fluid_review.py'
-      - '.github/workflows/liquid-video-portal-review.yml'
+      - '.github/workflows/realistic-liquid-fluid-review.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,7 +24,7 @@ jobs:
           python -m pip install playwright==1.56.0
           python -m playwright install --with-deps chromium
       - name: Check the liquid physics script
-        run: node --check previews/liquid-fluid-realistic/liquid-portal.js
+        run: node --check previews/liquid-fluid-realistic/realistic-fluid.js
       - name: Verify live video pixel samples, elastic flow and return
         run: python scripts/realistic_liquid_fluid_review.py
       - name: Keep before/during/after browser screenshots
