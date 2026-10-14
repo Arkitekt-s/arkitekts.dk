@@ -56,3 +56,14 @@
  .real-liquid-caption span{display:none}
 }
 @media(prefers-reduced-motion:reduce){.real-liquid-overlay{display:none!important}}
+
+/* Desktop interaction lab occupies the left margin.
+   Keep the full right side of the arches visible for the escaping liquid. */
+@media (min-width:761px){
+  .real-liquid-panel{
+    left:clamp(12px,2.2vw,32px);
+    right:auto;
+    top:calc(var(--header-h,70px) + 125px);
+    width:min(286px,calc(100vw - 24px));
+  }
+}

@@ -119,6 +119,14 @@ void main(){
  vec3 color=mix(deep,spectrum,edge*.38);
  color+=vec3(1.0,.98,.95)*(edge*.31+glint*.70+glint2*.26)*waterShine;
  color+=spectrum*edge*.24;
+ // Thin-film optical interference adds light on the liquid surface.
+ // The refracted base texture still comes from the actual playing movie.
+ float filmPhase=uTime*.23 + p.y*.015 + p.x*.008 + dot(gradient,vec2(.37,.81))*2.3;
+ float interference=.5+.5*sin(filmPhase);
+ vec3 wetReflection=mix(vec3(.22,.79,.67),vec3(.74,.31,.88),interference);
+ float wetEdge=1.0-smoothstep(-26.0,-1.0,fluid);
+ color=mix(color,color*.75+wetReflection*.71,wetEdge*.54);
+ color+=wetReflection*.12*wetEdge;
  color=clamp(color,0.0,1.0);
  float alpha=shell*(uModel<.7?.94:(uModel<1.7?.75:.89));
  // Within the arch a lens-like swirl draws only real colors from the film.

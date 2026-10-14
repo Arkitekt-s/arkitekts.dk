@@ -180,7 +180,7 @@ function animateStrokes(time,dt){
 function runDemo(ts){
  if(!demoOn)return;
  const t=(ts-demoAt)*.001;
- const el=document.querySelector("#panorama .arch:nth-child(2)");
+ const el=document.querySelector("#panorama .arch:nth-child(3)");
  if(!el){demoOn=false;return;}
  const bounds=el.getBoundingClientRect(),sr=stage.getBoundingClientRect();
  if(t>4.4){demoOn=false;inside=false;demoFinished=true;return;}
