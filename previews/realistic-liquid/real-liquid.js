@@ -114,7 +114,9 @@ function locateAnchor(x,y){
  const rects=getRectangles();
  let r=rects.find(r=>x>=r.left-9&&x<=r.right+9&&y>=r.top-10&&y<=r.bottom+10);
  if(!r)r=rects.reduce((a,b)=>Math.abs(x-b.center)<Math.abs(x-a.center)?b:a);
- const all=getRectangles();\n const idx=all.findIndex(z=>z===r);\n const side=idx===0?-1:idx===2?1:(x<r.center?-1:1);\n return {x:side<0?r.left:r.right,
+ const idx=rects.findIndex(z=>z===r);
+ const side=idx===0?-1:idx===2?1:(x<r.center?-1:1);
+ return {x:side<0?r.left:r.right,
   y:clamp(y,r.top+r.width*.58,r.bottom-r.width*.27),
   side,cx:r.center,cy:(r.top+r.bottom)/2,w:r.width};
 }
