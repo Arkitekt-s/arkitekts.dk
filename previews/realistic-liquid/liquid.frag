@@ -125,8 +125,10 @@ void main(){
  float interference=.5+.5*sin(filmPhase);
  vec3 wetReflection=mix(vec3(.22,.79,.67),vec3(.74,.31,.88),interference);
  float wetEdge=1.0-smoothstep(-26.0,-1.0,fluid);
- color=mix(color,color*.75+wetReflection*.71,wetEdge*.54);
- color+=wetReflection*.12*wetEdge;
+ color=mix(color,color*.39+wetReflection*.84,.28+wetEdge*.43);
+ color+=wetReflection*.18*wetEdge;
+ float ripples=sin(p.y*.047-uTime*4.0+sin(p.x*.016)*3.0)*sin(p.x*.05+uTime*2.2);
+ color*=.93+.07*ripples;
  color=clamp(color,0.0,1.0);
  float alpha=shell*(uModel<.7?.94:(uModel<1.7?.75:.89));
  // Within the arch a lens-like swirl draws only real colors from the film.

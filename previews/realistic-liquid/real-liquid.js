@@ -13,11 +13,11 @@ const q=new URLSearchParams(location.search).get("model");
 const model=["a","b","c"].includes(q)?q:"a";
 const models={
  a:{title:"A · Glass Gel",description:"Thick, refracted gel stretches into rounded glossy bulbs. Slow, weighty elastic recoil.",
-    count:6,reach:415,width:27,bounce:.79,force:.108,mode:0},
+    count:3,reach:405,width:20,bounce:.79,force:.108,mode:0},
  b:{title:"B · Water Splash",description:"Fine liquid sheets, narrow jets and smaller droplets. Quick response and lively return.",
-    count:9,reach:455,width:12,bounce:.70,force:.17,mode:1},
+    count:7,reach:440,width:10,bounce:.70,force:.17,mode:1},
  c:{title:"C · Magnetic Vortex",description:"Wide flowing ribbons spiral outward, as though the moving video is being pulled through glass.",
-    count:7,reach:425,width:22,bounce:.83,force:.11,mode:2}
+    count:5,reach:430,width:18,bounce:.83,force:.11,mode:2}
 };
 const settings=models[model];
 document.getElementById("real-liquid-mode-label").textContent=settings.title;
@@ -154,15 +154,16 @@ function animateStrokes(time,dt){
  const near=anchor;
  const c=(settings.count-1)/2;
  for(let i=0;i<settings.count;i++){
-  const s=modelStrokes[i],delta=i-c,spread=settings.mode===1?20:(settings.mode===2?28:26);
+  const s=modelStrokes[i],delta=i-c,spread=settings.mode===1?30:(settings.mode===2?53:60);
   const rootX=near.x+Math.sin(delta*.48)*6,rootY=clamp(near.y+delta*spread,15,h-16);
   const reach=settings.reach*strengthFactor*(settings.mode===1?.79+(.15*Math.sin(i*5.2)):.74+.29*Math.sin(i*3.07+1.0));
   const drawTime=time*.001;
-  const wave=settings.mode===2?Math.sin(drawTime*1.8+i*.67)*65:Math.sin(drawTime*2.3+s.phase)*25;
+  const wave=settings.mode===2?Math.sin(drawTime*1.8+i*.67)*79:Math.sin(drawTime*2.3+s.phase)*33;
   const direction=near.side;
   const tx=rootX+(active?direction*(reach+clamp(velocityX*1.6,-55,55)):0);
-  const ty=active?rootY+wave+(pointer.y-near.y)*.12+clamp(velocityY*.7,-40,40):rootY;
-  const bending=settings.mode===2?90:(settings.mode===1?47:35);
+  const fan=delta*(settings.mode===1?67:(settings.mode===2?107:116));
+  const ty=active?rootY+fan+wave+(pointer.y-near.y)*.12+clamp(velocityY*.7,-40,40):rootY;
+  const bending=settings.mode===2?130:(settings.mode===1?69:79);
   const bx=active?mix(rootX,tx,.46)-direction*bending*Math.sin(drawTime*1.6+i*.92):rootX;
   const by=active?mix(rootY,ty,.48)+bending*Math.cos(drawTime*1.4+i*.9):rootY;
   const desiredWidth=active?settings.width*strengthFactor*(.77+.22*Math.cos(i*1.8)):0;
