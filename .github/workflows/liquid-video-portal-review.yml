@@ -1,0 +1,37 @@
+name: Liquid video portal interactive preview
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'previews/liquid-video-portal/**'
+      - 'scripts/liquid_video_portal_review.py'
+      - '.github/workflows/liquid-video-portal-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  liquid:
+    name: Test video-colored liquid spill and elastic return on desktop and phone
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chrome automation
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Check the liquid physics script
+        run: node --check previews/liquid-video-portal/liquid-portal.js
+      - name: Verify live video pixel samples, elastic flow and return
+        run: python scripts/liquid_video_portal_review.py
+      - name: Keep before/during/after browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: liquid-video-portal-screenshots
+          path: screenshots/liquid-video-portal/
+          retention-days: 14
+          if-no-files-found: ignore
