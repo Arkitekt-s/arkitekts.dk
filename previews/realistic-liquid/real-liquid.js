@@ -13,11 +13,11 @@ const q=new URLSearchParams(location.search).get("model");
 const model=["a","b","c"].includes(q)?q:"a";
 const models={
  a:{title:"A · Glass Gel",description:"Thick, refracted gel stretches into rounded glossy bulbs. Slow, weighty elastic recoil.",
-    count:6,reach:220,width:23,bounce:.79,force:.108,mode:0},
+    count:6,reach:415,width:27,bounce:.79,force:.108,mode:0},
  b:{title:"B · Water Splash",description:"Fine liquid sheets, narrow jets and smaller droplets. Quick response and lively return.",
-    count:9,reach:248,width:11,bounce:.70,force:.17,mode:1},
+    count:9,reach:455,width:12,bounce:.70,force:.17,mode:1},
  c:{title:"C · Magnetic Vortex",description:"Wide flowing ribbons spiral outward, as though the moving video is being pulled through glass.",
-    count:7,reach:255,width:19,bounce:.83,force:.11,mode:2}
+    count:7,reach:425,width:22,bounce:.83,force:.11,mode:2}
 };
 const settings=models[model];
 document.getElementById("real-liquid-mode-label").textContent=settings.title;
@@ -39,7 +39,7 @@ if(!gl){
   status.textContent="WEBGL2 REQUIRED · USE CURRENT CHROME";
   return;
 }
-const vtxSource="#version 300 es\nin vec2 position;\nvoid main(){gl_Position=vec4(position,0.,1.);}";
+const vtxSource="#version 300 es\nlayout(location=0) in vec2 position;\nvoid main(){gl_Position=vec4(position,0.,1.);}";
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const mix=(a,b,t)=>a+(b-a)*t;
 const spring=(s,target,dt,force,drag)=>{
@@ -114,9 +114,9 @@ function locateAnchor(x,y){
  const rects=getRectangles();
  let r=rects.find(r=>x>=r.left-9&&x<=r.right+9&&y>=r.top-10&&y<=r.bottom+10);
  if(!r)r=rects.reduce((a,b)=>Math.abs(x-b.center)<Math.abs(x-a.center)?b:a);
- return {x:x<r.center?r.left:r.right,
+ const all=getRectangles();\n const idx=all.findIndex(z=>z===r);\n const side=idx===0?-1:idx===2?1:(x<r.center?-1:1);\n return {x:side<0?r.left:r.right,
   y:clamp(y,r.top+r.width*.58,r.bottom-r.width*.27),
-  side:x<r.center?-1:1,cx:r.center,cy:(r.top+r.bottom)/2,w:r.width};
+  side,cx:r.center,cy:(r.top+r.bottom)/2,w:r.width};
 }
 function updateAnchor(near){
  if(!near)return;
