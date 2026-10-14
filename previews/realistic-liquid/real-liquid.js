@@ -190,15 +190,16 @@ function runDemo(ts){
 function render(ts){
  raf=0;
  if(!program||reduced.matches||document.hidden){gl.clear(gl.COLOR_BUFFER_BIT);return;}
- const dt=lastTs?clamp((ts-lastTs)/16.667,.55,2.3):1;lastTs=ts;
+ const elapsed=lastTs?clamp(ts-lastTs,12,280):16.667;
+ const dt=clamp(elapsed/16.667,.55,3.0);lastTs=ts;
  runDemo(ts);
  const progress=Number(document.body.dataset.journeyProgress||0);
  active=inside&&progress<.26&&!reduced.matches;
- energy=mix(energy,active?1:0,1-Math.exp(-dt*16.667/(active?110:260)));
+ energy=mix(energy,active?1:0,1-Math.exp(-elapsed/(active?110:225)));
  if(!modelStrokes.length){resetStrokes(w*.54,h*.45);}
  const {data,bend,motion}=animateStrokes(ts,dt);
  videoFrame(ts);
- const canDraw=hasTexture&&(active||energy>.017||motion>3.5);
+ const canDraw=hasTexture&&(active||energy>.018);
  gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
  if(canDraw){
   const arches=getRectangles();
