@@ -1,0 +1,44 @@
+/* Preview-only layer. The original arches, SVG mask and video stay intact. */
+body.liquid-portal-preview .liquid-splash-canvas{
+ position:absolute;z-index:7;inset:0;width:100%;height:100%;
+ pointer-events:none;overflow:visible;contain:strict;
+}
+.liquid-preview-panel{
+ position:fixed;z-index:300;right:clamp(12px,3vw,40px);top:calc(var(--header-h, 70px) + 14px);
+ width:min(318px,calc(100vw - 24px));padding:17px 18px 15px;border-radius:16px;
+ border:1px solid rgba(229,175,251,.52);color:#faf2ff;
+ background:linear-gradient(142deg,rgba(28,12,43,.95),rgba(24,9,39,.84));
+ box-shadow:0 18px 60px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.1);
+ backdrop-filter:blur(18px);font-family:Inter,Arial,Helvetica,sans-serif;
+}
+.liquid-kicker{display:block;font:800 9px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.14em;color:#dda8ff}
+.liquid-preview-panel strong{display:block;font-size:24px;font-weight:740;letter-spacing:-.055em;margin:7px 0}
+.liquid-preview-panel strong span{color:#ce58eb}
+.liquid-preview-panel p{margin:0;font-size:12px;line-height:1.55;color:#e2cfea}
+.liquid-preview-panel p em{color:#fff;font-style:normal;font-weight:700}
+.liquid-actions{margin:14px 0 9px;display:flex;flex-direction:column;gap:10px}
+.liquid-actions button{border:1px solid #e09afa;border-radius:8px;background:#bd39d7;color:#fff;
+ font-weight:800;font-size:12px;min-height:42px;padding:10px 12px;cursor:pointer}
+.liquid-actions button:hover{background:#e050ee}
+.liquid-actions button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.liquid-actions label{display:flex;justify-content:space-between;font:700 10px ui-monospace,Consolas,monospace;color:#ebd2f5}
+.liquid-actions input{accent-color:#e475f3;width:100%;height:21px}
+.liquid-bottom{display:flex;align-items:center;gap:8px;justify-content:space-between}
+#liquid-preview-status{font:750 8px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.06em;color:#adf5e8;max-width:58%}
+.liquid-bottom a{font:750 9px ui-monospace,Consolas,monospace;color:#e9c1ff;text-decoration:none;white-space:nowrap}
+.liquid-bottom a:hover{text-decoration:underline}
+body[data-liquid-active=true] .liquid-preview-panel{border-color:rgba(178,247,227,.63)}
+@media(max-width:760px){
+ .liquid-preview-panel{top:calc(var(--header-h, 68px) + 7px);right:8px;
+  padding:10px 12px 11px;width:min(220px,calc(100vw - 16px))}
+ .liquid-preview-panel strong{font-size:17px;margin:4px 0}
+ .liquid-preview-panel p{font-size:10px;line-height:1.38}
+ .liquid-kicker{font-size:8px;letter-spacing:.06em}
+ .liquid-actions{margin:8px 0 6px;gap:5px}
+ .liquid-actions button{font-size:10px;min-height:40px}
+ #liquid-preview-status{display:none}
+ .liquid-bottom a{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .liquid-splash-canvas{display:none!important}
+}
