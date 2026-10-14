@@ -1,0 +1,58 @@
+/* Not referenced by the live website: original design is untouched. */
+.real-liquid-overlay{
+  position:absolute;inset:0;z-index:7;pointer-events:none;
+  width:100%;height:100%;overflow:visible;
+}
+.real-liquid-panel{
+  position:fixed;right:clamp(12px,2.8vw,42px);
+  top:calc(var(--header-h,70px) + 14px);z-index:500;
+  width:min(304px,calc(100vw - 24px));
+  padding:17px 18px 15px;
+  border:1px solid rgba(219,186,251,.58);
+  border-radius:15px;
+  color:#f8f0ff;
+  background:linear-gradient(145deg,rgba(18,10,34,.96),rgba(29,14,43,.89));
+  box-shadow:0 20px 70px #0009,inset 0 1px rgba(255,255,255,.14);
+  backdrop-filter:blur(22px);
+  font-family:Inter,Arial,sans-serif;
+}
+.real-liquid-eyebrow{font:750 9px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.09em;color:#ddb4f7}
+.real-liquid-panel h2{font-size:23px;line-height:1.15;letter-spacing:-.055em;font-weight:730;margin:8px 0 14px}
+.real-liquid-panel h2 em{font-family:Georgia,serif;font-weight:400;color:#f3cbff}
+.real-liquid-options{display:flex;gap:7px;margin-bottom:13px}
+.real-liquid-options a{display:flex;align-items:center;justify-content:center;flex:1;height:46px;min-width:40px;
+ text-decoration:none;font:800 15px ui-monospace,Consolas,monospace;
+ color:#f5eaff;background:#382245;border:1px solid #775587;border-radius:7px}
+.real-liquid-options a[aria-current="page"]{
+ color:#17091c;background:linear-gradient(120deg,#f3afff,#d770ee);border-color:#f6ccff;
+ box-shadow:0 0 20px rgba(224,114,242,.29);
+}
+.real-liquid-panel strong{display:block;font-size:15px;line-height:1.4;letter-spacing:-.02em}
+.real-liquid-panel p{font-size:11px;line-height:1.55;color:#d7c1e0;margin:5px 0 14px}
+.real-liquid-buttons{display:flex;gap:7px}
+.real-liquid-buttons button{min-height:42px;flex:1;border-radius:7px;border:1px solid #cb86dc;
+ background:#b63ad1;color:white;cursor:pointer;font-size:11px;font-weight:780;padding:8px}
+.real-liquid-buttons button:last-child{flex:0 0 66px;background:#33223b;color:#e6d2ef;border-color:#7d588b}
+.real-liquid-buttons button:focus-visible,.real-liquid-options a:focus-visible{
+ outline:2px solid white;outline-offset:3px}
+.real-liquid-slider{margin:13px 0 12px}
+.real-liquid-slider label{display:flex;justify-content:space-between;gap:8px;
+ font:730 10px ui-monospace,Consolas,monospace;color:#e6d0ef}
+.real-liquid-slider input{accent-color:#e88af6;width:100%;height:29px}
+.real-liquid-caption{display:flex;justify-content:space-between;gap:5px;align-items:center;
+ font:730 8px ui-monospace,Consolas,monospace;letter-spacing:.035em}
+.real-liquid-caption span{color:#b8eadc;max-width:66%}
+.real-liquid-caption a{color:#e9b7fc;white-space:nowrap;text-decoration:none}
+.real-liquid-panel button:hover{filter:brightness(1.13)}
+@media(max-width:760px){
+ .real-liquid-panel{top:calc(var(--header-h,68px) + 7px);right:8px;
+ width:min(215px,calc(100vw - 16px));padding:11px 12px}
+ .real-liquid-panel h2{font-size:18px;margin:4px 0 7px}
+ .real-liquid-eyebrow{font-size:8px}
+ .real-liquid-options{margin-bottom:7px}
+ .real-liquid-options a{height:40px}
+ .real-liquid-panel p{font-size:10px;line-height:1.38;margin-bottom:8px}
+ .real-liquid-buttons button{min-height:40px;font-size:10px}
+ .real-liquid-caption span{display:none}
+}
+@media(prefers-reduced-motion:reduce){.real-liquid-overlay{display:none!important}}
