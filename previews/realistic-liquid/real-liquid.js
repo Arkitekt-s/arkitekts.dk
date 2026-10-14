@@ -91,7 +91,7 @@ function resetStrokes(x,y){
 }
 function updateSize(){
  const r=stage.getBoundingClientRect();w=Math.max(1,r.width);h=Math.max(1,r.height);
- const scale=Math.min(1,980/w,680/h);
+ const scale=Math.min(1,800/w,560/h);
  textureWidth=Math.max(1,Math.round(w*scale));textureHeight=Math.max(1,Math.round(h*scale));
  canvas.width=textureWidth;canvas.height=textureHeight;
  gl.viewport(0,0,textureWidth,textureHeight);
@@ -125,7 +125,7 @@ function updateAnchor(near){
  anchor=near;
 }
 function videoFrame(ts){
- if(!program || (ts-lastTex)<65)return;
+ if(!program || (ts-lastTex)<110)return;
  lastTex=ts;
  let frame=vid.readyState>=2&&vid.videoWidth?vid:null;
  if(!frame&&poster.complete&&poster.naturalWidth)frame=poster;

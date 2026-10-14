@@ -52,8 +52,8 @@ float fluidField(vec2 p){
   if(width<.35)continue;
   float d=1.0e5;
   // Continuous spline centerline with changing radius and rounded volume.
-  for(int j=0;j<20;j++){
-   float t=float(j)/19.0;
+  for(int j=0;j<12;j++){
+   float t=float(j)/11.0;
    vec2 pt=bezier(a,c,b,t);
    float bulb=1.0+.20*sin(11.0*t + bend.w + uTime*1.8);
    float profile=mix(1.26,.42,smoothstep(.18,.96,t));
