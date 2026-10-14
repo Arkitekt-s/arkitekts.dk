@@ -8,6 +8,7 @@ uniform vec4 uStrokes[10];
 uniform vec4 uBends[10];
 uniform vec4 uArches[3];
 uniform vec2 uPointer;
+uniform float uSelectedArch;
 uniform float uTime;
 uniform float uEnergy;
 uniform float uModel;
@@ -89,7 +90,9 @@ void main(){
  vec2 p=vec2(gl_FragCoord.x/uTextureSize.x*uSize.x,
   (1.0-gl_FragCoord.y/uTextureSize.y)*uSize.y);
  if(uEnergy<.012){fragColor=vec4(0);return;}
- float outside=allArches(p);
+ // The spilling video is allowed to flow over neighboring panes; only
+ // the arch the pointer entered remains the undisturbed source window.
+ float outside=portalSdf(p,uArches[int(uSelectedArch)]);
  float fluid=fluidField(p);
  float shell=(1.0-smoothstep(-1.75,2.25,fluid))*smoothstep(-2.5,3.5,outside);
  float across=distance(p,uPointer);

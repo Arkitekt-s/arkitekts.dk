@@ -118,7 +118,7 @@ function locateAnchor(x,y){
  const side=idx===0?-1:idx===2?1:(x<r.center?-1:1);
  return {x:side<0?r.left:r.right,
   y:clamp(y,r.top+r.width*.58,r.bottom-r.width*.27),
-  side,cx:r.center,cy:(r.top+r.bottom)/2,w:r.width};
+  side,index:idx,cx:r.center,cy:(r.top+r.bottom)/2,w:r.width};
 }
 function updateAnchor(near){
  if(!near)return;
@@ -213,6 +213,7 @@ function render(ts){
   gl.uniform4fv(uniforms.uStrokes,data);gl.uniform4fv(uniforms.uBends,bend);
   gl.uniform4fv(uniforms.uArches,flat);
   gl.uniform2f(uniforms.uPointer,pointer.x,pointer.y);
+  gl.uniform1f(uniforms.uSelectedArch,clamp(anchor.index??1,0,2));
   gl.uniform1f(uniforms.uTime,ts*.001);
   gl.uniform1f(uniforms.uEnergy,energy);
   gl.uniform1f(uniforms.uModel,settings.mode);
@@ -269,7 +270,7 @@ fetch("/previews/realistic-liquid/liquid.frag",{cache:"no-cache"})
   program=createProgram(frag);
   gl.useProgram(program);
   ["uSize","uTextureSize","uCrop","uVideo","uStrokes[0]","uBends[0]",
-   "uArches[0]","uPointer","uTime","uEnergy","uModel","uCount"].forEach(key=>{
+   "uArches[0]","uPointer","uSelectedArch","uTime","uEnergy","uModel","uCount"].forEach(key=>{
     uniforms[key.split("[")[0]]=gl.getUniformLocation(program,key);
   });
   gl.uniform1i(uniforms.uVideo,0);
