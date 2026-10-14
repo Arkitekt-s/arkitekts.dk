@@ -51,7 +51,7 @@ with sync_playwright() as pw:
    first=metrics(page)
    page.screenshot(path=str(output/f"{device}-{mode}-before.png"),animations="disabled",timeout=12000)
    if device=="desktop":
-    box=page.locator("#panorama .arch").nth(1).bounding_box()
+    box=page.locator("#panorama .arch").nth(2).bounding_box()
     page.mouse.move(box["x"]+box["width"]*.64,box["y"]+box["height"]*.52)
    else:
     page.locator("#real-liquid-demo").click()
