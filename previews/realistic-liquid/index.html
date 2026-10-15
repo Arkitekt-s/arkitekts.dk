@@ -6,11 +6,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>/* Pick before the first paint, without saving the choice between visits. */
-document.documentElement.dataset.initialHomepageFilm="1"; // local, sampleable video for realistic physics tests</script>
+document.documentElement.dataset.initialHomepageFilm="1"; // same-origin video permits real pixel sampling</script>
 <meta name="theme-color" content="#160d22">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="description" content="IT-drift og Linux-serverdrift i København. Se Soheil Fattahiehs arbejde med Ansible-automatisering, IT-infrastruktur, Elasticsearch og Kafka.">
-<title>Realistic Liquid Portal | Three Interactive WebGL Experiments</title>
+<title>Realistic Liquid Paint Portal — A B C Interactive Tests</title>
 <link rel="icon" href="../../assets/soheil-favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
 <link rel="preload" as="image" href="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85">
@@ -28,7 +28,7 @@ document.documentElement.dataset.initialHomepageFilm="1"; // local, sampleable v
 <script src="assets/frame-one-hold-scenes.js" defer></script>
 <script src="assets/globe.js" defer></script>
 <script src="assets/journey-five.js" defer></script>
-<script src="/previews/realistic-liquid/real-liquid.js" defer></script>
+<script src="/previews/realistic-liquid/realistic-liquid.js" defer></script>
 <script src="../../contact/home-to-contact.js" defer></script>
 
 <link rel="canonical" href="https://arkitekts.dk/">
@@ -43,7 +43,7 @@ document.documentElement.dataset.initialHomepageFilm="1"; // local, sampleable v
 <link rel="stylesheet" href="assets/mobile-home.css">
 <link rel="stylesheet" href="assets/arch-morph-home.css">
 <script defer src="../../assets/name-hover.js"></script>
-<link rel="stylesheet" href="/previews/realistic-liquid/real-liquid.css">
+<link rel="stylesheet" href="/previews/realistic-liquid/realistic-liquid.css">
 </head>
 <body class="frame-one">
 <a class="skip" href="https://arkitekts.dk/#frame">Skip to the animated landing scene</a>
@@ -215,24 +215,14 @@ document.documentElement.dataset.initialHomepageFilm="1"; // local, sampleable v
   <span class="footer-location">COPENHAGEN · DENMARK</span>
 </footer>
 <section class="danish-search-summary" lang="da" aria-label="Dansk faglig beskrivelse" style="max-width:960px;margin:3rem auto 2rem;padding:1.5rem;color:inherit;font-size:clamp(14px,1.2vw,17px);line-height:1.65"><h2 style="font-size:1.1rem;margin:0 0 .5rem">IT-drift og Linux-serverdrift i København</h2><p style="margin:0">Jeg arbejder med IT-drift, Linux-servere og IT-infrastruktur i test- og produktionsmiljøer. Med Ansible og GitHub automatiserer jeg konfiguration og teknisk implementering, så ændringer kan gentages, kontrolleres og dokumenteres. Jeg arbejder også med Elasticsearch, Logstash, Apache Kafka, logning og fejlfinding. Mit fokus er stabile systemer, dokumenterede leverancer og praktisk fejlfinding i samarbejde med andre teams. Læs mere om min <a href="/profile/">erfaring med platformdrift</a>, mine <a href="/software-skills/">kompetencer i Linux og automatisering</a> og mine <a href="/technical-guides/">tekniske guides</a>. Du kan også <a href="/contact/">kontakte mig om job eller teknisk samarbejde</a>.</p></section>
-<aside class="real-liquid-panel" id="real-liquid-panel" aria-label="Realistic liquid effect settings">
-  <div class="real-liquid-eyebrow">01 / INTERACTIVE MATERIAL LAB</div>
-  <h2>Make the video <em>liquid.</em></h2>
-  <nav class="real-liquid-options" aria-label="Three fluid models">
-    <a href="?model=a" data-fluid="a" title="A, Glass Gel">A</a>
-    <a href="?model=b" data-fluid="b" title="B, Water Splash">B</a>
-    <a href="?model=c" data-fluid="c" title="C, Magnetic Vortex">C</a>
-  </nav>
-  <strong id="real-liquid-mode-label">A · Glass Gel</strong>
-  <p id="real-liquid-mode-desc">Thick glassy liquid stretches from the playing video.</p>
-  <div class="real-liquid-buttons">
-    <button id="real-liquid-demo" type="button">▶ See it move</button>
-    <button id="real-liquid-reset" type="button">Reset</button>
-  </div>
-  <div class="real-liquid-slider">
-    <label for="real-liquid-strength">Fluid strength <output id="real-liquid-value">75%</output></label>
-    <input id="real-liquid-strength" type="range" min="25" max="125" value="75" step="5">
-  </div>
-  <div class="real-liquid-caption"><span id="real-liquid-status" role="status">MOVE INSIDE A VIDEO ARCH</span><a href="https://arkitekts.dk/">ORIGINAL ↗</a></div>
+<aside class="liquid-preview-panel" id="liquid-preview-panel" aria-label="Interactive liquid portal preview controls">
+  <span class="liquid-kicker">SECTION 01 · INTERACTIVE EXPERIMENT</span>
+  <strong>Realistic liquid paint<span>.</span></strong>
+  <p>Choose A, B or C. Move your mouse inside the arches, or play the demo. The liquid uses the actual video.</p>
+  <div class="realistic-choices" role="group" aria-label="Realistic liquid model"><button type="button" data-liquid-mode="a">A · GEL</button><button type="button" data-liquid-mode="b">B · SPLASH</button><button type="button" data-liquid-mode="c">C · SILK</button></div>
+  <div class="liquid-actions"><button id="liquid-demo" type="button">▶ Play interaction demo</button>
+  <label for="liquid-strength">Strength <output id="liquid-strength-value">75%</output></label>
+  <input type="range" id="liquid-strength" min="30" max="100" step="5" value="75"></div>
+  <div class="liquid-bottom"><span id="liquid-preview-status" role="status">READY · MOVE MOUSE OVER ARCH</span><a href="https://arkitekts.dk/">ORIGINAL SITE ↗</a></div>
 </aside>
 </body></html>
