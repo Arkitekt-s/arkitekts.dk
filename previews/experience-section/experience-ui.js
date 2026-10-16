@@ -148,6 +148,7 @@
    animationStart=0;
    animation=requestAnimationFrame(step);
  }
+ window.__experiencePreviewMotion={setReveal,replay,stopAuto,get reveal(){return reveal;}};
  const currentlyHere=()=>{
    const position=Number(document.body.dataset.experienceTimeline||0);
    return position>=1.88&&position<=2.13&&
