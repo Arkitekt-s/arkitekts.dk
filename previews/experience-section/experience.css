@@ -3,12 +3,17 @@
  isolation:isolate;overflow:hidden;color:#f7f2ff;visibility:hidden;pointer-events:none;opacity:0;
  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;}
 .experience-section.is-visible{visibility:visible;pointer-events:auto}
+/* The SAME playing video used by the arch in scenes 1/2 lives under this
+   layer. Only transparent light-control gradients separate the copy from film. */
 .experience-atmosphere{position:absolute;inset:0;z-index:0;pointer-events:none;
- background:radial-gradient(ellipse 56% 64% at 78% 23%,rgba(103,43,143,.37),transparent 74%),
- radial-gradient(ellipse 55% 50% at 15% 79%,rgba(73,114,154,.16),transparent 83%),
- linear-gradient(130deg,#120d1f 0%,#241332 52%,#160f25 100%);}
-.experience-atmosphere:after{content:"";position:absolute;inset:0;opacity:.32;
- background:repeating-linear-gradient(90deg,transparent,transparent calc(8.333% - 1px),#fff1 calc(8.333% - 1px),#fff1 8.333%);}
+ background:
+   radial-gradient(ellipse 55% 62% at 80% 23%,rgba(100,29,141,.16),transparent 82%),
+   linear-gradient(100deg,rgba(9,8,20,.86) 0%,rgba(14,8,27,.72) 37%,rgba(12,8,24,.43) 72%,rgba(9,7,19,.55) 100%),
+   linear-gradient(0deg,rgba(9,6,18,.37),transparent 19%,transparent 76%,rgba(11,6,21,.22));
+ backdrop-filter:brightness(.94) saturate(.94);
+}
+.experience-atmosphere:after{content:"";position:absolute;inset:0;opacity:.13;
+ background:repeating-linear-gradient(90deg,transparent,transparent calc(8.333% - 1px),rgba(244,234,255,.28) calc(8.333% - 1px),rgba(244,234,255,.28) 8.333%);}
 .experience-inner{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:space-between;
  height:100%;width:100%;padding:clamp(30px,5vh,65px) clamp(27px,6.5vw,116px) clamp(24px,4vh,54px);}
 .experience-topline,.experience-bottomline{display:flex;justify-content:space-between;align-items:center;gap:16px;
@@ -20,15 +25,18 @@
 .experience-eyebrow{display:flex;gap:10px;align-items:center;color:#d9c2e3;font:800 10px/1.4 ui-monospace,Consolas,monospace;letter-spacing:.16em;margin-bottom:25px}
 .experience-mark{display:inline-block;height:6px;width:6px;border-radius:50%;background:#db9ffa;box-shadow:0 0 18px #c94dff}
 .experience-headline h2{margin:0;color:#fff;font-size:clamp(44px,5.5vw,96px);font-weight:730;
- letter-spacing:-.076em;line-height:1.035;white-space:nowrap}
+ letter-spacing:-.076em;line-height:1.035;white-space:nowrap;text-shadow:0 4px 28px rgba(6,4,18,.52)}
 .experience-headline h2 em{font:italic 390 1.01em/.97 Georgia,'Times New Roman',serif;letter-spacing:-.072em;color:#d1a2ed}
-.experience-headline p{max-width:455px;color:#e1d4e9;font-size:clamp(13px,1.15vw,17px);line-height:1.75;margin:26px 0 0}
+.experience-headline p{max-width:455px;color:#eee2f7;font-size:clamp(13px,1.15vw,17px);line-height:1.75;margin:26px 0 0}
 .experience-organisations{display:grid;grid-template-columns:1fr 1fr;gap:13px;min-width:0}
-.experience-employer{position:relative;min-width:0;min-height:174px;border:1px solid rgba(239,223,255,.20);
- border-radius:14px;padding:22px 18px 17px;background:linear-gradient(145deg,#ffffff11,#ffffff05);
- box-shadow:0 7px 24px #0d081323, inset 0 1px 0 #ffffff10;overflow:hidden;
+.experience-employer{position:relative;min-width:0;min-height:174px;border:1px solid rgba(239,223,255,.23);
+ border-radius:12px;padding:22px 18px 17px;
+ background:linear-gradient(145deg,rgba(19,13,37,.81),rgba(16,10,31,.64));
+ backdrop-filter:blur(10px) saturate(.90);
+ box-shadow:0 11px 35px rgba(5,2,13,.27), inset 0 1px 0 rgba(255,255,255,.10);
+ overflow:hidden;
  transition:border-color .28s,background .28s,transform .28s}
-.experience-employer:hover{border-color:#d9a8f88a;background:linear-gradient(145deg,#ffffff18,#ffffff05);transform:translateY(-3px)}
+.experience-employer:hover{border-color:rgba(232,200,251,.75);background:linear-gradient(145deg,rgba(40,25,62,.88),rgba(21,12,40,.75));transform:translateY(-3px)}
 .experience-number{font:700 9px/1.45 ui-monospace,Consolas,monospace;letter-spacing:.11em;color:#c2a6d2;min-height:14px}
 .experience-brandline{display:flex;align-items:center;gap:11px;margin-top:17px;min-width:0}
 .experience-company-name{font-size:clamp(16px,1.62vw,24px);font-weight:800;letter-spacing:-.055em;line-height:1.06;min-width:0;overflow-wrap:anywhere}
@@ -145,3 +153,31 @@
  .experience-section[data-layout="b"] .experience-employer{min-height:100px}
 }
 @media(prefers-reduced-motion:reduce){.experience-employer{transition:none}}
+
+/* On the new chapter, the film underneath must be visible at all times.
+   Hide only the OLD section text; do not suppress the arch-morph movie. */
+body.experience-section-active #chapter-two,
+body.experience-section-active #chapter-three{visibility:hidden!important;pointer-events:none!important;}
+body.experience-section-active #portal-film{visibility:hidden!important;}
+body.experience-section-active #arch-morph-media{visibility:visible!important;}
+body.experience-section-active .arch-morph-media > video{filter:saturate(.86) contrast(1.04);}
+body.experience-section-active .scene-eyebrow,
+body.experience-section-active .scene-tools{opacity:0!important;pointer-events:none!important;}
+/* The new panel is always translucent: never add a solid opaque movie cover. */
+.experience-section[data-layout="b"] .experience-employer{
+ background:linear-gradient(145deg,rgba(14,10,30,.85),rgba(18,9,34,.68));
+ border-color:rgba(235,221,248,.29);
+}
+.experience-section[data-layout="c"] .experience-employer{
+ background:linear-gradient(90deg,rgba(13,8,27,.48),rgba(13,8,27,.22));
+ backdrop-filter:blur(4px);
+}
+.experience-section[data-layout="c"] .experience-employer:hover{
+ background:linear-gradient(90deg,rgba(36,19,57,.72),rgba(13,8,27,.25));
+}
+@media(max-width:760px){
+ .experience-atmosphere{background:
+  radial-gradient(ellipse 105% 45% at 60% 11%,rgba(102,46,145,.15),transparent 85%),
+  linear-gradient(180deg,rgba(9,8,25,.71) 0%,rgba(11,7,24,.77) 37%,rgba(12,8,25,.69) 72%,rgba(9,7,22,.80) 100%);}
+ .experience-employer{backdrop-filter:blur(5px);}
+}
