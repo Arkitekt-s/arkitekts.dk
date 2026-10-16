@@ -79,7 +79,8 @@
   ['sit',"https://www.google.com/s2/favicons?domain=statens-it.dk&sz=128"],
   ['skat',"https://commons.wikimedia.org/wiki/Special:FilePath/Skattestyrelsen%20Logo.svg"],
   ['ku',"https://designguide.ku.dk/download/co-branding/ku_logo_dk_hh.png"],
-  ['twentyfour',"https://www.google.com/s2/favicons?domain=twentyfour.dk&sz=128"]
+  // The generic favicon is not the Twentyfour brand. Keep its clear 24 mark
+  // until the official logo from its press kit is available.
  ];
  // Public logo/icon references are optional in the PREVIEW. Every company
  // retains its name and typographic mark if an image fails or is blocked.
