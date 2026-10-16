@@ -1,0 +1,38 @@
+name: Live experience section browser QA
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'concepts/frame-five-contact/assets/journey-six.js'
+      - 'concepts/frame-five-contact/assets/experience*'
+      - 'assets/site-language.js'
+      - 'assets/language-core-da.js'
+      - 'scripts/review_live_experience.py'
+      - '.github/workflows/live-experience.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  experience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chrome
+        run: |
+          pip install playwright==1.56.0
+          python -m playwright install --with-deps chrome
+      - name: Test six sections, current SIT, video, language and scroll lock
+        run: python scripts/review_live_experience.py
+      - name: Save screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-live-experience
+          path: screenshots/live-experience/
+          retention-days: 14
+          if-no-files-found: ignore
