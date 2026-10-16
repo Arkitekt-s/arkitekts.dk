@@ -66,7 +66,7 @@ try:
               };
             }""")
             page.locator("#site-language-switch").click(timeout=8500)
-            # Every route starts in English; switch to Danish and back.
+            # Every new visit starts in Danish; switch to English and back.
             after=page.evaluate("""() => ({
               lang:document.documentElement.lang,
               buttonLabel:document.querySelector('#site-language-switch')?.textContent,
@@ -77,17 +77,17 @@ try:
                 return r?[r.x,r.y,r.width,r.height]:null;})(),
               bodyOverflow:document.documentElement.scrollWidth-innerWidth
             })""")
-            if before["lang"]!="en" or before["buttonLabel"]!="DA":
-                issues.append(f"{device}:{route} English default was not restored")
-            if after["lang"]!="da" or after["buttonLabel"]!="EN":
-                issues.append(f"{device}:{route} Danish switch or label failed")
+            if before["lang"]!="da" or before["buttonLabel"]!="EN":
+                issues.append(f"{device}:{route} Danish is not the primary language")
+            if after["lang"]!="en" or after["buttonLabel"]!="DA":
+                issues.append(f"{device}:{route} English switch or label failed")
             page.locator("#site-language-switch").click(timeout=8500)
             back=page.evaluate("""() => ({
                lang:document.documentElement.lang,
                button:document.querySelector('#site-language-switch')?.textContent
             })""")
-            if back["lang"]!="en" or back["button"]!="DA":
-                issues.append(f"{device}:{route} English restore failed")
+            if back["lang"]!="da" or back["button"]!="EN":
+                issues.append(f"{device}:{route} Danish restore failed")
             if response.status!=200:issues.append(f"{device}:{route} HTTP {response.status}")
             if before["buttons"]!=1:issues.append(f"{device}:{route} expected one language button")
             if before["nav"]!=after["nav"]:issues.append(f"{device}:{route} navigation links changed")
@@ -101,15 +101,28 @@ try:
             if before["lang"]==after["lang"]:issues.append(f"{device}:{route} switch failed")
             if before["bodyOverflow"]>4 or after["bodyOverflow"]>4:
                 issues.append(f"{device}:{route} horizontal overflow")
-            if route=="/" and after["lang"]=="da":
+            if route=="/" and before["lang"]=="da":
                 hero=page.locator(".hero-text").inner_text()
                 if "komplekse" not in hero or "virke" not in hero:issues.append(f"{device}: homepage Danish hero {hero}")
-            if route=="/profile/" and after["lang"]=="da":
+            if route=="/profile/" and before["lang"]=="da":
                 if "Mennesket" not in page.locator("main").inner_text():issues.append(f"{device}: profile not translated")
             if route=="/":
                 page.screenshot(path=str(out/f"{device}-homepage-after-toggle.png"),animations="disabled",timeout=15000)
             checks.append({"device":device,"route":route,"before":before["lang"],"after":after["lang"]})
             print(device,route,before["lang"],"->",after["lang"],flush=True)
+        # English is a secondary, explicit choice and should follow to other pages.
+        page.goto(base+"/?lang=en",wait_until="domcontentloaded")
+        page.wait_for_function("typeof window.__siteSetLanguage === 'function'")
+        if page.locator("html").get_attribute("lang")!="en":
+            issues.append(f"{device}: English query override did not work")
+        page.goto(base+"/profile/",wait_until="domcontentloaded")
+        page.wait_for_function("typeof window.__siteSetLanguage === 'function'")
+        if page.locator("html").get_attribute("lang")!="en":
+            issues.append(f"{device}: English choice not remembered between pages")
+        page.goto(base+"/contact/?lang=da",wait_until="domcontentloaded")
+        page.wait_for_function("typeof window.__siteSetLanguage === 'function'")
+        if page.locator("html").get_attribute("lang")!="da":
+            issues.append(f"{device}: Danish query override failed")
         if js:issues.extend(f"{device}: runtime {x}" for x in js[:6])
         ctx.close()
     browser.close()
