@@ -488,7 +488,7 @@
           galleryExitReadyAt=0;
           galleryNextPhotoAt=0;
           document.body.dataset.galleryAutoExit="complete";
-          setTarget(4);
+          setTarget(5);
         }
       }
     }
@@ -672,7 +672,7 @@
     }else if(key==="Home"){
       event.preventDefault();setTarget(0);
     }else if(key==="End"){
-      event.preventDefault();setTarget(4);
+      event.preventDefault();setTarget(5);
     }
   });
   // Chapter controls move exactly one section at a time.
@@ -788,7 +788,7 @@
   galleryNext?.addEventListener("click",()=>moveGallery(1));
   if(viewport){
     viewport.addEventListener("pointerdown",event=>{
-      if(event.button!==0||position<2.88)return;
+      if(event.button!==0||position<3.88)return;
       cancelGalleryExit();
       // Frame 01's unchanged stage handler captures pointerdown globally.
       // Keep this gallery gesture local, or its capture steals pointermove/up.
@@ -799,7 +799,7 @@
       event.preventDefault();
     });
     viewport.addEventListener("pointermove",event=>{
-      if(position<2.86)return;
+      if(position<3.86)return;
       if(reelDragging){
         galleryTarget=clamp(downIndex-(event.clientX-downX)/galleryStep,0,photos.length-1);
         galleryPosition=galleryTarget;
