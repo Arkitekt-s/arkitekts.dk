@@ -507,10 +507,23 @@
     document.body.dataset.returnTour="cancelled";
     target=position;
   }
-  function setTarget(value){
+  function setTarget(value,bypassExperienceGate=false){
     // A manual wheel, swipe, key or scrub always takes over immediately.
     interruptReturnTour();
-    target=clamp(value,0,5);
+    const requested=clamp(value,0,5);
+    // The dedicated experience scene is a complete scroll chapter, not a
+    // crossfade visitors can accidentally skip by scrolling too quickly.
+    // Clamp ALL forward navigation paths at 03 until 04/04 has appeared
+    // and the final company has had a short moment on screen.
+    const motion=window.__experiencePreviewMotion;
+    if(!bypassExperienceGate && target<=2.001 && requested>2 &&
+        motion && !motion.canAdvance()){
+      target=2;
+      document.body.dataset.experienceLocked="true";
+    }else{
+      target=requested;
+      document.body.dataset.experienceLocked="false";
+    }
     if(reduced.matches)position=target;
     schedule();
   }
@@ -699,7 +712,9 @@
     }
     setTarget(destination);
   }
-  window.__experiencePreviewGo=function(section,instant=false){setTarget(clamp(Number(section)-1,0,5));if(instant){position=target;paint();}};
+  // instant is reserved for the preview's explicit section chooser and tests.
+  // Everyday wheel, touch, keyboard, and arrow navigation never bypasses the gate.
+  window.__experiencePreviewGo=function(section,instant=false){setTarget(clamp(Number(section)-1,0,5),instant);if(instant){position=target;paint();}};
   nextSectionButton?.addEventListener("click",()=>navigateSection(1));
   prevSectionButton?.addEventListener("click",()=>navigateSection(-1));
 
