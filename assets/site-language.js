@@ -18,6 +18,19 @@
    if(match)return "Afsnit "+match[1]+" af 5";
    match=normalized.match(/^(\d{2})\s*\/\s*(\d{2})\s*·?\s*PRESS & HOLD$/i);
    if(match)return match[1]+" / "+match[2]+" · HOLD INDE";
+   match=normalized.match(/^(\d+)\s+(PROJECT|PROJECTS|GUIDE|GUIDES|SKILL|SKILLS)$/);
+   if(match)return match[1]+" "+({
+     PROJECT:"PROJEKT",PROJECTS:"PROJEKTER",GUIDE:"GUIDE",GUIDES:"VEJLEDNINGER",
+     SKILL:"KOMPETENCE",SKILLS:"KOMPETENCER"
+   })[match[2]];
+   match=normalized.match(/^(\d+)\s+TOOLS & SKILLS$/);
+   if(match)return match[1]+" VÆRKTØJER OG KOMPETENCER";
+   match=normalized.match(/^PRESS & HOLD\s*·\s*(\d{2}) \/ 03$/);
+   if(match)return "HOLD INDE · "+match[1]+" / 03";
+   match=normalized.match(/^(.+)\s+copied to clipboard$/i);
+   if(match)return match[1]+" kopieret til udklipsholderen";
+   match=normalized.match(/^Copied\s+(.+)$/);
+   if(match)return "Kopieret: "+match[1];
    match=normalized.match(/^GUIDE (\d{2}) \/ 11$/);
    if(match)return "GUIDE "+match[1]+" / 11";
    match=normalized.match(/^(\d{2}) \/ TECHNICAL GUIDE$/);
