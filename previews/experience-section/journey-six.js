@@ -274,6 +274,8 @@
        const enter=smooth(normalize(position,1.37,1.78));
        const leave=smooth(normalize(position,2.50,2.90));
        const alpha=enter*(1-leave);
+       experience.style.setProperty("--spatial-enter",enter.toFixed(4));
+       experience.style.setProperty("--spatial-leave",leave.toFixed(4));
        experience.style.opacity=String(alpha);
        experience.style.translate="0 "+(23*(1-enter)-18*leave).toFixed(2)+"px";
        const visible=alpha>.025;
