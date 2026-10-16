@@ -21,10 +21,10 @@ document.documentElement.dataset.initialHomepageFilm="1"; // same-origin video p
 <link rel="stylesheet" href="../frame-four-gallery/assets/photo-gallery.css">
 <link rel="stylesheet" href="assets/contact-globe.css">
 <link rel="stylesheet" href="../../assets/shared-brand.css">
-<script src="assets/arch-morph-home.js" defer></script>
+<script src="/previews/realistic-liquid/isolated-arch.js" defer></script>
 <script src="assets/scene-one-passive.js" defer></script>
-<script src="assets/scene-pointer-ambient.js" defer></script>
-<script src="assets/arch-hover.js" defer></script>
+<!-- Ambient cursor is deliberately disabled in liquid previews. -->
+<!-- Legacy arch hover is deliberately disabled in liquid previews. -->
 <script src="assets/frame-one-hold-scenes.js" defer></script>
 <script src="assets/globe.js" defer></script>
 <script src="assets/journey-five.js" defer></script>
@@ -42,8 +42,9 @@ document.documentElement.dataset.initialHomepageFilm="1"; // same-origin video p
 <link rel="stylesheet" href="../../assets/name-hover.css">
 <link rel="stylesheet" href="assets/mobile-home.css">
 <link rel="stylesheet" href="assets/arch-morph-home.css">
-<script defer src="../../assets/name-hover.js"></script>
+<!-- Name hover animation is off in liquid comparison. -->
 <link rel="stylesheet" href="/previews/realistic-liquid/realistic-liquid.css">
+<style id="isolated-pointer-preview">.paint-cursor,.paint-cursor-core,.pointer-pattern,.arch-morph-lens,.arch-color-lens{display:none!important;opacity:0!important;visibility:hidden!important}body.paint-cursor-active{cursor:auto!important}body.paint-cursor-active a,body.paint-cursor-active button{cursor:pointer!important}</style>
 </head>
 <body class="frame-one">
 <a class="skip" href="https://arkitekts.dk/#frame">Skip to the animated landing scene</a>
