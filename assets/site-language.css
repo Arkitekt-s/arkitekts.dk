@@ -27,3 +27,7 @@ body.frame-one .site-header .site-language-switch:hover{background:#72378f}
 @media(max-width:760px){
  .site-header .site-language-switch{right:calc(5% + 54px)}
 }
+
+/* Search engines and default visitors see real Danish HTML. English users see
+   the translated interface without a leftover Danish SEO summary. */
+html[lang="en"] .danish-search-summary{display:none}
