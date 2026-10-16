@@ -72,7 +72,7 @@ try:
             fails.append(f"{variant}: liquid not extruding {inside}")
         if inside["source"]!="playing-video" or not inside["moviePlaying"]:
             fails.append(f"{variant}: live video pixels unavailable {inside}")
-        if inside["renderVersion"]!="video-textured-sculpture-v2" or inside["cursorGlow"]!="true":
+        if inside["renderVersion"]!="iridescent-flowing-membrane-v3" or inside["cursorGlow"]!="true":
             fails.append(f"{variant}: expected isolation or renderer not loaded")
         if after["active"]!="false" or after["extent"]>15:
             fails.append(f"{variant}: liquid did not return {after}")
