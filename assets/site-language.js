@@ -49,8 +49,13 @@
    let record=textHistory.get(node);
    if(!record || (existing!==record.en&&existing!==record.da)){
      // Existing interactive scripts may update a label after initialization.
-     const da=lookup(existing);
-     record={en:existing,da:da===null?existing:existing.replace(/^(\s*)[\s\S]*?(\s*)$/,(_,a,b)=>a+da+b)};
+     const reverse=(window.__siteEn||{})[key(existing)];
+     if(reverse!==undefined){
+       record={en:existing.replace(/^(\s*)[\s\S]*?(\s*)$/,(_,a,b)=>a+reverse+b),da:existing};
+     }else{
+       const da=lookup(existing);
+       record={en:existing,da:da===null?existing:existing.replace(/^(\s*)[\s\S]*?(\s*)$/,(_,a,b)=>a+da+b)};
+     }
      textHistory.set(node,record);
    }
    const chosen=lang==="da"?record.da:record.en;
@@ -64,7 +69,8 @@
    if(!records){records={};attrHistory.set(el,records);}
    let record=records[name];
    if(!record||(value!==record.en&&value!==record.da)){
-     record={en:value,da:lookup(value)??value};
+     const reverse=(window.__siteEn||{})[key(value)];
+     record=reverse!==undefined?{en:reverse,da:value}:{en:value,da:lookup(value)??value};
      records[name]=record;
    }
    const wanted=lang==="da"?record.da:record.en;
