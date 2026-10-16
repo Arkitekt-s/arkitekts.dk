@@ -171,8 +171,30 @@ try:
         failures.append(f"{name}: section movie must be unmasked and cover the full viewport: {film_layout}")
       if abs(film_layout["width"]-film_layout["stageWidth"])>3 or abs(film_layout["height"]-film_layout["stageHeight"])>3:
         failures.append(f"{name}: film layer does not fill the original stage: {film_layout}")
+      # On the first frame, Statens It is already visible as the user's
+      # current employer. Other organisations wait for the scroll gesture.
+      page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(0)")
+      page.wait_for_timeout(190)
+      first=page.evaluate("""() => ({
+        organisations:[...document.querySelectorAll('#experience-section .experience-employer')].map(el=>({
+          company:el.dataset.company,hidden:el.getAttribute('aria-hidden'),
+          entry:el.style.getPropertyValue('--entry')
+        })),
+        label:document.querySelector('[data-company="sit"] .experience-current')?.textContent,
+        current:document.querySelector('[data-company="sit"]')?.dataset.currentEmployer,
+        progress:document.querySelector('.experience-progress-count')?.textContent,
+        mirror:document.querySelector('#experience-section')?.dataset.layout
+      })""")
+      if first["organisations"][0]["company"]!="sit" or first["organisations"][0]["hidden"]!="false":
+        failures.append(f"{name}: Statens It not visible first: {first}")
+      if any(el["hidden"]!="true" for el in first["organisations"][1:]):
+        failures.append(f"{name}: previous organisations appeared before scroll: {first}")
+      if "HER ARBEJDER JEG NU" not in first["label"] or first["current"]!="true":
+        failures.append(f"{name}: current Statens It workplace not clearly marked: {first}")
+      if first["progress"]!="01 / 04":
+        failures.append(f"{name}: reveal count must start with Statens It: {first}")
       # Down-scroll inside Chapter 03 reveals logos, without skipping the scene.
-      page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(.05)")
+      page.evaluate("window.__experiencePreviewMotion.setReveal(.05)")
       page.mouse.move(width/2,height/2)
       page.mouse.wheel(0,130)
       page.wait_for_timeout(200)
