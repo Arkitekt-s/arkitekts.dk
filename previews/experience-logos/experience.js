@@ -102,5 +102,13 @@ function tick(){
  requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
+// Start the preview near the relevant section, never on the real homepage.
+if(new URLSearchParams(location.search).get("start")!=="1"){
+ window.setTimeout(()=>{
+  if(Number(document.body.dataset.currentFrame||1)===1){
+   document.getElementById("next-chapter")?.click();
+  }
+ },720);
+}
 window.addEventListener("pagehide",()=>{active=false},{once:true});
 })();
