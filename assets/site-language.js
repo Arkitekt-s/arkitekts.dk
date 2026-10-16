@@ -127,8 +127,8 @@
  switcher.type="button";
  switcher.className="site-language-switch";
  switcher.setAttribute("data-no-translate","");
- switcher.setAttribute("aria-label","Switch to Danish");
- switcher.textContent="DA";
+ switcher.setAttribute("aria-label","Skift til engelsk");
+ switcher.textContent="EN";
  header.appendChild(switcher);
  let initial=null;
  // A new preference key makes Danish the default at rollout, even for
