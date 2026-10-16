@@ -375,3 +375,19 @@ body.experience-section-active .portal-shade{opacity:.08!important}
 @media(prefers-reduced-motion:reduce){
  #experience-section .experience-headline{filter:none!important;transform:none!important}
 }
+
+/* Preview-only layout chooser: usable without obscuring the experience type. */
+@media(max-width:760px){
+ .experience-select{
+  flex-wrap:wrap;justify-content:center;
+  width:min(365px,calc(100vw - 18px));max-width:calc(100vw - 18px);
+  right:9px;left:auto;gap:4px;padding:6px 5px;
+  top:calc(var(--header-h,72px) + 5px)
+ }
+ .experience-select-note{font-size:8px;flex:1 1 100%;text-align:center;line-height:1}
+ .experience-select button{font-size:9px;min-height:29px;padding:4px 6px;flex:0 1 auto}
+ .experience-select [data-exp-option]{min-width:55px}
+ .experience-select [data-exp-replay]{min-width:95px}
+ .experience-select [data-exp-start]{min-width:65px}
+ .experience-select [data-exp-show]{min-width:85px}
+}
