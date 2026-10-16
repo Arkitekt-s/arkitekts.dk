@@ -63,7 +63,7 @@ base=f"http://127.0.0.1:{server.server_port}/previews/experience-section/"
 failures=[];results=[]
 try:
  with sync_playwright() as pw:
-    browser=pw.chromium.launch(headless=True,args=["--disable-dev-shm-usage","--autoplay-policy=no-user-gesture-required"])
+    browser=pw.chromium.launch(channel="chrome",headless=True,args=["--disable-dev-shm-usage","--autoplay-policy=no-user-gesture-required"])
     for name,width,height in [("desktop",1440,900),("mobile",390,844)]:
       ctx=browser.new_context(viewport={"width":width,"height":height},device_scale_factor=1)
       page=ctx.new_page();errors=[]
