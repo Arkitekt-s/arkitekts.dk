@@ -33,7 +33,7 @@ urls = [
     (url.text or "") for url in
     ET.parse(ROOT / "sitemap.xml").findall(f".//{XML_NS}loc")
 ]
-assert len(urls) == 23, f"Expected 23 public pages; got {len(urls)}"
+assert len(urls) == 24, f"Expected 24 public pages including the Danish operations guide; got {len(urls)}"
 server = ThreadingHTTPServer(
     ("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, directory=str(ROOT))
 )
