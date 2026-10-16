@@ -10,7 +10,7 @@ root=Path(__file__).resolve().parents[1]
 out=root/"screenshots/site-language"
 out.mkdir(parents=True,exist_ok=True)
 paths=[
- "/", "/profile/","/portfolio/","/software-skills/","/contact/","/technical-guides/","/it-drift/",
+ "/", "/profile/","/portfolio/","/software-skills/","/contact/","/technical-guides/",
  "/portfolio/basecamp-response/","/portfolio/camp-booking/","/portfolio/copenhagen-valuation/",
  "/portfolio/full-stack-application/","/portfolio/shopflow-mobile/","/portfolio/web-development/",
  "/technical-guides/03-linux-red-hat-cheat-sheet-html-rendered/",
