@@ -1,0 +1,141 @@
+/* Preview only — 3 isolated professional-experience placements.
+   No changes to animation timelines, sections, header, or links. */
+#exp-layer{position:absolute;inset:0;z-index:25;pointer-events:none;overflow:visible}
+#exp-layer *{box-sizing:border-box}
+.exp-panel{
+ position:absolute;pointer-events:none;opacity:0;visibility:hidden;
+ transition:opacity .28s ease,filter .28s ease;
+ color:#fff;isolation:isolate
+}
+.exp-panel.is-showing{visibility:visible}
+.exp-kicker{
+ display:flex;align-items:center;gap:12px;
+ font:750 10px/1.4 ui-monospace,Consolas,monospace;
+ letter-spacing:.22em;text-transform:uppercase;
+ color:#ecdbfa;white-space:nowrap;margin-bottom:15px
+}
+.exp-kicker:before{content:"";width:25px;height:1px;background:#e4b0f2}
+.exp-note{color:#e2d5ec;font-size:11px;line-height:1.3;opacity:.77;white-space:nowrap}
+.exp-logos{display:flex;align-items:stretch;justify-content:space-between;gap:16px;width:100%}
+.exp-logo{
+ display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
+ min-width:0;flex:1;text-align:center;color:inherit
+}
+.exp-art{
+ display:flex;align-items:center;justify-content:center;
+ min-width:0;width:100%;height:55px;max-height:55px;
+ border-radius:7px;
+}
+.exp-art img{
+ display:block;width:auto;height:auto;max-width:90%;max-height:48px;
+ object-fit:contain;object-position:center;
+ filter:grayscale(.85) saturate(.4) brightness(1.12);
+ opacity:.91;transition:opacity .25s,filter .25s
+}
+.exp-art.has-image .exp-fallback{display:none}
+.exp-fallback{display:block;font-size:clamp(12px,1.32vw,18px);font-weight:850;line-height:1.05;letter-spacing:-.045em}
+.exp-fallback.is-24{font-size:clamp(15px,1.45vw,21px);font-weight:900}
+.exp-label{display:block;color:#cfc6d7;font:650 9px/1.35 ui-monospace,Consolas,monospace;letter-spacing:.07em}
+.exp-a{
+ left:50%;bottom:11.9%;width:min(915px,78vw);
+ transform:translateX(-50%);
+ padding:13px 22px 13px;border-top:1px solid rgba(246,237,255,.39);
+ background:linear-gradient(180deg,transparent,#0e0a1b7d)
+}
+.exp-a .exp-kicker{margin-bottom:5px;font-size:9px}
+.exp-a .exp-art{height:43px;max-height:43px}
+.exp-a .exp-art img{max-height:37px}
+.exp-a .exp-label{font-size:8px}
+.exp-a .exp-logos{gap:20px}
+.exp-b{
+ right:clamp(45px,6vw,110px);top:50%;
+ transform:translateY(-45%);
+ width:min(355px,34vw);
+ padding:24px 23px 19px;
+ border:1px solid rgba(215,202,234,.33);
+ border-radius:19px;
+ background:linear-gradient(130deg,rgba(17,19,40,.83),rgba(65,35,78,.78));
+ backdrop-filter:blur(20px);
+ box-shadow:0 22px 80px #05041465,inset 0 1px 0 #fff2
+}
+.exp-b .exp-logos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.exp-b .exp-logo{background:rgba(255,255,255,.07);min-height:110px;padding:10px 5px;border:1px solid #ffffff23;border-radius:11px}
+.exp-b .exp-art{height:55px}
+.exp-b .exp-kicker{font-size:9px}
+.exp-b .exp-note{white-space:normal;display:block;margin-top:12px}
+.exp-c{
+ left:50%;top:13.4%;transform:translateX(-50%);
+ width:min(800px,74vw);padding:10px 25px 16px;
+ border-radius:100px;background:linear-gradient(90deg,rgba(16,11,26,.89),rgba(59,29,81,.87),rgba(16,11,26,.89));
+ border:1px solid #d1badb65;
+ box-shadow:0 14px 60px #13071f50,0 0 50px #ad61e514,inset 0 1px #ffffff35;
+ backdrop-filter:blur(17px);
+ display:flex;align-items:center;gap:23px
+}
+.exp-c .exp-kicker{margin:0;display:block;font-size:9px;line-height:1.9;letter-spacing:.15em;flex:0 0 105px;white-space:normal}
+.exp-c .exp-kicker:before{display:none}
+.exp-c .exp-logos{gap:7px;flex:1}
+.exp-c .exp-logo{gap:0}
+.exp-c .exp-art{height:45px}
+.exp-c .exp-art img{max-height:32px}
+.exp-c .exp-fallback{font-size:13px}
+.exp-c .exp-label{display:none}
+.exp-c .exp-note{display:none}
+.exp-lab{
+ position:fixed;z-index:300;right:clamp(10px,2.2vw,26px);
+ top:calc(var(--header-h,95px) + 12px);
+ width:min(310px,calc(100vw - 24px));pointer-events:auto;
+ color:#faf3ff;background:#1b1029ee;
+ border:1px solid #d1acdd7a;border-radius:14px;
+ padding:13px;box-shadow:0 15px 50px #1005188c;
+ backdrop-filter:blur(18px)
+}
+.exp-lab-title{display:flex;justify-content:space-between;align-items:center;gap:10px;
+ font:760 10px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#d8b4e9}
+.exp-lab-tag{font-size:9px;color:#c2d9cc;background:#214030;padding:5px 7px;border-radius:6px}
+.exp-lab-options{display:flex;gap:6px;margin:11px 0 8px}
+.exp-lab-option{
+ flex:1;min-width:0;border:1px solid #ffffff34;background:#392345;color:#f8eefe;
+ border-radius:8px;padding:9px 5px 8px;text-align:center;cursor:pointer
+}
+.exp-lab-option:hover{border-color:#e9b5fa}
+.exp-lab-option[aria-pressed=true]{background:#bd56d7;border-color:#f0c6ff;color:#fff}
+.exp-lab-option strong{display:block;font-size:11px}
+.exp-lab-option small{font-size:8px;display:block;margin-top:5px;line-height:1.2}
+.exp-lab-actions{display:flex;gap:6px}
+.exp-lab-jump{flex:1;background:#251831;border:1px solid #ffffff38;color:#e9d9f0;font-size:11px;font-weight:700;padding:8px;border-radius:7px;cursor:pointer}
+.exp-lab-jump:hover{background:#533064}
+.exp-lab-hint{font:500 10px/1.4 Inter,system-ui,sans-serif;color:#bca9c9;margin-top:8px}
+@media(max-width:1000px){
+ .exp-b{right:4.5%;width:38vw}
+ .exp-a{width:83vw;bottom:9%}
+ .exp-c{width:85vw;top:18%;padding:10px 17px}
+ .exp-lab{top:calc(var(--header-h,80px) + 9px)}
+}
+@media(max-width:760px){
+ .exp-a{width:88vw;bottom:7%;padding:7px 8px 9px}
+ .exp-a .exp-logos{gap:4px}
+ .exp-a .exp-kicker{font-size:8px;letter-spacing:.08em}
+ .exp-a .exp-label{font-size:7px;letter-spacing:0}
+ .exp-a .exp-art{height:36px}
+ .exp-a .exp-art img{max-height:30px;max-width:90%}
+ .exp-a .exp-fallback{font-size:10px}
+ .exp-b{right:5%;left:5%;width:auto;top:auto;bottom:5%;transform:none;padding:10px 12px;border-radius:13px}
+ .exp-b .exp-kicker{margin-bottom:7px}
+ .exp-b .exp-logos{display:flex;gap:5px}
+ .exp-b .exp-logo{min-height:61px;border-radius:7px;padding:5px 3px;gap:0}
+ .exp-b .exp-art{height:35px}
+ .exp-b .exp-art img{max-height:27px}
+ .exp-b .exp-fallback{font-size:10px}
+ .exp-b .exp-label{font-size:7px}
+ .exp-b .exp-note{display:none}
+ .exp-c{width:90vw;top:7%;padding:7px 9px;border-radius:18px;gap:8px}
+ .exp-c .exp-kicker{flex:0 0 53px;font-size:7px;line-height:1.35}
+ .exp-c .exp-art{height:32px}
+ .exp-c .exp-art img{max-height:26px}
+ .exp-c .exp-fallback{font-size:10px}
+ .exp-lab{top:calc(var(--header-h,73px) + 6px);right:8px;width:min(276px,calc(100vw - 16px));padding:9px}
+ .exp-lab-title{font-size:9px}
+ .exp-lab-option{padding:7px 3px}
+}
+@media(prefers-reduced-motion:reduce){.exp-panel,.exp-art img{transition:none}}
