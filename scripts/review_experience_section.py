@@ -5,7 +5,7 @@ from functools import partial
 from pathlib import Path
 from threading import Thread
 from playwright.sync_api import sync_playwright
-import json,sys,subprocess
+import json,sys,subprocess,re,os
 root=Path(__file__).resolve().parents[1]
 out=root/"screenshots/experience-section"
 out.mkdir(parents=True,exist_ok=True)
@@ -13,7 +13,43 @@ subprocess.run(["node","--check",str(root/"previews/experience-section/journey-s
 subprocess.run(["node","--check",str(root/"previews/experience-section/experience-ui.js")],check=True)
 assert "experience-section" not in (root/"index.html").read_text(), "Live homepage must remain unchanged"
 assert (root/"previews/experience-section/index.html").exists()
-server=ThreadingHTTPServer(("127.0.0.1",0),partial(SimpleHTTPRequestHandler,directory=str(root)))
+# Unlike GitHub Pages, Python's simple HTTP server does not implement
+# byte-range MP4 requests. Browser playback requires HTTP 206 for some MP4s.
+class RangeHandler(SimpleHTTPRequestHandler):
+    def send_head(self):
+        self.range_remaining=None
+        path=self.translate_path(self.path)
+        header=self.headers.get("Range")
+        if header and os.path.isfile(path):
+            match=re.fullmatch(r"bytes=(\d+)-(\d*)",header.strip())
+            if match:
+                source=open(path,"rb")
+                total=os.fstat(source.fileno()).st_size
+                start=int(match.group(1))
+                end=min(total-1,int(match.group(2))) if match.group(2) else total-1
+                if start>=total or end<start:
+                    self.send_error(416,"Range Not Satisfiable")
+                    source.close()
+                    return None
+                self.send_response(206)
+                self.send_header("Content-Type",self.guess_type(path))
+                self.send_header("Content-Range",f"bytes {start}-{end}/{total}")
+                self.send_header("Content-Length",str(end-start+1))
+                self.send_header("Accept-Ranges","bytes")
+                self.end_headers()
+                source.seek(start)
+                self.range_remaining=end-start+1
+                return source
+        return super().send_head()
+    def copyfile(self,source,output):
+        if self.range_remaining is None:
+            return super().copyfile(source,output)
+        while self.range_remaining>0:
+            block=source.read(min(128*1024,self.range_remaining))
+            if not block:break
+            output.write(block)
+            self.range_remaining-=len(block)
+server=ThreadingHTTPServer(("127.0.0.1",0),partial(RangeHandler,directory=str(root)))
 Thread(target=server.serve_forever,daemon=True).start()
 base=f"http://127.0.0.1:{server.server_port}/previews/experience-section/"
 failures=[];results=[]
