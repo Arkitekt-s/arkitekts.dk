@@ -34,6 +34,12 @@
 .experience-company-name{font-size:clamp(16px,1.62vw,24px);font-weight:800;letter-spacing:-.055em;line-height:1.06;min-width:0;overflow-wrap:anywhere}
 .experience-symbol{height:43px;min-width:43px;display:grid;place-items:center;background:#faf9ff;border-radius:10px;
  font:800 23px/1 Arial,sans-serif;color:#261334;letter-spacing:-.08em;flex-shrink:0}
+.experience-symbol{position:relative;overflow:hidden}
+.experience-logo-img{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px);
+ object-fit:contain;display:block;opacity:0;filter:none}
+.experience-symbol.has-logo{font-size:0}
+.experience-symbol.has-logo>span{display:none}
+.experience-symbol.has-logo .experience-logo-img{opacity:1}
 .sit-symbol{color:#212a45;font-size:26px}.sit-symbol span{color:#cf2561}.skat-symbol{font-family:Georgia,serif;color:#26213d;font-size:31px}
 .ku-symbol{background:#a61d29;color:#fff;font:800 15px/1 Georgia,serif;letter-spacing:0}
 .tf-symbol{background:#f9f2ff;color:#a34ecc;font:900 19px/1 Arial,sans-serif}
