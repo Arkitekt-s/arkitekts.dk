@@ -11,6 +11,14 @@ out=root/"screenshots/experience-section"
 out.mkdir(parents=True,exist_ok=True)
 subprocess.run(["node","--check",str(root/"previews/experience-section/journey-six.js")],check=True)
 subprocess.run(["node","--check",str(root/"previews/experience-section/experience-ui.js")],check=True)
+media=root/"assets/videos/synthid-ai-25744122.mp4"
+raw=media.read_bytes()
+print("MP4_HEADER:",{"size":len(raw),"avc1":raw.find(b"avc1"),"hvc1":raw.find(b"hvc1"),"hev1":raw.find(b"hev1"),"av01":raw.find(b"av01"),"vp09":raw.find(b"vp09"),"moov":raw.find(b"moov")},flush=True)
+try:
+    desc=subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_name,codec_tag_string,width,height","-of","json",str(media)],capture_output=True,text=True,timeout=10)
+    print("FFPROBE:",desc.stdout.strip(),"ERR:",desc.stderr[:200],flush=True)
+except Exception as exc:
+    print("FFPROBE_UNAVAILABLE:",str(exc),flush=True)
 assert "experience-section" not in (root/"index.html").read_text(), "Live homepage must remain unchanged"
 assert (root/"previews/experience-section/index.html").exists()
 # Unlike GitHub Pages, Python's simple HTTP server does not implement
