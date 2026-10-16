@@ -98,6 +98,13 @@ journalctl -p warning -n 50 --no-pager</code></pre>
         <tr><td>Elasticsearch</td><td>Indeksering, søgning og lagring</td><td>Cluster health, shards, diskforbrug og indekslivscyklus</td></tr>
         <tr><td>Linux</td><td>Servere og tjenester</td><td>CPU, RAM, disk, netværk, systemd og patchniveau</td></tr>
       </tbody></table>
+      <h3>Kafka-drift: Topics, forbrugergrupper og lag</h3>
+      <p>Når Kafka bruges til logtransport, bør driften omfatte kontrol af topics, adgangsrettigheder og forbrugergrupper. Høj consumer lag kan betyde, at hændelser hober sig op, selv om forbindelsen stadig er aktiv. Find først den berørte producent, forbrugergruppe og klientidentitet. Kontrollér derefter ACL-regler og eventuelle forbindelsesfejl. Ændr ikke offset eller adgang i produktion uden en godkendt plan.</p>
+      <h3>Logstash-drift: Pipelines, filtre og køer</h3>
+      <p>Logstash skal både kunne læse hændelser og sende dem til den rigtige modtager. Kontrollér derfor pipeline-status, fejl i filtre, behandlingshastighed, køer og hukommelsesforbrug. Hvis data forsvinder, skal man undersøge, om hændelserne bliver afvist, ændret forkert eller sendt til et andet output. Brug en godkendt testhændelse til at følge data gennem hele pipelinen.</p>
+      <h3>Elasticsearch-drift: Disk, shards og indeks</h3>
+      <p>Elasticsearch kan svare på søgninger og stadig have problemer med nye data. Overvåg klyngens status, antallet af ikke-tildelte shards, diskforbrug og skriveblokeringer. Kontrollér også index lifecycle management (ILM), så gamle data håndteres efter den aftalte opbevaringstid. Undersøg altid årsagen, før shards flyttes, eller skriveblokeringer fjernes. En grøn cluster-status alene beviser ikke, at hele logpipelinen fungerer.</p>
+      <p>Vil du se mere om Kafka i distribuerede systemer, kan du læse min <a href="../technical-guides/java-apache-kafka-building-scalable-backend-systems/">guide til Apache Kafka og Java</a>.</p>
       <p>Hvis dokumenter ikke vises i Elasticsearch, er det ikke nok at kontrollere, om Elasticsearch er startet. Fejlen kan ligge i Kafka-adgang, et forkert topic, en forbrugergruppe, en Logstash-filterfejl eller et afvist indeks. Derfor skal hele dataflowet undersøges.</p>
 
       <h2 id="fejlfinding" tabindex="-1">Fejlfinding: Hvor stoppede data?</h2>
