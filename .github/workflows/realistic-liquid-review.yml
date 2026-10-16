@@ -1,17 +1,18 @@
-name: Realistic liquid models preview checks
+name: Interactive liquid arch comparison review
 on:
   push:
     branches: [main]
     paths:
       - 'previews/realistic-liquid/**'
-      - 'scripts/realistic_liquid_review.py'
+      - 'previews/liquid-arch-compare/**'
+      - 'scripts/liquid_arch_compare_review.py'
       - '.github/workflows/realistic-liquid-review.yml'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   verify:
-    name: Chrome preview A B C actual video and elastic return
+    name: Check liquid gel, splash, silk and disabled competing cursor
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -19,19 +20,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install Playwright Chrome dependencies
+      - name: Install browser
         run: |
           pip install playwright==1.56.0
           python -m playwright install --with-deps chromium
       - name: Check JavaScript syntax
-        run: node --check previews/realistic-liquid/real-liquid.js
-      - name: Test all three physically rendered preview modes
-        run: python scripts/realistic_liquid_review.py
-      - name: Upload screenshots and test report
+        run: |
+          node --check previews/realistic-liquid/realistic-liquid.js
+          node --check previews/realistic-liquid/isolated-arch.js
+      - name: Verify interactive visual effects
+        run: python scripts/liquid_arch_compare_review.py
+      - name: Upload actual-browser screenshots and diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: realistic-liquid-models
-          path: screenshots/realistic-liquid/
+          name: liquid-arch-compare
+          path: screenshots/liquid-arch-compare/
           retention-days: 14
           if-no-files-found: ignore
