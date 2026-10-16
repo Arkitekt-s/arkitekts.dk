@@ -219,7 +219,41 @@ try:
       if role_layout["statusBackground"] not in ("rgba(0, 0, 0, 0)","transparent"):
         failures.append(f"{name}: overly strong badge background: {role_layout}")
 
-      # Down-scroll inside Chapter 03 reveals logos, without skipping the scene.
+      # IMPORTANT: no fast scroll, arrow or navigation control can skip the
+      # company chapter while any of its four organisations remain unseen.
+      page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(0)")
+      page.evaluate("window.__experiencePreviewGo(4)")  # normal, non-forced next
+      page.wait_for_timeout(190)
+      held=page.evaluate("""() => ({
+        frame:document.body.dataset.currentFrame,
+        targetLocked:document.body.dataset.experienceLocked,
+        reveal:window.__experiencePreviewMotion.reveal
+      })""")
+      if held["frame"]!="3" or held["targetLocked"]!="true":
+        failures.append(f"{name}: next-section navigation skipped unseen companies: {held}")
+      page.mouse.move(width/2,height/2)
+      page.mouse.wheel(0,1800)  # huge mouse gesture
+      page.wait_for_timeout(240)
+      wheel_hold=page.evaluate("""() => ({
+        frame:document.body.dataset.currentFrame,
+        reveal:window.__experiencePreviewMotion.reveal
+      })""")
+      if wheel_hold["frame"]!="3":
+        failures.append(f"{name}: fast mouse wheel jumped past company story: {wheel_hold}")
+      # At 04/04 the chapter still holds briefly, giving time to read.
+      page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(1)")
+      page.evaluate("window.__experiencePreviewGo(4)")
+      page.wait_for_timeout(130)
+      if page.locator("body").get_attribute("data-current-frame")!="3":
+        failures.append(f"{name}: next chapter opened before final reading pause")
+      page.wait_for_timeout(1120)
+      if not page.evaluate("window.__experiencePreviewMotion.canAdvance()"):
+        failures.append(f"{name}: completed company chapter never unlocks")
+      page.evaluate("window.__experiencePreviewGo(4)")
+      page.wait_for_function("document.body.dataset.currentFrame==='4'",timeout=8000)
+      page.evaluate("window.__experiencePreviewGo(3,true)")
+      page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(0)")
+      # Down-scroll inside Chapter 03 reveals companies, without skipping it.
       page.evaluate("window.__experiencePreviewMotion.setReveal(.05)")
       page.mouse.move(width/2,height/2)
       page.mouse.wheel(0,130)
