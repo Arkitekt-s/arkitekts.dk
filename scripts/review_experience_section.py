@@ -193,6 +193,32 @@ try:
         failures.append(f"{name}: current Statens It workplace not clearly marked: {first}")
       if first["progress"]!="01 / 04":
         failures.append(f"{name}: reveal count must start with Statens It: {first}")
+      # The current-workplace caption must be a separate line directly below
+      # "Statens It", rather than an overlapping badge or adjacent heading.
+      role_layout=page.evaluate("""() => {
+        const company=document.querySelector('[data-company="sit"]');
+        const title=company.querySelector('.experience-company-name');
+        const status=company.querySelector('.experience-current');
+        const a=title.getBoundingClientRect();
+        const b=status.getBoundingClientRect();
+        return {
+          hierarchy:status.parentElement.classList.contains('experience-company-identity'),
+          title: title.textContent,
+          caption: status.textContent,
+          titleBottom:a.bottom,captionTop:b.top,
+          captionLeft:b.left,titleLeft:a.left,
+          statusBackground:getComputedStyle(status).backgroundColor,
+          statusVisible:getComputedStyle(status).display!=='none',
+          companyVisible:company.getAttribute('aria-hidden')==='false'
+        };
+      }""")
+      if not role_layout["hierarchy"] or role_layout["captionTop"]<role_layout["titleBottom"]+2:
+        failures.append(f"{name}: current-workplace text not placed below SIT name: {role_layout}")
+      if abs(role_layout["captionLeft"]-role_layout["titleLeft"])>3:
+        failures.append(f"{name}: status not aligned with name: {role_layout}")
+      if role_layout["statusBackground"] not in ("rgba(0, 0, 0, 0)","transparent"):
+        failures.append(f"{name}: overly strong badge background: {role_layout}")
+
       # Down-scroll inside Chapter 03 reveals logos, without skipping the scene.
       page.evaluate("window.__experiencePreviewMotion.setReveal(.05)")
       page.mouse.move(width/2,height/2)
