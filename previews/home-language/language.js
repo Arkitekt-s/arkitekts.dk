@@ -28,6 +28,7 @@ const entries=[
  [".gallery-mobile-intro > span","text","04 / LIVET UDEN FOR SKÆRMEN"],
  [".gallery-mobile-intro > strong","html","Mere end kode<span>.</span>"],
  [".gallery-mobile-intro > p","text","Mennesker, udvikling og et liv i bevægelse."],
+ [".frame-four-gallery .visually-hidden","text","Billeder, oplevelser og arbejdet bag teknologien"],
  [".gallery-photo[data-photo='0'] figcaption strong","text","Løbsdag"],
  [".gallery-photo[data-photo='1'] figcaption strong","text","Møder nye mennesker"],
  [".gallery-photo[data-photo='3'] figcaption strong","text","Deler viden"],
@@ -83,6 +84,8 @@ function set(el,type,value){
  else if(type==="first"){if(el.firstChild?.nodeType===3&&el.firstChild.nodeValue!==value)el.firstChild.nodeValue=value;}
  else if(el.getAttribute(type)!==value)el.setAttribute(type,value);
 }
+const contactEmail=document.querySelector(".contact-email");
+const contactEmailHref=contactEmail?.getAttribute("href")||"";
 const sum=document.querySelector(".danish-search-summary p");
 const sumDa=sum?.innerHTML||"";
 const sumEn='I work with IT operations, Linux servers and infrastructure in test and production. With Ansible and GitHub, I automate changes so they can be repeated, tested and documented. I also work with Elasticsearch, Logstash, Apache Kafka, logging and troubleshooting. My focus is stable systems and practical delivery. Read my <a href="/it-drift/">Danish IT operations guide</a>. Learn more about my <a href="/profile/">experience</a>, <a href="/software-skills/">technical skills</a> and <a href="/technical-guides/">guides</a>, or <a href="/contact/">contact me</a>.';
@@ -116,6 +119,7 @@ function apply(next,remember=true){
  document.documentElement.lang=language;
  document.documentElement.dataset.previewLanguage=language;
  for(const entry of translations)set(entry.el,entry.type,da?entry.da:entry.en);
+ if(contactEmail)set(contactEmail,"href",da?"mailto:sohe@arkitekts.dk?subject=Kontakt%20om%20samarbejde":contactEmailHref);
  if(sum)set(sum,"html",da?sumDa:sumEn);
  const sumTitle=document.querySelector(".danish-search-summary h2");
  if(sumTitle)set(sumTitle,"text",da?"IT-drift og Linux-serverdrift i København":"IT operations and Linux server management in Copenhagen");
