@@ -44,8 +44,9 @@
    [".experience-topline span:last-child","ARBEJDSPLADSER & FAGLIGE PROJEKTER","WORKPLACES & PROFESSIONAL PROJECTS"],
    [".experience-eyebrow","FRA KODE TIL PRAKSIS","FROM CODE TO PRACTICE"],
    [".experience-headline h2","Erfaring i<br><em>praksis.</em>","Experience<br><em>in practice.</em>"],
-   [".experience-headline p","Fra Linux og platformdrift til softwareudvikling. Her er organisationerne bag mine arbejdsopgaver og projekter.","From Linux and platform operations to software development. These organisations are part of my professional work and projects."],
+   [".experience-headline p","Jeg arbejder i dag med platformdrift hos Statens It. Min erfaring omfatter også andre arbejdspladser og projekter.","I currently work with platform operations at Statens It. My experience also includes other workplaces and projects."],
    ['[data-company="sit"] .experience-number',"01 / OFFENTLIG IT","01 / PUBLIC IT"],
+   ['[data-company="sit"] .experience-current',"HER ARBEJDER JEG NU","MY CURRENT WORKPLACE"],
    ['[data-company="skat"] .experience-number',"02 / OFFENTLIG IT","02 / PUBLIC IT"],
    ['[data-company="ku"] .experience-number',"03 / FAGLIGT PROJEKT","03 / RESEARCH PROJECT"],
    ['[data-company="twentyfour"] .experience-number',"04 / SOFTWAREVIRKSOMHED","04 / SOFTWARE COMPANY"],
@@ -118,10 +119,13 @@
    section.style.setProperty("--puzzle-complete",smooth((reveal-.04)/.92).toFixed(4));
    let fullyVisible=0;
    firms.forEach((firm,i)=>{
-     const entry=smooth((reveal-i*.20-.025)/.175);
+     // Statens It is the current employer and is visible from the first frame.
+     // The remaining organisations appear only as the visitor scrolls.
+     const entry=i===0?1:smooth((reveal-(i-1)*.245-.12)/.20);
      firm.style.setProperty("--entry",entry.toFixed(4));
      let spot;
-     if(i===3)spot=smooth((reveal-.68)/.13);
+     if(i===0)spot=1-smooth((reveal-.205)/.10);
+     else if(i===3)spot=smooth((reveal-.68)/.13);
      else spot=smooth((reveal-(i*.205+.025))/.12)*
           (1-smooth((reveal-(i*.205+.225))/.095));
      firm.style.setProperty("--spotlight",spot.toFixed(4));
@@ -208,7 +212,7 @@
  entryObserver.observe(section,{attributes:true,attributeFilter:["class"]});
  select(chosen);
  refreshLanguage();
- setReveal(.03);
+ setReveal(0);
  let attempts=0;
  function goToSection(){
   if(typeof window.__experiencePreviewGo==="function"){
