@@ -1,0 +1,865 @@
+/* Frames 01 -> 02 -> 03 -> 04 -> 05: final contact and 3D globe.
+ * Preserve the approved Frame 01 code as-is (loaded from shared assets).
+ * Isolated progressive animation layer; both approved baseline folders unchanged.
+ * Scroll DOWN grows arches until video fills the viewport, revealing text.
+ * Scroll UP runs the exact transition backward.
+ */
+(() => {
+  "use strict";
+  const stage=document.getElementById("frame");
+  const panorama=document.getElementById("panorama");
+  const arches=[...document.querySelectorAll("#panorama .arch")];
+  const hero=document.querySelector(".hero-text");
+  const support=document.querySelector(".supporting-line");
+  const eyebrow=document.querySelector(".scene-eyebrow");
+  const chapter=document.querySelector("#chapter-two");
+  const chapterTitleLines=[...document.querySelectorAll("#chapter-two .chapter-title > span")];
+  const chapterDescription=chapter?.querySelector(".chapter-description");
+  const chapterLink=chapter?.querySelector(".chapter-link");
+  const experience=document.getElementById("experience-section");
+   const third=document.querySelector("#chapter-three");
+  const thirdKicker=third?.querySelector(".chapter-three-kicker");
+  const thirdStatements=[...third.querySelectorAll(".side-statement span")];
+  const fourth=document.getElementById("frame-four-gallery");
+  const fifth=document.getElementById("frame-five-contact");
+  const fifthBackdrop=document.querySelector(".frame-five-backdrop");
+  const backdrop=document.querySelector(".frame-four-backdrop");
+  const curtain=document.getElementById("frame-four-curtain");
+  // Staggered full-height panels replace the single flat wipe.
+  const curtainPanels=curtain?Array.from({length:10},(_,i)=>{
+    const panel=document.createElement("span");
+    panel.className="frame-four-curtain-panel";
+    panel.style.setProperty("--panel-index",String(i));
+    curtain.appendChild(panel);
+    return panel;
+  }):[];
+  const viewport=document.getElementById("gallery-viewport");
+  const reel=document.getElementById("gallery-reel");
+  const photos=[...document.querySelectorAll(".gallery-photo")];
+  const count=document.getElementById("gallery-count");
+  const galleryPrev=document.getElementById("gallery-prev");
+  const galleryNext=document.getElementById("gallery-next");
+  const twenty=document.querySelector("#twenty-hotspot");
+  const twentyParts=[...document.querySelectorAll(".twenty-piece")];
+  const shade=document.querySelector(".portal-shade");
+  const rail=document.querySelector(".portal-navigation");
+  const fill=document.getElementById("portal-fill");
+  const currentLabel=document.getElementById("portal-current");
+  const sectionTrack=document.querySelector(".portal-steps .portal-track");
+  const prevSectionButton=document.getElementById("previous-chapter");
+  const nextSectionButton=document.getElementById("next-chapter");
+  const wheelHint=document.getElementById("wheel-hint");
+  const note=document.getElementById("interaction-note");
+  const live=document.getElementById("live-status");
+  const tools=document.querySelector(".scene-tools");
+  const film=document.getElementById("portal-film");
+  const windowVideos=[...document.querySelectorAll("#panorama .arch-video")];
+  const pauseControl=document.getElementById("motion-button");
+  let filmStarted=false, windowsPaused=false;
+  const scrollbar=document.getElementById("journey-scrollbar");
+  const scrollbarThumb=document.getElementById("journey-scrollbar-thumb");
+  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
+  if(!stage||!panorama||arches.length!==3||!chapter||!third||!twenty||!fourth||!fifth||!fifthBackdrop||!reel||photos.length<5)return;
+
+  const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+  const smooth=x=>{x=clamp(x,0,1);return x*x*(3-2*x);};
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const normalize=(v,from,to)=>clamp((v-from)/(to-from),0,1);
+  const toPx=n=>n.toFixed(2)+"px";
+
+  let target=0,position=0,frame=0;
+  let initial={w:0,h:0,top:0,gap:0,head:0,foot:0};
+  let touchY=null;
+  let lastVisible=false, experienceVisible=false, thirdVisible=false, fourthVisible=false, fifthVisible=false, galleryVisited=false;
+  let galleryTarget=0,galleryPosition=0,galleryPointer=0,galleryPointerTarget=0;
+  let reelDragging=false,downX=0,downIndex=0,galleryStep=320;
+  // A single downward gesture in Frame 04 completes the photo journey
+  // before revealing Frame 05. Reversible by scrolling upward.
+  let galleryAutoExit=false,galleryExitReadyAt=0,galleryNextPhotoAt=0;
+  let filmSuspendedForGallery=false;
+  let lastRendered=-1;
+  let previousFrameTime=0;
+  let displayedSection=0;
+  let returnTour=null;
+  let scrollbarTravel=0,scrollbarPercent=-1,scrollbarScene=-1;
+
+  function measure(){
+    // Drop runtime values briefly so measurements come from approved CSS.
+    const stageWas=[stage.style.top,stage.style.bottom];
+    const overrides=[panorama.style.width,panorama.style.height,panorama.style.gap,panorama.style.top,panorama.style.transform];
+    stage.style.removeProperty("top");
+    stage.style.removeProperty("bottom");
+    for(const property of ["width","height","gap","top","transform"])panorama.style.removeProperty(property);
+    const style=getComputedStyle(panorama);
+    const head=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h"));
+    const foot=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--footer-h"));
+    initial={
+      w:parseFloat(style.width),h:parseFloat(style.height),
+      gap:parseFloat(style.gap),top:parseFloat(style.top),
+      head:Number.isFinite(head)?head:100,
+      foot:Number.isFinite(foot)?foot:80
+    };
+    // Restore the current state immediately.
+    stage.style.top=stageWas[0];stage.style.bottom=stageWas[1];
+    ["width","height","gap","top","transform"].forEach((p,i)=>{
+      if(overrides[i])panorama.style.setProperty(p,overrides[i]);
+    });
+    galleryStep=Math.max(120,photos[1].offsetLeft-photos[0].offsetLeft);
+    if(scrollbar&&scrollbarThumb)scrollbarTravel=Math.max(0,scrollbar.clientHeight-scrollbarThumb.offsetHeight);
+    lastRendered=-1; // Recalculate dimensions after an actual resize.
+    paint();
+  }
+
+  function syncFilms(p){
+    if(document.body.dataset.archMorphEnabled==="true")return;
+    if(!film)return;
+    const lead=windowVideos[0];
+    const motionPaused=reduced.matches||document.body.classList.contains("motion-off");
+    // Alternative artwork uses its own video + poster above the arch layer.
+    // Never let the default AI film bleed through the selected movie.
+    const alternateArt=panorama.dataset.artScene && panorama.dataset.artScene!=="0";
+    if(alternateArt && filmStarted){
+      film.pause();
+      filmStarted=false;
+    }
+
+    // Option A: start the full-screen film before the dissolve becomes visible.
+    // This keeps the same movie playing behind the arches at every scroll speed.
+    if(!alternateArt && p>.26 && !filmStarted && !motionPaused){
+      filmStarted=true;
+      if(lead && lead.readyState>=2){
+        try{film.currentTime=lead.currentTime;}catch{}
+      }
+      film.play().catch(()=>{filmStarted=false;});
+    }
+    if(!alternateArt && p>.26 && !motionPaused && film.paused && !filmStarted){
+      filmStarted=true;
+      film.play().catch(()=>{filmStarted=false;});
+    }
+    if(motionPaused)film.pause();
+
+    const ready=film.readyState>=2;
+    // The video tag's matching poster is the fallback if the stream is slow.
+    // Never show a blank frame while waiting for a remote video download.
+    const blend=alternateArt?0:smooth(normalize(p,.42,.89));
+    film.classList.toggle("is-active",blend>.002);
+    film.style.opacity=String(blend);
+
+    // Only pause the three arch streams after their image is fully covered
+    // in Section 02. On reverse, restart/resync while still hidden behind
+    // the opaque portal film; no visible playback jump at the seam.
+    if(!alternateArt && position>1.025 && ready && !windowsPaused){
+      windowVideos.forEach(video=>video.pause());
+      windowsPaused=true;
+    }else if(position<.83 && windowsPaused){
+      windowVideos.forEach(video=>{
+        try{if(film.readyState>=2)video.currentTime=film.currentTime;}catch{}
+        if(!motionPaused)video.play().catch(()=>{});
+      });
+      windowsPaused=false;
+    }
+    if(p<.19 && filmStarted){
+      film.pause();
+      filmStarted=false;
+    }
+  }
+  pauseControl?.addEventListener("click",()=>{
+    // The frozen Frame 01 handler runs first; then mirror its state.
+    setTimeout(()=>{
+      if(!film)return;
+      if(document.body.classList.contains("motion-off"))film.pause();
+      else if(position>.52)film.play().catch(()=>{});
+    },0);
+  });
+
+  function updateJourneyScrollbar(){
+    if(!scrollbar||!scrollbarThumb)return;
+    const progress=clamp(position/5,0,1);
+    // Cached measurements: reading offsetHeight after updating 3D scenes
+    // would force a synchronous browser layout on every animation frame.
+    scrollbarThumb.style.transform="translate3d(0,"+(scrollbarTravel*progress).toFixed(2)+"px,0)";
+    const percent=Math.round(progress*100);
+    const scene=Math.min(6,Math.round(position)+1);
+    if(percent!==scrollbarPercent){
+      scrollbar.setAttribute("aria-valuenow",String(percent));
+      scrollbarPercent=percent;
+    }
+    if(scene!==scrollbarScene){
+      scrollbar.setAttribute("aria-valuetext","Section "+scene+" of 6");
+      scrollbarScene=scene;
+    }
+  }
+
+  function paint(){
+    const journey=position<=1?position:position<3?1+(position-1)*.5:position-1;
+    const p=Math.min(1,journey);
+    // Option A: GPU-composited, modest depth push, NOT a width/height
+    // resize of three 4K video decoders on every animation frame.
+    const grow=smooth(normalize(p,.08,.78));
+    const alternateArt=panorama.dataset.artScene && panorama.dataset.artScene!=="0";
+    const alternateReady=panorama.dataset.artMediaReady==="true";
+    const dissolve=smooth(normalize(p,.42,.89)) * (!alternateArt||alternateReady?1:0);
+    const fillScreen=smooth(normalize(p,.12,.97));
+    const head=Math.max(0,initial.head*(1-fillScreen));
+    const foot=Math.max(0,initial.foot*(1-fillScreen));
+    const sceneHeight=innerHeight-head-foot;
+    // The arches remain at their original layout size; only their
+    // compositor scale and alpha change. The original interactive arch
+    // silhouettes remain untouched, including on small phones/tablets.
+    if(p!==lastRendered){
+      stage.style.top=toPx(head);
+      stage.style.bottom=toPx(foot);
+      panorama.style.top=toPx(lerp(initial.top,sceneHeight*.5,grow));
+      if(p>.001)panorama.style.setProperty("--scene-zoom",(1+.085*grow).toFixed(4));
+      else panorama.style.removeProperty("--scene-zoom");
+      panorama.style.opacity=String(1-dissolve);
+    }
+    // Option A physically opens all three arches in a single video mask.
+    // It uses the same eased scroll timeline and reverses without a film swap.
+    window.__arkitektsMorph?.paint(position);
+    // One uninterrupted, reversible scroll transition from 01 to 02.
+    // The outgoing sentence starts drifting up before the arches finish
+    // opening. Every value is derived from scroll progress, not a timer.
+    const introExit=smooth(normalize(p,.22,.83));
+    const firstOpacity=1-introExit;
+    if(hero){
+      hero.style.opacity=String(firstOpacity);
+      hero.style.translate="0 "+(-22*introExit).toFixed(2)+"px";
+      hero.style.filter="none";
+    }
+    if(support)support.style.opacity=String(firstOpacity);
+    if(eyebrow)eyebrow.style.opacity=String(1-smooth(normalize(p,.31,.85)));
+    if(note)note.style.opacity=String(firstOpacity);
+    if(live)live.style.opacity=String(firstOpacity);
+    const darkness=smooth(normalize(p,.47,.87));
+    if(shade)shade.style.opacity=String(darkness*.93);
+    syncFilms(p);
+
+    // Crossfade the incoming line-by-line story into the outgoing sentence.
+    // Text drifts upward and becomes sharp; scrolling back reverses it.
+    const textOpacity=smooth(normalize(p,.55,.95));
+    // Frame 02 is fully readable before leaving; then words float upward
+    // and blur out, just like the opening headline. The 02→03 entrance
+    // is a matched slow crossfade controlled by the same scroll progress.
+    const leaveTwo=smooth(normalize(journey,1.37,1.88));
+    chapter.style.opacity=String(textOpacity*(1-leaveTwo));
+    chapter.style.translate="0 "+(22*(1-textOpacity)-24*leaveTwo).toFixed(2)+"px";
+    chapter.style.filter="none";
+    chapterTitleLines.forEach((line,index)=>{
+      const wordEnter=smooth(normalize(p,.54+index*.055,.84+index*.045));
+      line.style.opacity=String(wordEnter);
+      line.style.transform="translate3d(0,"+(28*(1-wordEnter)).toFixed(2)+"px,0)";
+      line.style.filter="none";
+    });
+    const descriptionEnter=smooth(normalize(p,.70,.97));
+    if(chapterDescription){
+      chapterDescription.style.opacity=String(descriptionEnter);
+      chapterDescription.style.transform="translate3d(0,"+(17*(1-descriptionEnter)).toFixed(2)+"px,0)";
+    }
+    const linkEnter=smooth(normalize(p,.76,1.00));
+    if(chapterLink){
+      chapterLink.style.opacity=String(linkEnter);
+      chapterLink.style.transform="translate3d(0,"+(13*(1-linkEnter)).toFixed(2)+"px,0)";
+    }
+    const shouldShow=journey>.54 && journey<1.90;
+    chapter.style.pointerEvents=journey>.88&&journey<1.56?"auto":"none";
+    if(shouldShow!==lastVisible){
+      chapter.classList.toggle("is-visible",shouldShow);
+      chapter.inert=!shouldShow;
+      chapter.setAttribute("aria-hidden",String(!shouldShow));
+      lastVisible=shouldShow;
+    }
+    // Live chapter 03 has its own scroll stop.
+     if(experience){
+       const enter=smooth(normalize(position,1.37,1.78));
+       const leave=smooth(normalize(position,2.50,2.90));
+       const alpha=enter*(1-leave);
+       experience.style.setProperty("--spatial-enter",enter.toFixed(4));
+       experience.style.setProperty("--spatial-leave",leave.toFixed(4));
+       experience.style.opacity=String(alpha);
+       experience.style.translate="0 "+(23*(1-enter)-18*leave).toFixed(2)+"px";
+       const visible=alpha>.025;
+       if(visible!==experienceVisible){
+         experienceVisible=visible;
+         experience.classList.toggle("is-visible",visible);
+         experience.inert=!visible;
+         experience.setAttribute("aria-hidden",String(!visible));
+       }
+       document.body.classList.toggle("experience-section-active",alpha>.1);
+       document.body.dataset.experienceSectionOpacity=alpha.toFixed(3);
+     }
+     // Frame 03 changes only the editorial composition. The seamless movie,
+    // original grid, header and footer remain in place.
+    // Scene 03 text fades out before the staircase begins: video only.
+    const leaveThree=smooth(normalize(journey,2.05,2.28));
+    const enterThree=smooth(normalize(journey,1.41,1.89));
+    // Crossfade the film lighting on the same continuous timeline.
+    if(shade)shade.style.setProperty("--third-shade-opacity",enterThree.toFixed(3));
+    const thirdOpacity=enterThree*(1-leaveThree);
+    third.style.opacity=String(thirdOpacity);
+    third.style.translate="0 "+(24*(1-enterThree)).toFixed(2)+"px";
+    // Each word follows the same scroll gesture, rather than CSS timers.
+    // The number 10 keeps its original untouched hover interaction.
+    const kickerEnter=smooth(normalize(journey,1.47,1.79));
+    if(thirdKicker){
+      thirdKicker.style.opacity=String(.9*kickerEnter);
+      thirdKicker.style.transform="translateX(-50%) translateY("+(-3+16*(1-kickerEnter)).toFixed(2)+"px)";
+    }
+    thirdStatements.forEach((word,index)=>{
+      const wordEnter=smooth(normalize(journey,1.43+index*.075,1.75+index*.055));
+      word.style.opacity=String(wordEnter);
+      word.style.transform="translateY("+(30*(1-wordEnter)).toFixed(2)+"px)";
+      word.style.filter="none";
+    });
+    const showThird=journey>1.40 && journey<2.60;
+    if(thirdVisible!==showThird){
+      third.classList.toggle("is-visible",showThird);
+      third.inert=!showThird;
+      third.setAttribute("aria-hidden",String(!showThird));
+      thirdVisible=showThird;
+      // Phones have no hover. Keep the interactive "10" assembled by
+      // default, rather than showing scattered digits indefinitely.
+      if(showThird && matchMedia("(hover:none), (pointer:coarse)").matches)assembleTen(1);
+      if(!showThird)scatterTen();
+    }
+    document.body.classList.toggle("frame-three-active",showThird);
+    // One staircase mask reveals both the gallery and its background.
+    // There is no separate dark curtain over the photographs.
+    if(curtain)curtain.style.display="none";
+    const stairStart=2.30,stairEnd=2.70;
+    let revealMask="none";
+    if(journey<stairStart){
+      revealMask="inset(100% 0 0 0)";
+    }else if(journey<stairEnd){
+      const points=["0% 100%"];
+      for(let i=0;i<10;i++){
+        const rise=smooth(normalize(journey,stairStart+i*.015,stairEnd-.135+i*.015));
+        const top=(100*(1-rise)).toFixed(3)+"%";
+        points.push((i*10)+"% "+top,((i+1)*10)+"% "+top);
+      }
+      points.push("100% 100%");
+      revealMask="polygon("+points.join(",")+")";
+    }
+    if(backdrop.style.clipPath!==revealMask)backdrop.style.clipPath=revealMask;
+    backdrop.style.opacity=journey>=stairStart?"1":"0";
+    backdrop.classList.toggle("is-active",journey>=stairStart);
+    const leaveFourth=smooth(normalize(journey,3.12,3.80));
+    fourth.style.opacity=String(1-leaveFourth);
+    if(fourth.style.clipPath!==revealMask)fourth.style.clipPath=revealMask;
+    const reelReady=journey>=stairEnd;
+    fourth.classList.toggle("gallery-reveal-complete",reelReady);
+    const showFourth=journey>=stairStart && journey<3.81;
+    if(fourthVisible!==showFourth){
+      fourthVisible=showFourth;
+      fourth.classList.toggle("is-visible",showFourth);
+      fourth.inert=!showFourth;
+      fourth.setAttribute("aria-hidden",String(!showFourth));
+      if(showFourth && !galleryVisited){
+        galleryVisited=true;
+        // Every new entry starts at photo 01, never the middle portrait.
+        galleryTarget=0;
+        galleryPosition=0;
+        galleryPointer=galleryPointerTarget=0;
+      }
+    }
+    if(journey<2.20)galleryVisited=false;
+    document.body.classList.toggle("frame-four-active",showFourth);
+
+    // The final scene rises out of the gallery's dark ending.
+    // The backdrop matches the gallery's fully darkened near-black colors.
+    // Adjacent scenes now crossfade while their backing films stay continuous.
+    const contactFade=smooth(normalize(journey,3.16,3.84));
+    fifthBackdrop.style.opacity=String(smooth(normalize(journey,3.08,3.82)));
+    fifthBackdrop.classList.toggle("is-active",journey>3.07);
+    fifth.style.opacity=String(contactFade);
+    const showFifth=journey>3.15;
+    if(fifthVisible!==showFifth){
+      fifthVisible=showFifth;
+      fifth.classList.toggle("is-visible",showFifth);
+      fifth.inert=!showFifth;
+      fifth.setAttribute("aria-hidden",String(!showFifth));
+      if(showFifth && window.soheilGlobe)window.soheilGlobe.center(true);
+    }
+    document.body.classList.toggle("frame-five-active",showFifth);
+    // Stop the full-screen film once the gallery fully covers it.
+    if(journey>2.99 && !filmSuspendedForGallery && film && !film.paused){
+      film.pause();filmSuspendedForGallery=true;
+    }else if(journey<2.76 && filmSuspendedForGallery){
+      filmSuspendedForGallery=false;
+      if(!reduced.matches && !document.body.classList.contains("motion-off"))film.play().catch(()=>{});
+    }
+    // Only update the 3D photo reel while the gallery is approaching,
+    // visible, or leaving. Other frames do not need its 7 card filters.
+    if(journey>2.15 && journey<3.95)renderGallery();
+    document.body.dataset.journeyProgress=journey.toFixed(4);
+     document.body.dataset.experienceTimeline=position.toFixed(4);
+    // The label, controls and theme follow the same section boundaries.
+    // Only update the displayed number when a section actually changes.
+    const visibleSection=position<.83?1:position<1.44?2:position<2.56?3:position<3.55?4:position<4.49?5:6;
+    document.body.dataset.currentFrame=String(visibleSection);
+    if(visibleSection!==displayedSection){
+      if(currentLabel)currentLabel.textContent=String(visibleSection).padStart(2,"0");
+      if(sectionTrack)sectionTrack.setAttribute("aria-valuenow",String(visibleSection));
+      if(rail)rail.setAttribute("aria-label","Section "+visibleSection+" of 6");
+      if(nextSectionButton)nextSectionButton.setAttribute("aria-label",visibleSection===1?"Scroll down to explore the website":"Go to the next section");
+      displayedSection=visibleSection;
+    }
+    if(rail){
+      rail.classList.add("is-visible");
+      rail.style.opacity="1";
+    }
+    if(prevSectionButton)prevSectionButton.disabled=target<=.001 && !returnTour;
+    if(nextSectionButton){
+      nextSectionButton.disabled=target>=4.999 && !returnTour;
+      nextSectionButton.classList.toggle("is-scroll-invite",visibleSection===1 && !returnTour);
+    }
+    if(fill)fill.style.transform="scaleX("+clamp(position/5,0,1).toFixed(4)+")";
+    if(wheelHint){
+      wheelHint.style.opacity=(journey>.06&&journey<.82)?"1":"0";
+      wheelHint.innerHTML=p>.82?"SCROLL UP TO RETURN <span>↑</span>":"KEEP SCROLLING TO ENTER <span>↓</span>";
+    }
+    // This legacy class abruptly removes arch borders and shadow.
+    // Option A never activates it, so there is no mid-transition flash.
+    document.body.classList.remove("portal-zoom");
+    document.body.classList.toggle("chapter-two-active",p>.75);
+    document.body.dataset.portalProgress=p.toFixed(4);
+    document.documentElement.style.setProperty("--portal-progress",p.toFixed(4));
+    if(tools)tools.style.opacity=String(1-smooth(normalize(p,.69,.95))*.75);
+    lastRendered=p;
+    updateJourneyScrollbar();
+  }
+
+  function frameStep(now){
+    frame=0;
+    // Time-based easing, consistent on 60, 90, 120 Hz and slower devices.
+    // No CSS animation competes with the scroll-driven section positions.
+    const dt=previousFrameTime?clamp(now-previousFrameTime,1,48):16.67;
+    previousFrameTime=now;
+    // Approved option B: slow only the 02 -> 03 transition.
+    // This matches the tested cinematic preview. The arches, interaction,
+    // video playback, and every other section keep their original timing.
+    const cinematic=target>1.04 && position>=.84 && position<3.01;
+    const follow=1-Math.exp(-dt/(cinematic?315:108));
+    const galleryFollow=1-Math.exp(-dt/84);
+    const pointerFollow=1-Math.exp(-dt/108);
+    if(returnTour){
+      // A single smooth trip from scene 05 through 04, 03 and 02 to 01.
+      // Passing through each anchor slows slightly, like cinematic scrolling.
+      const trip=returnTour;
+      if(!trip.started)trip.started=now;
+      let distance=clamp((now-trip.started)/trip.duration,0,1)*trip.from;
+      let previous=trip.from;
+      position=0;
+      for(const destination of trip.stops){
+        const length=previous-destination;
+        if(distance<=length){
+          position=lerp(previous,destination,smooth(distance/length));
+          break;
+        }
+        distance-=length;
+        previous=destination;
+      }
+      if(now-trip.started>=trip.duration){
+        position=target=0;
+        returnTour=null;
+        document.body.dataset.returnTour="complete";
+      }
+    }else if(reduced.matches)position=target;
+    else position+=(target-position)*follow;
+    if(Math.abs(target-position)<.0006)position=target;
+    if(!reelDragging)galleryPosition+=(galleryTarget-galleryPosition)*(reduced.matches?1:galleryFollow);
+    if(Math.abs(galleryPosition-galleryTarget)<.003)galleryPosition=galleryTarget;
+    galleryPointer+=(galleryPointerTarget-galleryPointer)*(reduced.matches?1:pointerFollow);
+    if(Math.abs(galleryPointer-galleryPointerTarget)<.05)galleryPointer=galleryPointerTarget;
+    paint();
+    if(galleryAutoExit && !reelDragging){
+      const now=performance.now();
+      // Centre every photograph in sequence; never jump from 01 to 07.
+      if(galleryTarget<photos.length-1){
+        if(now>=galleryNextPhotoAt && Math.abs(galleryPosition-galleryTarget)<.035){
+          galleryTarget+=1;
+          galleryNextPhotoAt=now+(reduced.matches?0:310);
+          document.body.dataset.galleryAutoPhoto=String(galleryTarget+1).padStart(2,"0");
+        }
+      }else if(galleryPosition>=photos.length-1-.025){
+        // Hold the final photograph against the dark background before
+        // entering Frame 05, preserving the approved crossfade.
+        if(!galleryExitReadyAt)galleryExitReadyAt=now+(reduced.matches?0:750);
+        else if(now>=galleryExitReadyAt){
+          galleryAutoExit=false;
+          galleryExitReadyAt=0;
+          galleryNextPhotoAt=0;
+          document.body.dataset.galleryAutoExit="complete";
+          setTarget(5);
+        }
+      }
+    }
+    if(position!==target || galleryPosition!==galleryTarget ||
+       galleryPointer!==galleryPointerTarget || galleryAutoExit || returnTour)
+      frame=requestAnimationFrame(frameStep);
+  }
+  function schedule(){
+    if(!frame)frame=requestAnimationFrame(frameStep);
+  }
+  function interruptReturnTour(){
+    if(!returnTour)return;
+    returnTour=null;
+    document.body.dataset.returnTour="cancelled";
+    target=position;
+  }
+  function setTarget(value,bypassExperienceGate=false){
+    // A manual wheel, swipe, key or scrub always takes over immediately.
+    interruptReturnTour();
+    const requested=clamp(value,0,5);
+    // The dedicated experience scene is a complete scroll chapter, not a
+    // crossfade visitors can accidentally skip by scrolling too quickly.
+    // Clamp ALL forward navigation paths at 03 until 04/04 has appeared
+    // and the final company has had a short moment on screen.
+    const motion=window.__experienceMotion;
+    if(!bypassExperienceGate && target<=2.001 && requested>2 &&
+        motion && !motion.canAdvance()){
+      target=2;
+      document.body.dataset.experienceLocked="true";
+    }else{
+      target=requested;
+      document.body.dataset.experienceLocked="false";
+    }
+    if(reduced.matches)position=target;
+    schedule();
+  }
+  function startReturnTour(){
+    cancelGalleryExit();
+    if(reduced.matches){setTarget(0);return;}
+    const from=clamp(position,0,5);
+    const stops=[4,3,2,1,0].filter(stop=>stop<from-.005);
+    if(!stops.length){setTarget(0);return;}
+    // A quicker ~3-second return from scene 05, passing smoothly through each scene.
+    returnTour={from,stops,started:0,duration:Math.max(1350,from*750)};
+    target=0;
+    document.body.dataset.returnTour="active";
+    schedule();
+  }
+  function cancelGalleryExit(){
+    if(!galleryAutoExit)return;
+    galleryAutoExit=false;
+    galleryExitReadyAt=0;
+    galleryNextPhotoAt=0;
+    galleryTarget=clamp(Math.round(galleryPosition),0,photos.length-1);
+    document.body.dataset.galleryAutoExit="cancelled";
+    schedule();
+  }
+  function beginGalleryExit(){
+    if(galleryAutoExit)return;
+    galleryAutoExit=true;
+    galleryExitReadyAt=0;
+    galleryNextPhotoAt=performance.now()+(reduced.matches?0:450);
+    setTarget(4); // Keep Frame 04 fully visible until the final photo arrives.
+    // Auto-progress from the currently focused photo, one at a time.
+    galleryPointerTarget=0;
+    document.body.dataset.galleryAutoPhoto=String(Math.round(galleryPosition)+1).padStart(2,"0");
+    document.body.dataset.galleryAutoExit="moving";
+    schedule();
+  }
+
+  // A visible scrollbar gives a familiar cue that the scenes scroll.
+  // Dragging its thumb navigates the same timeline as the mouse wheel.
+  if(scrollbar&&scrollbarThumb){
+    let dragging=false,grabOffset=0;
+    const scrub=clientY=>{
+      const rect=scrollbar.getBoundingClientRect();
+      const travel=Math.max(1,rect.height-scrollbarThumb.offsetHeight);
+      const progress=clamp((clientY-rect.top-grabOffset)/travel,0,1);
+      cancelGalleryExit();
+      setTarget(progress*5);
+    };
+    scrollbar.addEventListener("pointerdown",event=>{
+      if(event.button!==0)return;
+      const thumbRect=scrollbarThumb.getBoundingClientRect();
+      grabOffset=event.target===scrollbarThumb?event.clientY-thumbRect.top:thumbRect.height/2;
+      dragging=true;
+      scrollbar.setPointerCapture(event.pointerId);
+      scrub(event.clientY);
+      event.preventDefault();
+    });
+    scrollbar.addEventListener("pointermove",event=>{
+      if(dragging)scrub(event.clientY);
+    });
+    const endScrollDrag=()=>{dragging=false;};
+    scrollbar.addEventListener("pointerup",endScrollDrag);
+    scrollbar.addEventListener("pointercancel",endScrollDrag);
+    scrollbar.addEventListener("lostpointercapture",endScrollDrag);
+    scrollbar.addEventListener("keydown",event=>{
+      let next=target;
+      if(event.key==="ArrowDown")next+=.18;
+      else if(event.key==="ArrowUp")next-=.18;
+      else if(event.key==="PageDown")next+=1;
+      else if(event.key==="PageUp")next-=1;
+      else if(event.key==="Home")next=0;
+      else if(event.key==="End")next=5;
+      else return;
+      event.stopPropagation();
+      event.preventDefault();
+      cancelGalleryExit();
+      setTarget(next);
+    });
+  }
+
+  // More reading time in the first three scenes (about 30% slower).
+  // These remain continuous, not locked to a timer or forced pause.
+  // Frames 04 and 05 retain their approved scroll pace.
+  const editorialWheelDistance=1030;
+  // Continual native wheel motion, not binary next/previous slides.
+  addEventListener("wheel",event=>{
+    if(event.ctrlKey)return; // browser pinch-to-zoom must remain available
+    if(event.target instanceof Element && event.target.closest(".navigation,.site-header a,.site-header button,.site-footer a,.chapter-link"))return;
+    event.preventDefault();
+    const pixels=event.deltaMode===1?event.deltaY*18:event.deltaMode===2?event.deltaY*innerHeight:event.deltaY;
+    if(!Number.isFinite(pixels)||Math.abs(pixels)<.1)return;
+    const delta=clamp(pixels,-160,160);
+    interruptReturnTour();
+    if(galleryAutoExit){
+      // A reverse gesture cancels the automatic glide safely.
+      if(delta<0)cancelGalleryExit();
+      return;
+    }
+    if(target>=3.94 && target<4.20 && position>=3.70 && position<4.20){
+      if(delta>0)beginGalleryExit();
+      else if(galleryTarget<=.005)setTarget(3);
+      else{
+        galleryTarget=clamp(galleryTarget+delta/240,0,photos.length-1);
+        schedule();
+      }
+    }else if(target>4.003 || position>4.20){
+      // Scroll back from Frame 05 to the gallery's last photograph.
+      setTarget(Math.max(4,target+delta/790));
+    }else{
+      // Matching scroll length for both 01→02 and 02→03 transitions.
+      const distance=target<3.28?editorialWheelDistance:790;
+      setTarget(target+delta/distance);
+    }
+  },{passive:false});
+
+  // Touch drag scrolls through the very same continuous expansion.
+  stage.addEventListener("touchstart",event=>{
+    if(event.touches.length===1)touchY=event.touches[0].clientY;
+  },{passive:true});
+  stage.addEventListener("touchmove",event=>{
+    if(touchY===null||event.touches.length!==1)return;
+    if(event.target instanceof Element && event.target.closest("button,a,.gallery-viewport,#globe-shell"))return;
+    const next=event.touches[0].clientY;
+    const delta=touchY-next;
+    touchY=next;
+    if(Math.abs(delta)>.05)interruptReturnTour();
+    if(event.cancelable)event.preventDefault();
+    if(galleryAutoExit){
+      if(delta<0)cancelGalleryExit();
+    }else if(delta>0 && target>=3.94 && target<4.20 && position>=3.70 && position<4.20){
+      beginGalleryExit();
+    }else{
+      const distance=target<3.28?Math.max(390,innerHeight*.95):Math.max(300,innerHeight*.72);
+      setTarget(target+delta/distance);
+    }
+  },{passive:false});
+  stage.addEventListener("touchend",()=>{touchY=null},{passive:true});
+  stage.addEventListener("touchcancel",()=>{touchY=null},{passive:true});
+
+  addEventListener("keydown",event=>{
+    const key=event.key;
+    if(event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+    if(event.target instanceof Element && event.target.closest("a,button,input,textarea,select"))return;
+    if(["ArrowUp","ArrowDown","PageUp","PageDown"," ","Home","End","ArrowLeft","ArrowRight"].includes(key))interruptReturnTour();
+    if((key==="ArrowLeft"||key==="ArrowRight") && position>3.92 && position<4.05){
+      event.preventDefault();
+      cancelGalleryExit();
+      galleryTarget=clamp(galleryTarget+(key==="ArrowRight"?1:-1),0,photos.length-1);
+      schedule();
+    }else if((key==="ArrowDown"||key==="ArrowUp"||key===" " ) && position>3.92 && position<4.05){
+      event.preventDefault();
+      if(key==="ArrowUp"){
+        cancelGalleryExit();
+        galleryTarget=clamp(galleryTarget-1,0,photos.length-1);
+        schedule();
+      }else beginGalleryExit();
+    }else if(key==="ArrowDown"||key==="PageDown"||key===" "){
+      event.preventDefault();setTarget(target+.24);
+    }else if(key==="ArrowUp"||key==="PageUp"){
+      event.preventDefault();setTarget(target-.24);
+    }else if(key==="Home"){
+      event.preventDefault();setTarget(0);
+    }else if(key==="End"){
+      event.preventDefault();setTarget(5);
+    }
+  });
+  // Chapter controls move exactly one section at a time.
+  // The Frame 04 → 05 control still shows the full photo sequence first.
+  function navigateSection(direction){
+    // The last section's UP arrow is a full, visible return to the intro.
+    if(direction<0 && position>=4.49){
+      startReturnTour();
+      return;
+    }
+    if(galleryAutoExit){
+      if(direction>0)return;
+      cancelGalleryExit();
+    }
+    interruptReturnTour();
+    const current=clamp(Math.round(target),0,5);
+    const destination=clamp(current+direction,0,5);
+    if(destination===current)return;
+    if(current===4 && direction>0){
+      beginGalleryExit();
+      return;
+    }
+    setTarget(destination);
+  }
+  // Programmatic navigation is available for accessibility testing.
+  // Everyday wheel, touch, keyboard, and arrow navigation never bypasses the gate.
+  window.__experienceGo=function(section,instant=false){setTarget(clamp(Number(section)-1,0,5),instant);if(instant){position=target;paint();}};
+  nextSectionButton?.addEventListener("click",()=>navigateSection(1));
+  prevSectionButton?.addEventListener("click",()=>navigateSection(-1));
+
+  // The scattered nine-piece number joins into a legible 10 on hover.
+  // Leaving the hotspot returns every piece to its separate resting point.
+  let digitAutoTimer=0;
+  function assembleTen(strength){
+    const power=reduced.matches?1:clamp(strength,0,1);
+    twenty.dataset.reacting=String(power>.5);
+    twenty.setAttribute("aria-pressed",String(power>.5));
+    const rect=twenty.getBoundingClientRect();
+    const unit=Math.max(15,Math.min(43,rect.width*.086));
+    twentyParts.forEach((piece,index)=>{
+      const col=index%3-1,row=Math.floor(index/3)-1;
+      const dx=(col*1.18+(index%2?.27:-.27))*unit;
+      const dy=(row*.93+(index%3===1?-.22:.22))*unit;
+      const angle=col*9-row*7+(index%2?6:-6);
+      const apart=1-power;
+      piece.style.setProperty("--offset-x",(dx*apart).toFixed(2)+"px");
+      piece.style.setProperty("--offset-y",(dy*apart).toFixed(2)+"px");
+      piece.style.setProperty("--angle",(angle*apart).toFixed(2)+"deg");
+    });
+  }
+  function scatterTen(){clearTimeout(digitAutoTimer);assembleTen(0);}
+  assembleTen(0);
+  twenty.addEventListener("pointerenter",event=>{
+    if(!thirdVisible||event.pointerType==="touch")return;
+    clearTimeout(digitAutoTimer);assembleTen(1);
+  });
+  twenty.addEventListener("pointermove",event=>{
+    if(!thirdVisible||event.pointerType==="touch")return;
+    clearTimeout(digitAutoTimer);assembleTen(1);
+  },{passive:true});
+  const returnPieces=()=>{
+    if(!matchMedia("(hover:none), (pointer:coarse)").matches)scatterTen();
+  };
+  twenty.addEventListener("pointerleave",returnPieces);
+  twenty.addEventListener("pointercancel",returnPieces);
+  twenty.addEventListener("blur",returnPieces);
+  twenty.addEventListener("click",()=>{
+    if(!thirdVisible)return;
+    clearTimeout(digitAutoTimer);assembleTen(1);
+    // A phone tap should not scatter the headline after 1.3 seconds.
+    if(!matchMedia("(hover:none), (pointer:coarse)").matches)
+      digitAutoTimer=setTimeout(scatterTen,1300);
+  });
+
+  // Continuous horizontal photo reel. Each image has an independently
+  // computed perspective depth. The primary portrait initially faces front.
+  function renderGallery(){
+    const positionIndex=galleryPosition;
+    const middle=(photos.length-1)/2;
+    const offset=(middle-positionIndex)*galleryStep;
+    reel.style.setProperty("--reel-offset",offset.toFixed(2)+"px");
+    reel.style.setProperty("--pointer-nudge",galleryPointer.toFixed(2)+"px");
+    let focused=clamp(Math.round(positionIndex),0,photos.length-1);
+    photos.forEach((item,index)=>{
+      const delta=index-positionIndex,abs=Math.abs(delta);
+      const rotate=clamp(-delta*7,-26,26);
+      const depth=-Math.min(abs,3)*44;
+      const scale=1-Math.min(abs,4)*.075;
+      item.style.zIndex=String(50-Math.round(abs*7));
+      item.style.setProperty("--card-rotate",rotate.toFixed(2)+"deg");
+      item.style.setProperty("--card-z",depth.toFixed(2)+"px");
+      item.style.setProperty("--card-scale",Math.max(.70,scale).toFixed(3));
+      item.style.setProperty("--card-brightness",Math.max(.42,1-abs*.18).toFixed(3));
+      item.style.setProperty("--card-saturation",Math.max(.6,1-abs*.11).toFixed(3));
+      item.style.setProperty("--card-opacity",Math.max(.37,1-abs*.17).toFixed(3));
+      item.classList.toggle("is-current",index===focused);
+    });
+    // As the reel approaches its last two photographs, fade only the
+    // background from the original atmospheric purple to near-black.
+    // Reversing the wheel lightens it along the same path.
+    const endDarkness=smooth(normalize(positionIndex,photos.length-3,photos.length-1));
+    backdrop.style.setProperty("--gallery-end-darkness",endDarkness.toFixed(4));
+    document.body.dataset.galleryDarkness=endDarkness.toFixed(4);
+    if(count)count.textContent=String(focused+1).padStart(2,"0");
+    if(galleryPrev)galleryPrev.disabled=galleryTarget<=0;
+    if(galleryNext)galleryNext.disabled=galleryTarget>=photos.length-1;
+    document.body.dataset.galleryIndex=galleryPosition.toFixed(3);
+  }
+  function moveGallery(direction){
+    cancelGalleryExit();
+    galleryTarget=clamp(Math.round(galleryTarget)+direction,0,photos.length-1);
+    schedule();
+  }
+  galleryPrev?.addEventListener("click",()=>moveGallery(-1));
+  galleryNext?.addEventListener("click",()=>moveGallery(1));
+  if(viewport){
+    viewport.addEventListener("pointerdown",event=>{
+      if(event.button!==0||position<3.88)return;
+      cancelGalleryExit();
+      // Frame 01's unchanged stage handler captures pointerdown globally.
+      // Keep this gallery gesture local, or its capture steals pointermove/up.
+      event.stopPropagation();
+      reelDragging=true;downX=event.clientX;downIndex=galleryTarget;
+      viewport.classList.add("is-dragging");
+      try{viewport.setPointerCapture(event.pointerId);}catch{}
+      event.preventDefault();
+    });
+    viewport.addEventListener("pointermove",event=>{
+      if(position<3.86)return;
+      if(reelDragging){
+        galleryTarget=clamp(downIndex-(event.clientX-downX)/galleryStep,0,photos.length-1);
+        galleryPosition=galleryTarget;
+        renderGallery();
+      }else if(event.pointerType==="mouse"){
+        const norm=(event.clientX-innerWidth/2)/(innerWidth/2);
+        galleryPointerTarget=clamp(-norm*23,-23,23);
+        schedule();
+      }
+    },{passive:true});
+    const endDrag=()=>{
+      if(!reelDragging)return;
+      reelDragging=false;viewport.classList.remove("is-dragging");
+      galleryTarget=clamp(Math.round(galleryTarget),0,photos.length-1);
+      schedule();
+    };
+    viewport.addEventListener("pointerup",endDrag);
+    viewport.addEventListener("pointercancel",endDrag);
+    window.addEventListener("pointerup",endDrag,{passive:true});
+    window.addEventListener("blur",endDrag);
+    viewport.addEventListener("pointerleave",()=>{
+      if(!reelDragging){galleryPointerTarget=0;schedule();}
+    });
+  }
+  // Video/photo failure should not collapse the reel.
+  // Empty placeholders retain individual dark gradient panels.
+  photos.forEach(photo=>{
+    const img=photo.querySelector("img");
+    img?.addEventListener("error",()=>photo.classList.add("image-fallback"));
+  });
+
+  reduced.addEventListener("change",()=>{
+    if(reduced.matches){
+      if(returnTour){returnTour=null;target=0;document.body.dataset.returnTour="complete";}
+      position=target;
+    }
+    schedule();
+  });
+  let resizeTimer=0;
+  addEventListener("resize",()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(()=>{measure();schedule();},90);
+  },{passive:true});
+  measure();
+  paint();
+})();

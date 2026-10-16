@@ -20,7 +20,9 @@ def main():
         '<link rel="canonical" href="https://arkitekts.dk/">',
         '<base href="./concepts/frame-five-contact/">',
         'assets/frame-one-hold-scenes.js',
-        'assets/journey-five.js',
+        'assets/journey-six.js',
+        'id="experience-section"',
+        'assets/experience-live.js',
         'id="panorama"',
         'id="frame-five-contact"',
     )

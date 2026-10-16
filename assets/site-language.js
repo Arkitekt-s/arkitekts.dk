@@ -14,8 +14,8 @@
    if(!normalized)return null;
    if(Object.prototype.hasOwnProperty.call(dictionary,normalized))return dictionary[normalized];
    // Dynamic navigation labels: keep section numbers, translate only the words.
-   let match=normalized.match(/^Section (\d+) of 5$/i);
-   if(match)return "Afsnit "+match[1]+" af 5";
+   let match=normalized.match(/^Section (\d+) of (5|6)$/i);
+   if(match)return "Afsnit "+match[1]+" af "+match[2];
    match=normalized.match(/^(\d{2})\s*\/\s*(\d{2})\s*·?\s*PRESS & HOLD$/i);
    if(match)return match[1]+" / "+match[2]+" · HOLD INDE";
    match=normalized.match(/^(\d+)\s+(PROJECT|PROJECTS|GUIDE|GUIDES|SKILL|SKILLS)$/);
