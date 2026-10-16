@@ -64,8 +64,8 @@
 .exp-b .exp-kicker{font-size:9px}
 .exp-b .exp-note{white-space:normal;display:block;margin-top:12px}
 .exp-c{
- left:50%;top:13.4%;transform:translateX(-50%);
- width:min(800px,74vw);padding:10px 25px 16px;
+ left:clamp(26px,3.2vw,58px);top:7.5%;transform:none;
+ width:min(810px,69vw);padding:10px 25px 16px;
  border-radius:100px;background:linear-gradient(90deg,rgba(16,11,26,.89),rgba(59,29,81,.87),rgba(16,11,26,.89));
  border:1px solid #d1badb65;
  box-shadow:0 14px 60px #13071f50,0 0 50px #ad61e514,inset 0 1px #ffffff35;
@@ -109,7 +109,7 @@
 @media(max-width:1000px){
  .exp-b{right:4.5%;width:38vw}
  .exp-a{width:83vw;bottom:9%}
- .exp-c{width:85vw;top:18%;padding:10px 17px}
+ .exp-c{width:76vw;top:20%;padding:10px 17px}
  .exp-lab{top:calc(var(--header-h,80px) + 9px)}
 }
 @media(max-width:760px){
@@ -129,7 +129,7 @@
  .exp-b .exp-fallback{font-size:10px}
  .exp-b .exp-label{font-size:7px}
  .exp-b .exp-note{display:none}
- .exp-c{width:90vw;top:7%;padding:7px 9px;border-radius:18px;gap:8px}
+ .exp-c{width:90vw;top:23%;padding:7px 9px;border-radius:18px;gap:8px;left:5%}
  .exp-c .exp-kicker{flex:0 0 53px;font-size:7px;line-height:1.35}
  .exp-c .exp-art{height:32px}
  .exp-c .exp-art img{max-height:26px}
