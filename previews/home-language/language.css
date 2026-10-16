@@ -1,0 +1,48 @@
+/* Homepage EN/DA preview only: same cinematic site, one discreet header switch. */
+.site-header{position:fixed}
+.site-header .navigation{margin-right:71px}
+.language-switch{
+  appearance:none;position:absolute;right:3.1%;top:50%;
+  transform:translateY(-50%);z-index:112;
+  display:flex;align-items:center;justify-content:center;
+  width:51px;height:37px;min-width:44px;
+  border:1px solid rgba(237,186,249,.56);border-radius:9px;
+  background:rgba(38,19,53,.78);color:#fcf0ff;
+  box-shadow:inset 0 1px rgba(255,255,255,.09);
+  font:800 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;cursor:pointer;transition:background .17s,border-color .17s;
+  -webkit-tap-highlight-color:transparent;
+}
+.language-switch:hover{background:rgba(96,35,121,.92);border-color:#f1cbff}
+.language-switch:focus-visible{outline:2px solid white;outline-offset:3px}
+.language-switch[aria-busy="true"]{opacity:.5}
+html[lang="da"] body.frame-one .frame-stage .hero-text{
+  font-size:clamp(42px,6.1vw,94px)
+}
+html[lang="da"] body.frame-one .frame-stage #chapter-two .chapter-title{
+  font-size:clamp(49px,7.1vw,104px)
+}
+html[lang="da"] body.frame-one .frame-five-contact .contact-heading{
+  font-size:clamp(39px,4.8vw,78px)
+}
+@media (max-width:1024px){
+ .site-header .navigation{margin-right:0}
+ .language-switch{right:calc(4.5% + 55px);height:38px}
+}
+@media (max-width:760px){
+ .language-switch{right:calc(5% + 55px);height:39px;width:48px;font-size:11px}
+ html[lang="da"] body.frame-one .frame-stage .hero-text{
+   font-size:clamp(27px,7.45vw,49px)
+ }
+ html[lang="da"] body.frame-one .frame-stage #chapter-two .chapter-title{
+   font-size:clamp(39px,10.0vw,70px)
+ }
+ html[lang="da"] body.frame-one .frame-five-contact .contact-heading{
+   font-size:clamp(35px,9.5vw,57px)
+ }
+}
+@media (max-width:360px){
+ html[lang="da"] body.frame-one .frame-stage .hero-text{font-size:clamp(25px,7.4vw,32px)}
+ html[lang="da"] body.frame-one .frame-stage #chapter-two .chapter-title{font-size:clamp(36px,10vw,50px)}
+}
+@media(prefers-reduced-motion:reduce){.language-switch{transition:none}}
