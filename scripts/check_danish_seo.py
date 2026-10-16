@@ -42,8 +42,10 @@ def main():
     seen_descriptions = set()
     if len(urls) != len(set(urls)):
         errors.append("Sitemap contains duplicate URLs")
-    if len(urls) != 23:
-        errors.append(f"Expected 23 intentional public pages, got {len(urls)}")
+    if len(urls) != 24:
+        errors.append(f"Expected 24 intentional public pages, got {len(urls)}")
+    if HOST + "/it-drift/" not in urls:
+        errors.append("Danish IT-drift landing page missing from sitemap")
     for url in urls:
         parsed = urlparse(url)
         if parsed.scheme != "https" or parsed.netloc != "arkitekts.dk":
@@ -69,6 +71,16 @@ def main():
             errors.append(f"Noindex on public page: {url}")
         if p.danish_sections != 1:
             errors.append(f"Expected one Danish context section on {url}; got {p.danish_sections}")
+    # Country-specific content must be visible and genuinely Danish, not metadata only.
+    dk_page = (ROOT / "it-drift" / "index.html").read_text(encoding="utf-8")
+    if '<html lang="da">' not in dk_page or "<h1" not in dk_page:
+        errors.append("Danish IT-drift page requires a Danish language declaration and H1")
+    for term in ("Linux-serverdrift", "Logstash", "Elasticsearch", "Kafka", "Ansible"):
+        if term not in dk_page:
+            errors.append(f"Danish IT-drift guide missing relevant technical section: {term}")
+    for path in ("index.html", "profile/index.html", "software-skills/index.html", "technical-guides/index.html"):
+        if 'href="/it-drift/"' not in (ROOT / path).read_text(encoding="utf-8"):
+            errors.append(f"Missing internal Danish guide link: {path}")
     # Keep every old indexed technical article URL working after the WordPress move.
     # An instant meta refresh is supported as a permanent move on static GitHub Pages.
     for url in urls:
