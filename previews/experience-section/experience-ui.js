@@ -9,7 +9,7 @@
  selector.setAttribute("aria-label","Vælg design til den nye erfaringssektion");
  selector.innerHTML=[
   '<span class="experience-select-note">NY SEKTION 03</span>',
-  '<button type="button" data-exp-option="a" aria-pressed="true">01 · Tekst</button>',
+  '<button type="button" data-exp-option="a" aria-pressed="true">01 · Spejl</button>',
   '<button type="button" data-exp-option="b" aria-pressed="false">02 · Buer</button>',
   '<button type="button" data-exp-option="c" aria-pressed="false">03 · Fokus</button>',
   '<button type="button" class="experience-jump" data-exp-replay>Se animation ↻</button>',
@@ -42,9 +42,9 @@
  const translated=[
    [".experience-topline span:first-child","03 / ERFARING","03 / EXPERIENCE"],
    [".experience-topline span:last-child","ARBEJDSPLADSER & FAGLIGE PROJEKTER","WORKPLACES & PROFESSIONAL PROJECTS"],
-   [".experience-eyebrow","FRA IDÉ TIL DRIFT","FROM IDEAS TO OPERATIONS"],
-   [".experience-headline h2","Erfaring, der<br><em>skaber værdi.</em>","Experience<br><em>that delivers.</em>"],
-   [".experience-headline p","Jeg har arbejdet med IT-drift og udvikling i både offentlige organisationer og private virksomheder.","I've worked on IT operations and software development across the public and private sectors."],
+   [".experience-eyebrow","FRA KODE TIL PRAKSIS","FROM CODE TO PRACTICE"],
+   [".experience-headline h2","Erfaring i<br><em>praksis.</em>","Experience<br><em>in practice.</em>"],
+   [".experience-headline p","Fra Linux og platformdrift til softwareudvikling. Her er organisationerne bag mine arbejdsopgaver og projekter.","From Linux and platform operations to software development. These organisations are part of my professional work and projects."],
    ['[data-company="sit"] .experience-number',"01 / OFFENTLIG IT","01 / PUBLIC IT"],
    ['[data-company="skat"] .experience-number',"02 / OFFENTLIG IT","02 / PUBLIC IT"],
    ['[data-company="ku"] .experience-number',"03 / FAGLIGT PROJEKT","03 / RESEARCH PROJECT"],
@@ -54,7 +54,7 @@
    ['[data-company="ku"] .experience-company-detail',"Forskningsprojekt og software","Research project & software"],
    ['[data-company="twentyfour"] .experience-company-detail',"Webudvikling og integration","Web development & integration"],
    [".experience-bottomline span:first-child","INFRASTRUKTUR <i>·</i> UDVIKLING <i>·</i> SAMARBEJDE","INFRASTRUCTURE <i>·</i> DEVELOPMENT <i>·</i> COLLABORATION"],
-   [".experience-bottomline span:last-child","04 ORGANISATIONER","04 ORGANISATIONS"]
+   [".experience-bottomline span:last-child","SEKTION 03 / 06","SECTION 03 / 06"]
  ];
  function refreshLanguage(){
   const da=document.documentElement.lang!=="en";
@@ -66,7 +66,7 @@
    else el.textContent=text;
   }
   section.setAttribute("aria-label",da?"Afsnit tre: Erfaring fra arbejdspladser og projekter":"Section three: Workplaces and professional projects");
-  const texts=da?["NY SEKTION 03","01 · Tekst","02 · Buer","03 · Fokus","Sektion 03 ↘"]:["NEW SECTION 03","01 · Type","02 · Arches","03 · Focus","Section 03 ↘"];
+  const texts=da?["NY SEKTION 03","01 · Spejl","02 · Buer","03 · Fokus","Sektion 03 ↘"]:["NEW SECTION 03","01 · Mirror","02 · Arches","03 · Focus","Section 03 ↘"];
   selector.querySelector(".experience-select-note").textContent=texts[0];
   buttons.forEach((b,i)=>{b.textContent=texts[i+1]});
   selector.querySelector("[data-exp-show]").textContent=texts[4];
@@ -114,6 +114,7 @@
  function setReveal(value){
    reveal=clamp(value);
    section.style.setProperty("--experience-reveal",reveal.toFixed(4));
+   section.style.setProperty("--puzzle-complete",smooth((reveal-.04)/.92).toFixed(4));
    let fullyVisible=0;
    firms.forEach((firm,i)=>{
      const entry=smooth((reveal-i*.20-.025)/.175);
