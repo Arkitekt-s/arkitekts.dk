@@ -18,12 +18,12 @@ body.frame-one .site-header .site-language-switch{
 }
 body.frame-one .site-header .site-language-switch:hover{background:#72378f}
 @media(max-width:1024px){
- .site-header .navigation{margin-right:60px}
- .site-header .menu-button{margin-right:58px}
- .site-header .site-language-switch{right:clamp(14px,3vw,35px);min-width:47px;height:39px}
+ .site-header .navigation{margin-right:0}
+ .site-header .site-language-switch{
+   right:calc(4.5% + 55px);
+   min-width:47px;height:39px
+ }
 }
 @media(max-width:760px){
- .site-header .navigation{margin-right:0}
- .site-header .menu-button{margin-right:58px}
- .site-header .site-language-switch{right:clamp(12px,4vw,23px)}
+ .site-header .site-language-switch{right:calc(5% + 54px)}
 }
