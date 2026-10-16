@@ -66,7 +66,7 @@ try:
               };
             }""")
             page.locator("#site-language-switch").click(timeout=8500)
-            # First page: EN => DA; subsequent pages load DA via localStorage and clicking goes to EN.
+            # Every route starts in English; switch to Danish and back.
             after=page.evaluate("""() => ({
               lang:document.documentElement.lang,
               buttonLabel:document.querySelector('#site-language-switch')?.textContent,
@@ -77,6 +77,17 @@ try:
                 return r?[r.x,r.y,r.width,r.height]:null;})(),
               bodyOverflow:document.documentElement.scrollWidth-innerWidth
             })""")
+            if before["lang"]!="en" or before["buttonLabel"]!="DA":
+                issues.append(f"{device}:{route} English default was not restored")
+            if after["lang"]!="da" or after["buttonLabel"]!="EN":
+                issues.append(f"{device}:{route} Danish switch or label failed")
+            page.locator("#site-language-switch").click(timeout=8500)
+            back=page.evaluate("""() => ({
+               lang:document.documentElement.lang,
+               button:document.querySelector('#site-language-switch')?.textContent
+            })""")
+            if back["lang"]!="en" or back["button"]!="DA":
+                issues.append(f"{device}:{route} English restore failed")
             if response.status!=200:issues.append(f"{device}:{route} HTTP {response.status}")
             if before["buttons"]!=1:issues.append(f"{device}:{route} expected one language button")
             if before["nav"]!=after["nav"]:issues.append(f"{device}:{route} navigation links changed")
