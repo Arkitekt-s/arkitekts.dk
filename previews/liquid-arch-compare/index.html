@@ -81,7 +81,7 @@ iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#120
 <main class="preview" aria-label="Live copy of Soheil homepage with selected liquid effect">
   <iframe id="home" title="Interactive homepage preview" allow="autoplay; fullscreen" loading="eager"></iframe>
   <span class="status" id="status" role="status">LOADING REAL HOMEPAGE</span>
-  <div class="guide">Move your cursor into any arch, then out. Watch the video colors stretch and return.</div>
+  <div class="guide">Move inside an arch, pull outward, then release. The liquid should return.</div>
 </main>
 <footer class="footerbar">
   <span>Preview only · Live homepage is unchanged · Works best with a mouse in desktop Chrome</span>
@@ -126,8 +126,8 @@ iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#120
       d.head.appendChild(style);
       status.textContent=labels[choice].toUpperCase()+" · INTERACTIVE";
       // The demo button is still in the DOM; the outer toolbar triggers it.
-      // Start with visible movement, not an empty static first impression.
-      window.setTimeout(replay,850);
+      // Do not trigger liquid until actual mouse interaction or Replay click.
+      // The film keeps playing while the effect rests.
     }catch(e){status.textContent="PREVIEW READY · MOVE MOUSE INTO AN ARCH";}
   });
   buttons.forEach(function(btn){btn.addEventListener("click",function(){load(btn.dataset.choice);});});
