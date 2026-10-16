@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#150c20">
+<title>Soheil — Interactive Liquid Arch | Compare 3 Homepage Previews</title>
+<style>
+:root{color-scheme:dark;--ink:#180b25;--edge:#ffffff25;--active:#e9a3fc}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#120b1d;color:#f8efff;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+body{display:flex;flex-direction:column;min-height:100dvh;overflow:hidden}
+button,a,input{font:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #faf2ff;outline-offset:3px}
+.toolbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:92px;padding:13px clamp(14px,2.6vw,38px);border-bottom:1px solid #d7a0ec30;background:linear-gradient(115deg,#21102f,#120d1d);box-shadow:0 12px 32px #0004;z-index:5}
+.identity{display:flex;align-items:center;gap:13px;min-width:225px}
+.monogram{font-weight:900;font-size:32px;letter-spacing:-.14em;line-height:1}
+.monogram i{color:#de47fc;font-style:normal}
+.name{display:grid;gap:4px}
+.eyebrow{font:750 10px ui-monospace,SFMono-Regular,monospace;letter-spacing:.18em;color:#dca7ed}
+.name strong{font-size:15px;letter-spacing:-.025em}
+.name small{font-size:11px;color:#d5bddf}
+.choices{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center}
+.choice{min-height:56px;border-radius:11px;padding:9px 15px;min-width:123px;border:1px solid #a67ab956;cursor:pointer;text-align:left;background:#382343;color:#f4e9fb;transition:background .18s,border-color .18s,transform .18s}
+.choice:hover{border-color:#eda7fa;transform:translateY(-1px)}
+.choice[aria-pressed=true]{background:linear-gradient(130deg,#cd55e8,#8f4bba);border-color:#f7cfff;box-shadow:0 0 0 1px #f7d3ff2e}
+.choice b{display:block;font-size:12px;margin-bottom:3px}
+.choice small{font-size:10px;white-space:nowrap;opacity:.85}
+.controls{display:flex;gap:9px;align-items:center}
+.play{padding:12px 14px;background:#ecbcfa;color:#221029;border:0;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.play:hover{background:white}
+.reset{border:1px solid #9667a6;background:#30203c;color:#f8edff;border-radius:9px;min-height:39px;padding:9px 12px;font-size:12px;cursor:pointer}
+.preview{position:relative;flex:1;min-height:0;background:#120b1d}
+iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#120b1d}
+.guide{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:3;background:#10091cce;color:#fff;border:1px solid #e6b2ff60;padding:10px 16px;border-radius:999px;white-space:nowrap;font-size:12px;backdrop-filter:blur(12px);text-align:center}
+.status{position:absolute;left:18px;top:16px;padding:7px 12px;background:#11071edc;color:#edd1f7;border:1px solid #e4c2f750;border-radius:7px;font:700 10px ui-monospace,monospace;letter-spacing:.09em;pointer-events:none;z-index:2}
+.footerbar{flex:0 0 auto;min-height:42px;padding:10px clamp(14px,2.6vw,38px);background:#120b1d;border-top:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.footerbar span{color:#d8c1e2;font-size:11px}
+.footerbar a{color:#f1c1ff;font-size:11px;text-decoration:none}
+.footerbar a:hover{text-decoration:underline}
+@media(max-width:950px){
+ .toolbar{flex-wrap:wrap;justify-content:center}
+ .identity{min-width:unset;margin-right:auto}
+ .controls{margin-left:auto}
+ .choice{min-width:106px}
+}
+@media(max-width:640px){
+ .toolbar{gap:10px;padding:10px 12px}
+ .identity{width:100%;justify-content:center}
+ .choices{width:100%;flex-wrap:nowrap;gap:5px}
+ .choice{min-width:0;flex:1;padding:8px 5px;text-align:center;min-height:44px}
+ .choice b{font-size:10px}
+ .choice small{font-size:9px}
+ .controls{width:100%;justify-content:center}
+ .play,.reset{padding:8px 13px;min-height:36px}
+ .status{top:8px;left:8px;font-size:8px}
+ .guide{bottom:12px;font-size:10px;padding:8px 10px;max-width:95%;white-space:normal}
+ .footerbar{padding:8px 12px}
+ .footerbar span,.footerbar a{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.choice{transition:none}}
+</style>
+</head>
+<body>
+<header class="toolbar" aria-label="Liquid arch preview options">
+  <div class="identity">
+    <div class="monogram" aria-hidden="true">S<i>.</i></div>
+    <div class="name"><span class="eyebrow">SOHEIL · HOMEPAGE LAB</span><strong>Liquid video arch</strong><small>Three interactive previews · original homepage design</small></div>
+  </div>
+  <div class="choices" role="group" aria-label="Choose one of three liquid effects">
+    <button class="choice" data-choice="a" type="button" aria-pressed="true"><b>01 · Liquid Gel</b><small>Soft &amp; elegant</small></button>
+    <button class="choice" data-choice="b" type="button" aria-pressed="false"><b>02 · Liquid Splash</b><small>Bold &amp; playful</small></button>
+    <button class="choice" data-choice="c" type="button" aria-pressed="false"><b>03 · Liquid Silk</b><small>Flowing &amp; hypnotic</small></button>
+  </div>
+  <div class="controls">
+    <button class="play" id="replay" type="button">▶ Replay effect</button>
+    <button class="reset" id="open" type="button" title="Open the selected preview on its own">Full screen ↗</button>
+  </div>
+</header>
+<main class="preview" aria-label="Live copy of Soheil homepage with selected liquid effect">
+  <iframe id="home" title="Interactive homepage preview" allow="autoplay; fullscreen" loading="eager"></iframe>
+  <span class="status" id="status" role="status">LOADING REAL HOMEPAGE</span>
+  <div class="guide">Move your cursor into any arch, then out. Watch the video colors stretch and return.</div>
+</main>
+<footer class="footerbar">
+  <span>Preview only · Live homepage is unchanged · Works best with a mouse in desktop Chrome</span>
+  <a href="https://arkitekts.dk/" target="_blank" rel="noopener">Open current homepage ↗</a>
+</footer>
+<script>
+(function(){
+  "use strict";
+  var iframe=document.getElementById("home");
+  var status=document.getElementById("status");
+  var buttons=[].slice.call(document.querySelectorAll("[data-choice]"));
+  var choice="a";
+  var counter=0;
+  var labels={a:"01 · Liquid Gel",b:"02 · Liquid Splash",c:"03 · Liquid Silk"};
+  var root="/previews/realistic-liquid/";
+  function frameUrl(){return root+"?compare="+choice+"&session="+counter+"#"+choice;}
+  function updateButtons(){
+    buttons.forEach(function(button){button.setAttribute("aria-pressed",String(button.dataset.choice===choice));});
+  }
+  function load(next){
+    if(!labels[next])return;
+    choice=next;
+    counter++;
+    updateButtons();
+    status.textContent="LOADING "+labels[choice].toUpperCase();
+    iframe.src=frameUrl();
+  }
+  function replay(){
+    try{
+      var d=iframe.contentDocument;
+      var demo=d&&d.getElementById("liquid-demo");
+      if(demo){demo.click();status.textContent=labels[choice].toUpperCase()+" · DEMO PLAYING";}
+      else status.textContent="MOVE THE MOUSE INSIDE AN ARCH TO PREVIEW";
+    }catch(e){status.textContent="MOVE THE MOUSE INSIDE AN ARCH TO PREVIEW";}
+  }
+  iframe.addEventListener("load",function(){
+    try{
+      var d=iframe.contentDocument;
+      var style=d.createElement("style");
+      // Keep the exact homepage visible without a second control panel.
+      style.textContent=".liquid-preview-panel{display:none!important}";
+      d.head.appendChild(style);
+      status.textContent=labels[choice].toUpperCase()+" · INTERACTIVE";
+      // The demo button is still in the DOM; the outer toolbar triggers it.
+      // Start with visible movement, not an empty static first impression.
+      window.setTimeout(replay,850);
+    }catch(e){status.textContent="PREVIEW READY · MOVE MOUSE INTO AN ARCH";}
+  });
+  buttons.forEach(function(btn){btn.addEventListener("click",function(){load(btn.dataset.choice);});});
+  document.getElementById("replay").addEventListener("click",replay);
+  document.getElementById("open").addEventListener("click",function(){
+    window.open(frameUrl(),"_blank","noopener,noreferrer");
+  });
+  var start=new URLSearchParams(location.search).get("model");
+  load(labels[start]?start:"a");
+})();
+</script>
+</body>
+</html>
