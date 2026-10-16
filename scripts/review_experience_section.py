@@ -48,10 +48,8 @@ try:
       })""")
       # Verify the original arch-morph video is playing BEHIND the experience
       # section. This test catches the old opaque-background failure.
-      page.wait_for_function("""() => {
-        const v=document.getElementById('arch-morph-video');
-        return v&&v.readyState>=2&&!v.paused&&v.currentTime>=0;
-      }""",timeout=18000)
+      # Even when media decoding fails, collect diagnostics instead of timing out.
+      page.wait_for_timeout(2400)
       film0=page.evaluate("""() => {
         const v=document.getElementById('arch-morph-video');
         const layer=document.getElementById('arch-morph-media');
@@ -63,7 +61,20 @@ try:
           clip:layer.style.clipPath,morph:layer.dataset.morphProgress,
           cover:background,
           sectionOpaqueColor:getComputedStyle(shade).backgroundColor,
-          videoCount:document.querySelectorAll('#experience-section video').length
+          videoCount:document.querySelectorAll('#experience-section video').length,
+          errorCode:v.error?.code||0,
+          networkState:v.networkState,
+          currentTime:v.currentTime,
+          videoSource:v.getAttribute('src'),
+          preload:v.preload,
+          mediaCapabilities:v.canPlayType('video/mp4'),
+          visibility:document.visibilityState,
+          bodyPauseClass:document.body.classList.contains('motion-off'),
+          reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,
+          layoutAlpha:getComputedStyle(document.getElementById('arch-morph-media')).opacity,
+          videoOpacity:getComputedStyle(v).opacity,
+          filmClip:getComputedStyle(layer).clipPath,
+          fullscreenMask:layer.dataset.morphProgress
         };
       }""")
       page.wait_for_timeout(1450)
@@ -76,6 +87,7 @@ try:
         failures.append(f"{name}: not the preview's expected original local film: {film0}")
       if film1["t"]-film0["t"]<.30 or film1["paused"]:
         failures.append(f"{name}: background movie does not move {film0} => {film1}")
+        print("VIDEO_PLAYBACK_DIAGNOSTICS",json.dumps({"viewport":name,"start":film0,"end":film1}),flush=True)
       if film0["videoCount"] or not film0["clip"] or film0["morph"]!="1.000":
         failures.append(f"{name}: duplicated or unmasked background video: {film0}")
       if film0["sectionOpaqueColor"] not in ("rgba(0, 0, 0, 0)","transparent"):
