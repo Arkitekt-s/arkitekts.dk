@@ -8,7 +8,7 @@
  const key=s=>String(s).replace(/\u00a0/g," ").replace(/\s+/g," ").trim();
  const protectedSelector="script,style,noscript,template,code,pre,kbd,samp,svg,canvas,textarea,iframe,math,[contenteditable],[data-no-translate]";
  const textHistory=new WeakMap(),attrHistory=new WeakMap();
- let lang="en",working=false,queued=false;
+ let lang="da",working=false,queued=false;
  function lookup(input){
    const normalized=key(input);
    if(!normalized)return null;
@@ -118,7 +118,7 @@
    }
    updateDynamicStatus();
    working=false;
-   if(persist)try{localStorage.setItem("arkitekts-language",lang)}catch{}
+   if(persist)try{localStorage.setItem("arkitekts-language-v2",lang)}catch{}
  }
  const header=document.querySelector(".site-header");
  if(!header)return;
@@ -131,11 +131,13 @@
  switcher.textContent="DA";
  header.appendChild(switcher);
  let initial=null;
- try{initial=localStorage.getItem("arkitekts-language")}catch{}
+ // A new preference key makes Danish the default at rollout, even for
+ // visitors who saved English under the previous English-first release.
+ try{initial=localStorage.getItem("arkitekts-language-v2")}catch{}
  const requested=new URLSearchParams(location.search).get("lang");
  if(requested==="en"||requested==="da")initial=requested;
  switcher.addEventListener("click",()=>applyLanguage(lang==="en"?"da":"en"));
- applyLanguage(initial==="da"?"da":"en",true);
+ applyLanguage(initial==="en"?"en":"da",true);
  const observer=new MutationObserver(changes=>{
    if(working||queued)return;
    queued=true;
