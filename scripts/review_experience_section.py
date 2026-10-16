@@ -46,6 +46,50 @@ try:
         sidebarValue:document.getElementById('portal-current')?.textContent,
         lang:document.documentElement.lang
       })""")
+      # Verify the original arch-morph video is playing BEHIND the experience
+      # section. This test catches the old opaque-background failure.
+      page.wait_for_function("""() => {
+        const v=document.getElementById('arch-morph-video');
+        return v&&v.readyState>=2&&!v.paused&&v.currentTime>=0;
+      }""",timeout=18000)
+      film0=page.evaluate("""() => {
+        const v=document.getElementById('arch-morph-video');
+        const layer=document.getElementById('arch-morph-media');
+        const shade=document.querySelector('#experience-section .experience-atmosphere');
+        const background=getComputedStyle(shade).backgroundImage;
+        return {
+          src:v.currentSrc,paused:v.paused,t:v.currentTime,rate:v.playbackRate,
+          ready:v.readyState,dimensions:[v.videoWidth,v.videoHeight],
+          clip:layer.style.clipPath,morph:layer.dataset.morphProgress,
+          cover:background,
+          sectionOpaqueColor:getComputedStyle(shade).backgroundColor,
+          videoCount:document.querySelectorAll('#experience-section video').length
+        };
+      }""")
+      page.wait_for_timeout(1450)
+      film1=page.evaluate("""() => ({
+        src:document.getElementById('arch-morph-video').currentSrc,
+        t:document.getElementById('arch-morph-video').currentTime,
+        paused:document.getElementById('arch-morph-video').paused
+      })""")
+      if not film0["src"].endswith("/assets/videos/synthid-ai-25744122.mp4"):
+        failures.append(f"{name}: not the preview's expected original local film: {film0}")
+      if film1["t"]-film0["t"]<.30 or film1["paused"]:
+        failures.append(f"{name}: background movie does not move {film0} => {film1}")
+      if film0["videoCount"] or not film0["clip"] or film0["morph"]!="1.000":
+        failures.append(f"{name}: duplicated or unmasked background video: {film0}")
+      if film0["sectionOpaqueColor"] not in ("rgba(0, 0, 0, 0)","transparent"):
+        failures.append(f"{name}: new section covers the movie with solid background")
+      for scene in (1,2,3):
+        page.evaluate(f"window.__experiencePreviewGo({scene},true)")
+        page.wait_for_timeout(420)
+      film2=page.evaluate("""() => ({
+        src:document.getElementById('arch-morph-video').currentSrc,
+        t:document.getElementById('arch-morph-video').currentTime,
+        paused:document.getElementById('arch-morph-video').paused
+      })""")
+      if film2["src"]!=film1["src"] or film2["t"]<=film1["t"] or film2["paused"]:
+        failures.append(f"{name}: film restarted/changed between scenes 1,2,3: {film1} => {film2}")
       if current["step"]!="3" or current["sceneOpacity"]<.95:failures.append(f"{name}: new scene not visible {current}")
       if current["organisations"]!=4 or current["photoCount"]!=7 or not current["originalThird"]:failures.append(f"{name}: content missing")
       if current["liveArches"]!=3 or not current["loadedOriginalFilm"]:failures.append(f"{name}: original videos missing")
@@ -65,7 +109,7 @@ try:
         number=page.locator("body").get_attribute("data-current-frame")
         if number!=str(target):failures.append(f"{name}: scene {target} reports {number}")
       if errors:failures.extend(f"{name}: JS exception {x}" for x in errors[:6])
-      results.append({"viewport":name,"entry":current,"runtime_errors":errors})
+      results.append({"viewport":name,"entry":current,"filmAtSection3":film0,"filmAfter":film1,"filmThrough1to3":film2,"runtime_errors":errors})
       ctx.close()
     browser.close()
 finally:
