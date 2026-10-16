@@ -62,7 +62,7 @@ function updateLanguage(){
 }
 const smooth=x=>{const a=Math.max(0,Math.min(1,x));return a*a*(3-2*a)};
 const visibility=(p,from,shown,closing,to)=>smooth((p-from)/(shown-from))*(1-smooth((p-closing)/(to-closing)));
-const windows={a:[.87,1.00,1.33,1.50],b:[.93,1.09,1.52,1.83],c:[1.35,1.53,1.96,2.19]};
+const windows={a:[.87,1.00,1.33,1.50],b:[.84,.98,1.48,1.76],c:[1.04,1.23,1.47,1.74]};
 function render(){
  const p=Number(document.body.dataset.journeyProgress||0);
  for(const [variant,panel] of Object.entries(panels)){
