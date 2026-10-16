@@ -189,6 +189,29 @@ try:
         page.wait_for_timeout(130)
         option=page.locator("#experience-section").get_attribute("data-layout")
         if option!=key:failures.append(f"{name}: option {key} not switching")
+        geometry=page.evaluate("""() => {
+          const box=selector=>{const r=document.querySelector(selector).getBoundingClientRect();
+             return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,cx:r.x+r.width/2}};
+          return {
+            headline:box('#experience-section .experience-headline'),
+            logos:box('#experience-section .experience-organisations'),
+            title:box('#experience-section .experience-headline h2'),
+            controls:box('.experience-select'),
+            stage:box('#frame'),
+            pageOverflow:document.documentElement.scrollWidth-innerWidth,
+            isRightAligned:document.querySelector('#experience-section').dataset.layout,
+            spatialPhase:document.querySelector('#experience-section').style.getPropertyValue('--spatial-enter'),
+            thread:!!document.querySelector('#experience-section .experience-thread')
+          }
+        }""")
+        if name=="desktop" and geometry["headline"]["cx"]<=geometry["logos"]["cx"]+90:
+          failures.append(f"{name} option {key}: experience headline does not complete the right side of the composition: {geometry}")
+        if geometry["controls"]["right"]>width+2 or geometry["controls"]["x"]<0:
+          failures.append(f"{name} option {key}: preview controls clipped: {geometry}")
+        if geometry["pageOverflow"]>5:
+          failures.append(f"{name} option {key}: unintended horizontal scrolling: {geometry}")
+        if not geometry["thread"]:
+          failures.append(f"{name} option {key}: no connective progress thread")
         page.screenshot(path=str(out/f"{name}-option-{key}.png"),animations="disabled",timeout=15000)
       # Direct navigation in the isolated scroll engine to confirm all scenes.
       for target,element in [(2,"chapter-two"),(3,"experience-section"),(4,"chapter-three"),(5,"frame-four-gallery"),(6,"frame-five-contact")]:
