@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f6fb">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<title>IT-drift i Danmark | Linux, Kafka, Logstash og Elasticsearch</title>
+<meta name="description" content="Praktisk guide til IT-drift og Linux-serverdrift i Danmark: drift, overvågning, fejlfinding og automatisering af Kafka, Logstash og Elasticsearch.">
+<link rel="canonical" href="https://arkitekts.dk/it-drift/">
+<link rel="icon" href="../assets/soheil-favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../contact/contact.css">
+<link rel="stylesheet" href="../technical-guides/guides.css">
+<link rel="stylesheet" href="../technical-guides/article.css">
+<link rel="stylesheet" href="../assets/name-hover.css">
+<script defer src="../technical-guides/article.js"></script>
+<script defer src="../assets/name-hover.js"></script>
+<meta property="og:type" content="article">
+<meta property="og:locale" content="da_DK">
+<meta property="og:title" content="IT-drift i Danmark | Linux, Kafka, Logstash og Elasticsearch">
+<meta property="og:description" content="Praktisk guide til Linux-serverdrift, logning, overvågning og automatisering af Kafka, Logstash og Elasticsearch i produktionsmiljøer.">
+<meta property="og:url" content="https://arkitekts.dk/it-drift/">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"IT-drift i Danmark: Linux, Kafka, Logstash og Elasticsearch","description":"Praktisk dansk gennemgang af Linux-serverdrift, Kafka, Logstash og Elasticsearch i test- og produktionsmiljøer.","inLanguage":"da-DK","datePublished":"2026-10-16","dateModified":"2026-10-16","author":{"@type":"Person","name":"Soheil Fattahieh","url":"https://arkitekts.dk/profile/"},"mainEntityOfPage":"https://arkitekts.dk/it-drift/","about":[{"@type":"Thing","name":"IT-drift"},{"@type":"Thing","name":"Linux-serverdrift"},{"@type":"SoftwareApplication","name":"Apache Kafka"},{"@type":"SoftwareApplication","name":"Logstash"},{"@type":"SoftwareApplication","name":"Elasticsearch"}]}</script>
+</head>
+<body class="guides-page">
+<a class="skip-link" href="#content">Gå til indhold</a>
+<div class="contact-atmosphere" aria-hidden="true"><div class="atmosphere-grid"></div><div class="atmosphere-orb"></div></div>
+<div class="page-shell">
+<header class="site-header" aria-label="Navigation">
+  <a class="brand-icon" href="../" aria-label="Forside">S<span>.</span></a>
+  <span class="site-name" aria-label="Soheil Fattahieh">S O H E I L</span>
+  <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Åbn menu"><span></span><span></span><span></span></button>
+  <nav class="navigation" id="navigation" aria-label="Hovednavigation">
+    <a href="../profile/">PROFIL</a>
+    <a href="../portfolio/">PROJEKTER</a>
+    <a href="../software-skills/">KOMPETENCER</a>
+    <a href="../technical-guides/">GUIDES</a>
+    <a class="contact" href="../contact/">KONTAKT</a>
+  </nav>
+</header>
+<main id="content">
+  <nav class="guide-breadcrumb" aria-label="Brødkrumme">
+    <a href="../technical-guides/">TEKNISKE GUIDES <span aria-hidden="true">↖</span></a><span>/</span><span>IT-DRIFT I DANMARK</span>
+  </nav>
+  <section class="guide-article-hero" aria-labelledby="article-title">
+    <div>
+      <p class="guides-kicker"><i></i> DANSK TEKNISK VEJLEDNING <span>—</span> INFRASTRUKTUR</p>
+      <h1 id="article-title">IT-drift af Linux, Kafka og Elasticsearch<span>.</span></h1>
+      <p class="guide-article-intro">Hvordan holder man Linux-servere, logpipelines og Elasticsearch stabile i produktion? Her er en praktisk gennemgang af serverdrift, automatisering og fejlfinding.</p>
+      <ul class="guide-tags"><li>Linux / Red Hat</li><li>Kafka</li><li>Logstash</li><li>Elasticsearch</li><li>Ansible</li></ul>
+      <div class="guide-article-actions"><a href="#hvad-er-it-drift">LÆS VEJLEDNINGEN <span aria-hidden="true">↓</span></a><a href="../profile/">OM MIG <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <div class="guide-article-number" aria-hidden="true">DK</div>
+  </section>
+  <div class="guide-reader">
+    <aside class="guide-contents">
+      <p>PÅ DENNE SIDE</p>
+      <nav aria-label="Indholdsfortegnelse">
+        <a href="#hvad-er-it-drift">Hvad er IT-drift? <span aria-hidden="true">↗</span></a>
+        <a href="#linux-serverdrift">Linux-serverdrift <span aria-hidden="true">↗</span></a>
+        <a href="#kafka-logstash-elasticsearch">Kafka, Logstash og Elasticsearch <span aria-hidden="true">↗</span></a>
+        <a href="#fejlfinding">Fejlfinding i praksis <span aria-hidden="true">↗</span></a>
+        <a href="#ansible">Automatisering med Ansible <span aria-hidden="true">↗</span></a>
+        <a href="#produktion">Drift i produktion <span aria-hidden="true">↗</span></a>
+        <a href="#om-mig">Erfaring og kontakt <span aria-hidden="true">↗</span></a>
+      </nav>
+      <a class="guide-contents-back" href="../technical-guides/">← ALLE GUIDES</a>
+    </aside>
+    <article class="guide-article-body" aria-label="Dansk guide til IT-drift">
+      <h2 id="hvad-er-it-drift" tabindex="-1">Hvad er IT-drift?</h2>
+      <p>IT-drift handler om at holde systemer tilgængelige, sikre og til at vedligeholde. Det gælder både servere, netværksforbindelser, logning, certifikater og de tjenester, som applikationerne bruger. Infrastrukturdrift er ikke kun at starte en server igen efter en fejl. Det er også at forebygge fejl, forstå afhængigheder og sikre, at ændringer kan gentages.</p>
+      <p>I en teknisk platform er der ofte to ansvarsområder: drift af selve infrastrukturen og ejerskab af applikationernes data og funktioner. De kræver tydelige aftaler. Eksempelvis kan platformteamet stå for Linux, kapacitet, installation og Elasticsearch-klyngens helbred, mens et andet team ejer datafelter, indeksering og anvendelse af data.</p>
+      <p>Dette er en teknisk vejledning og en del af min faglige profil som IT- og platformingeniør i København. Det er ikke et tilbud om fuld IT-outsourcing.</p>
+
+      <h2 id="linux-serverdrift" tabindex="-1">Linux-serverdrift på Red Hat</h2>
+      <p>En sund Linux-server skal kunne opdateres, overvåges og fejlfindes uden skjulte manuelle ændringer. For Red Hat Enterprise Linux betyder det blandt andet kontrol af systemd-tjenester, diskkapacitet, logfiler, pakkeversioner og netværk.</p>
+      <h3>En enkel driftskontrol</h3>
+      <pre><code>hostnamectl
+systemctl --failed
+df -h
+free -h
+journalctl -p warning -n 50 --no-pager</code></pre>
+      <p>Disse kommandoer giver et hurtigt overblik. De er ikke en komplet helbredstest. Kapacitet skal også vurderes over tid med overvågning, alarmer og viden om den forventede belastning. Et filsystem kan eksempelvis være stabilt i dag, men stadig vokse for hurtigt til næste uge.</p>
+      <p>Læs også min <a href="../technical-guides/03-linux-red-hat-cheat-sheet-html-rendered/">Linux- og Red Hat-oversigt</a> med kommandoer til tjenester, filsystemer og systemadministration.</p>
+
+      <h2 id="kafka-logstash-elasticsearch" tabindex="-1">Kafka, Logstash og Elasticsearch i drift</h2>
+      <p>En almindelig arkitektur til central logning sender hændelser fra Filebeat eller Auditbeat til Apache Kafka. Logstash læser fra et Kafka-topic, validerer eller omformer data og sender dem videre til Elasticsearch. Andre godkendte logmodtagere kan også indgå i løsningen. Kafka, Logstash og Elasticsearch har forskellige opgaver:</p>
+      <table><thead><tr><th>Komponent</th><th>Driftsansvar</th><th>Kontrol</th></tr></thead><tbody>
+        <tr><td>Kafka</td><td>Transport og buffering af hændelser</td><td>Topics, adgangsrettigheder, forbrugergrupper og lag</td></tr>
+        <tr><td>Logstash</td><td>Læsning, filtrering og videresendelse</td><td>Pipelinefejl, køer, hukommelse og output</td></tr>
+        <tr><td>Elasticsearch</td><td>Indeksering, søgning og lagring</td><td>Cluster health, shards, diskforbrug og indekslivscyklus</td></tr>
+        <tr><td>Linux</td><td>Servere og tjenester</td><td>CPU, RAM, disk, netværk, systemd og patchniveau</td></tr>
+      </tbody></table>
+      <p>Hvis dokumenter ikke vises i Elasticsearch, er det ikke nok at kontrollere, om Elasticsearch er startet. Fejlen kan ligge i Kafka-adgang, et forkert topic, en forbrugergruppe, en Logstash-filterfejl eller et afvist indeks. Derfor skal hele dataflowet undersøges.</p>
+
+      <h2 id="fejlfinding" tabindex="-1">Fejlfinding: Hvor stoppede data?</h2>
+      <ol>
+        <li><strong>Producent:</strong> Bekræft, at Filebeat eller den relevante applikation faktisk sender hændelser, og at eventuelle fejl fremgår af loggen.</li>
+        <li><strong>Kafka:</strong> Undersøg om topic findes, og om den korrekte klient har læseadgang. Se efter forbrugernes lag eller fejl i forbindelsen.</li>
+        <li><strong>Logstash:</strong> Kontrollér pipeline-status, input, filtrering og output. Kig efter afviste hændelser, køopbygning og højt hukommelsesforbrug.</li>
+        <li><strong>Elasticsearch:</strong> Kontrollér klyngens helbred, disktærskler, shards, skriveblokeringer og eventuelle fejl i indekseringen.</li>
+        <li><strong>Slutkontrol:</strong> Bekræft, at en godkendt testhændelse kan følges gennem hele kæden. En grøn klynge alene beviser ikke, at logningen virker.</li>
+      </ol>
+      <h3>Et par sikre kontrolpunkter</h3>
+      <pre><code>systemctl status logstash --no-pager
+journalctl -u logstash -n 100 --no-pager
+
+# Elasticsearch-API: kræver korrekt adgang
+GET /_cluster/health
+GET /_cat/shards?v</code></pre>
+      <p>De to sidste linjer er Elasticsearch API-stier, som bruges med en godkendt HTTP-klient eller i Dev Tools – de er ikke shellkommandoer. Produktionsmiljøer kræver korrekt TLS, autentifikation og adgangsstyring. Del aldrig tokens eller certifikatnøgler i fejlrapporter.</p>
+
+      <h2 id="ansible" tabindex="-1">Automatisering af IT-drift med Ansible</h2>
+      <p>Manuelle rettelser på en server er svære at gentage. Derfor er infrastruktur som kode vigtig i professionel serverdrift. Med Ansible kan man beskrive pakker, tjenester, konfigurationsfiler og forventet sluttilstand. GitHub bruges til versionsstyring og faglig gennemgang af ændringer.</p>
+      <p>En typisk proces er at ændre kode, gennemgå ændringen, teste i et afgrænset miljø og først derefter udrulle til produktion. Følsomme oplysninger hører hjemme i en godkendt secret manager som HashiCorp Vault – ikke i Git-historikken.</p>
+      <p>Det betyder ikke, at alle ændringer er risikofrie. Genstart af tjenester, nye certifikater eller ændrede Kafka-rettigheder kræver stadig planlægning, kontrol og mulighed for at rulle tilbage. Se min <a href="../technical-guides/ansible-enterprise-guide-automation-playbooks-roles-and-production-architecture/">Ansible-guide</a> og <a href="../technical-guides/hashicorp-vault-enterprise-guide-secrets-management-pki-authentication-and-production-architecture/">Vault-guide</a>.</p>
+
+      <h2 id="produktion" tabindex="-1">Stabil drift i produktion</h2>
+      <p>For at vurdere en infrastrukturløsning ser jeg især på fire ting: <strong>tilgængelighed</strong>, <strong>kapacitet</strong>, <strong>sporbare ændringer</strong> og <strong>muligheden for at opdage fejl tidligt</strong>. Det skal være klart, hvem der reagerer på en alarm, hvor fejlen undersøges, og hvordan ændringer testes.</p>
+      <ul>
+        <li><strong>Overvågning:</strong> Sammenhold aktuelle målinger med normale niveauer og kapacitetsgrænser.</li>
+        <li><strong>Indeks og lagring:</strong> Følg Elasticsearch-diskforbrug, shard-fordeling og indekslivscyklus.</li>
+        <li><strong>Logflow:</strong> Overvåg Kafka-lag og Logstash-behandling, ikke kun om processerne kører.</li>
+        <li><strong>Adgang og certifikater:</strong> Kontrollér rettigheder og udløbsdatoer inden driftsstop.</li>
+        <li><strong>Ændringer:</strong> Brug gennemgået kode, testmiljøer, dokumentation og en plan for tilbageførsel.</li>
+      </ul>
+      <p>En god leverance er ikke kun en server, som kan startes. Det er en løsning, hvor andre også kan forstå opsætningen, kontrollere den og overtage driften.</p>
+
+      <h2 id="om-mig" tabindex="-1">IT-infrastruktur og platformdrift i København</h2>
+      <p>Jeg arbejder med implementering, automatisering og fejlfinding af Linux-baserede platforme, blandt andet omkring Elasticsearch, Kafka og Logstash. På <a href="../profile/">min profil</a> kan du læse om min erfaring. På siden med <a href="../software-skills/">IT-kompetencer</a> findes en oversigt over mine teknologier. Du kan også <a href="../contact/">kontakte mig</a> om relevante IT-stillinger og teknisk samarbejde i Danmark.</p>
+    </article>
+  </div>
+  <div class="guide-end"><a href="../technical-guides/">SE FLERE TEKNISKE GUIDES <span aria-hidden="true">↗</span></a><a href="../contact/">KONTAKT <span aria-hidden="true">↗</span></a></div>
+</main>
+<footer class="site-footer" aria-label="Sidefod">
+  <a class="footer-mark" href="../" aria-label="Forside">S.</a>
+  <span class="footer-specialties">LINUX <i>·</i> ANSIBLE <i>·</i> ELASTICSEARCH <i>·</i> KAFKA</span>
+  <span class="footer-location">COPENHAGEN · DENMARK</span>
+</footer>
+</div>
+<section class="danish-search-summary" lang="da" aria-label="Dansk faglig beskrivelse" style="max-width:960px;margin:3rem auto 2rem;padding:1.5rem;color:inherit;font-size:clamp(14px,1.2vw,17px);line-height:1.65"><h2 style="font-size:1.1rem;margin:0 0 .5rem">Praktisk vejledning om IT-drift i Danmark</h2><p style="margin:0">Vejledningen handler om drift af Linux- og Red Hat-servere, Apache Kafka, Logstash, Elasticsearch, fejlfinding og automatisering med Ansible. Den er skrevet til dem, der arbejder med systemadministration og IT-infrastruktur i danske test- og produktionsmiljøer. <a href="/profile/">Erfaring</a> · <a href="/software-skills/">Kompetencer</a> · <a href="/technical-guides/">Flere guides</a>.</p></section>
+</body>
+</html>
