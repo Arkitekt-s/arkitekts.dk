@@ -1,5 +1,4 @@
 /* Language control only. Site layout, scenes, cards and interactions unchanged. */
-.site-header{position:relative}
 .site-header .navigation{margin-right:60px}
 .site-header .site-language-switch{
  position:absolute;right:clamp(16px,3.1vw,52px);top:50%;
