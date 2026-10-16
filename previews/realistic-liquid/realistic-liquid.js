@@ -106,124 +106,144 @@ function archContains(pt){
 }
 function createDrop(i,anchor,count){
  const seed=i*2.399963229728653;
- const spacing=mode==="a"?62:mode==="b"?30:55;
+ const spacing=mode==="a"?38:mode==="b"?58:43;
  return {start:seed,x:anchor.x,y:anchor.y,vx:0,vy:0,
-  radius:(mode==="a"?39:mode==="b"?25:31)+(i%3)*7,
+  radius:32,
   offset:(i-(count-1)/2)*spacing,
   phase:seed,stretch:.76+((i*7)%9)/16};
 }
 function setup(g){
  origin=g;
- const count=mode==="a"?4:mode==="b"?9:6;
+ const count=mode==="a"?2:mode==="b"?3:3;
  drops=Array.from({length:count},(_,i)=>createDrop(i,g,count));
 }
 
-function pathRibbon(d,ax,ay,tx,ty,r,twist){
- const dx=tx-ax,dy=ty-ay,L=Math.hypot(dx,dy)+.001,nx=-dy/L,ny=dx/L;
- const c1x=ax+dx*.32+nx*twist,c1y=ay+dy*.32+ny*twist;
- const c2x=ax+dx*.76-nx*twist*.48,c2y=ay+dy*.76-ny*twist*.48;
- const nose=r*(mode==="b"?.49:mode==="a"?.88:.32);
- const middle=r*(mode==="c"?.69:1.12),root=r*1.19;
- const path=new Path2D();
- path.moveTo(ax+nx*root,ay+ny*root);
- path.bezierCurveTo(c1x+nx*root,c1y+ny*root,c2x+nx*middle,c2y+ny*middle,tx+nx*nose,ty+ny*nose);
- path.bezierCurveTo(tx+dx*.20/L*nose+nx*nose,ty+dy*.20/L*nose+ny*nose,tx+dx/L*nose,ty+dy/L*nose,tx+dx/L*nose,ty+dy/L*nose);
- path.arc(tx,ty,nose,Math.atan2(dy,dx)-Math.PI/2,Math.atan2(dy,dx)+Math.PI/2,false);
- path.bezierCurveTo(tx-nx*nose,ty-ny*nose,c2x-nx*middle,c2y-ny*middle,c1x-nx*root,c1y-ny*root);
- path.bezierCurveTo(ax+dx*.11-nx*root,ay+dy*.11-ny*root,ax-nx*root,ay-ny*root,ax+nx*root,ay+ny*root);
- path.closePath();
- return {p:path,nx,ny,nose,root,middle,c1x,c1y,c2x,c2y,L};
+
+/* Liquid surface renderer v3: continuous refractive sheets, not tubes.
+ * Sample texture from the playing film, shaded with thin-film iridescence.
+ * No separate mouse glow, cartoon spheres or arbitrary radial radiation.
+ */
+function ribbonSurface(ax,ay,tx,ty,width,phaseOffset,index){
+ const dx=tx-ax,dy=ty-ay,length=Math.max(1,Math.hypot(dx,dy));
+ const normal={x:-dy/length,y:dx/length};
+ const wobble=phase*1.1+phaseOffset;
+ // Sheet bends and folds: wide at the root, fluid in the middle, pointed at the far tip.
+ const fold=(t)=>Math.sin(t*Math.PI)*Math.sin(wobble+t*5.5)*width*.39;
+ const center=(t)=>{
+  const arch=t*(1-t)*4;
+  return {x:ax+dx*t+normal.x*(Math.sin(t*Math.PI)*width*.24+fold(t)),
+          y:ay+dy*t+normal.y*(Math.sin(t*Math.PI)*width*.24+fold(t))+
+             arch*Math.sin(wobble*.62)*width*.25};
+ };
+ const thickness=(t)=>{
+  const neck=Math.pow(Math.max(0,1-t),.45);
+  const swell=.75+.48*Math.sin(Math.PI*t)+.12*Math.sin(12*t+phaseOffset);
+  return Math.max(.3,width*neck*swell);
+ };
+ const p=new Path2D(),N=34;
+ for(let i=0;i<=N;i++){
+  const t=i/N,c=center(t),r=thickness(t);
+  const x=c.x+normal.x*r,y=c.y+normal.y*r;
+  if(!i)p.moveTo(x,y);else p.lineTo(x,y);
+ }
+ for(let i=N;i>=0;i--){
+  const t=i/N,c=center(t),r=thickness(t);
+  p.lineTo(c.x-normal.x*r,c.y-normal.y*r);
+ }
+ p.closePath();
+ return {path:p,normal,center,thickness,length};
 }
 function drawLiquid(d,index,amp,src){
- const a=origin;if(!a)return 0;
- const ax=a.x,ay=clamp(a.y+d.offset,12,H-12),tx=d.x,ty=d.y;
- const distance=Math.hypot(tx-ax,ty-ay);
- if(distance<2||amp<.015)return 0;
- const width=d.radius*amp*(mode==="a"?1.6:mode==="b"?1.06:1.16);
- const twist=Math.sin(phase*1.07+d.phase)*(mode==="c"?71:mode==="a"?25:48)*amp;
- const pp=pathRibbon(d,ax,ay,tx,ty,width,twist);
- const base=palette[index%palette.length].map(x=>clamp(x,0,255));
- const bright=shine(base,.52),dark=deep(base,.42);
+ if(!origin)return 0;
+ const ax=origin.x,ay=clamp(origin.y+d.offset,12,H-12),tx=d.x,ty=d.y;
+ const reach=Math.hypot(tx-ax,ty-ay);
+ if(reach<2||amp<.014)return 0;
+ // Each material is a broad wave-shaped membrane, not a cylindrical bead.
+ const widths={a:[74,49],b:[49,40,33],c:[51,38,32]};
+ const baseWidth=widths[mode][index%widths[mode].length];
+ const width=baseWidth*amp*(Number(slider?.value||75)/75);
+ const surface=ribbonSurface(ax,ay,tx,ty,width,d.phase,index);
+ const p=surface.path;
+ const n=surface.normal;
+ // Use original movie frames as moving interior pigment.
+ // Refractive cyan/purple/magenta reflections are deliberately optical
+ // overlays; they are NOT claimed to be exact sampled film colors.
+ const gradient=ctx.createLinearGradient(ax,ay,tx,ty);
+ const tone=index%3;
+ const palette=[
+   [[24,161,237],[103,99,238],[246,121,184]],
+   [[68,200,223],[123,83,221],[255,167,176]],
+   [[39,103,225],[194,116,247],[251,145,197]]
+ ][tone];
+ const shift=Math.sin(phase*.62+d.phase)*.14;
+ const col=(n,t=.0)=>palette[n].map(v=>Math.round(clamp(v*(1+t),0,255)));
+ gradient.addColorStop(0,rgb(col(0,.15),.76*amp));
+ gradient.addColorStop(.29,rgb(col(1),.67*amp));
+ gradient.addColorStop(.53,rgb(col(2,.12),.59*amp));
+ gradient.addColorStop(.73,rgb(col(0,shift),.68*amp));
+ gradient.addColorStop(1,rgb(col(1,.16),.77*amp));
  ctx.save();
- ctx.shadowColor=rgb(base,.66*amp);
- ctx.shadowBlur=23*amp;
- ctx.shadowOffsetY=6;
- ctx.fillStyle=rgb(base,.38*amp);
- ctx.fill(pp.p);
- ctx.restore();
- // Moving frames from the REAL original video are clipped to the shape.
- ctx.save();
- ctx.clip(pp.p);
- if(src){ctx.globalAlpha=.82;paintFrame(src);ctx.globalAlpha=1;}
- const longitudinal=ctx.createLinearGradient(ax,ay,tx,ty);
- longitudinal.addColorStop(0,rgb(dark,.80));
- longitudinal.addColorStop(.25,rgb(base,.64));
- longitudinal.addColorStop(.53,rgb(bright,.24));
- longitudinal.addColorStop(.81,rgb(base,.48));
- longitudinal.addColorStop(1,rgb(bright,.76));
- ctx.fillStyle=longitudinal;ctx.fill(pp.p);
- // Cylindrical specular refraction gives volume rather than a flat glow.
- const across=ctx.createLinearGradient(
-   ax+pp.nx*width*1.4,ay+pp.ny*width*1.4,
-   ax-pp.nx*width*1.4,ay-pp.ny*width*1.4);
- across.addColorStop(0,"rgba(255,255,255,.70)");
- across.addColorStop(.12,"rgba(255,255,255,.21)");
- across.addColorStop(.28,"rgba(255,255,255,.02)");
- across.addColorStop(.53,"rgba(6,9,38,.10)");
- across.addColorStop(.77,"rgba(6,8,39,.42)");
- across.addColorStop(.94,"rgba(255,255,255,.42)");
- across.addColorStop(1,"rgba(255,255,255,.56)");
- ctx.fillStyle=across;ctx.fill(pp.p);
- ctx.restore();
- ctx.save();
- ctx.strokeStyle="rgba(250,251,255,"+(amp*.84)+")";
- ctx.lineWidth=1.7;
- ctx.shadowColor=rgb(bright,.76);ctx.shadowBlur=12;
- ctx.stroke(pp.p);
- ctx.restore();
- // A bright ridge follows the curved, elastic core.
- ctx.save();
- ctx.beginPath();
- ctx.moveTo(ax+pp.nx*width*.62,ay+pp.ny*width*.62);
- ctx.bezierCurveTo(
-   pp.c1x+pp.nx*width*.73,pp.c1y+pp.ny*width*.73,
-   pp.c2x+pp.nx*width*.42,pp.c2y+pp.ny*width*.42,
-   tx+pp.nx*pp.nose*.30,ty+pp.ny*pp.nose*.30);
- ctx.strokeStyle="rgba(255,255,255,"+(.26+.34*amp)+")";
- ctx.lineWidth=clamp(width*.075,1.8,5.4);
- ctx.lineCap="round";ctx.stroke();
- ctx.restore();
- if(mode!=="c" || index%2===0){
-  const rad=clamp(pp.nose,5,42);
-  const hi=ctx.createRadialGradient(tx-rad*.32,ty-rad*.37,0,tx,ty,rad);
-  hi.addColorStop(0,"rgba(255,255,255,.96)");
-  hi.addColorStop(.22,rgb(bright,.94));
-  hi.addColorStop(.61,rgb(base,.92));
-  hi.addColorStop(.90,rgb(dark,.84));
-  hi.addColorStop(1,rgb(bright,.14));
-  ctx.beginPath();ctx.ellipse(tx,ty,rad,rad*(mode==="b"?1.12:.87),twist*.008,0,Math.PI*2);
-  ctx.fillStyle=hi;ctx.fill();
-  ctx.strokeStyle="rgba(255,255,255,.53)";
-  ctx.lineWidth=1.2;ctx.stroke();
+ ctx.shadowColor=rgb(col(1),.33*amp);ctx.shadowBlur=20;
+ ctx.fillStyle=gradient;ctx.fill(p);ctx.restore();
+ ctx.save();ctx.clip(p);
+ if(src){
+  // Continuous animated content inside the arch feeds each membrane.
+  ctx.globalAlpha=.24;
+  paintFrame(src);
+  ctx.globalAlpha=1;
  }
- // Tiny connected droplets. They retract with the parent liquid.
- if(mode==="b"&&distance>85){
-  for(let n=0;n<2;n++){
-   const t=.57+n*.21;
-   const x=ax+(tx-ax)*t+pp.nx*width*(1.22+n*.4);
-   const y=ay+(ty-ay)*t+pp.ny*width*(1.22+n*.4);
-   const rad=clamp(width*(n===0?.20:.12),3,14);
-   const grad=ctx.createRadialGradient(x-rad*.35,y-rad*.37,0,x,y,rad);
-   grad.addColorStop(0,"rgba(255,255,255,.89)");
-   grad.addColorStop(.35,rgb(bright,.92));
-   grad.addColorStop(1,rgb(base,.28));
-   ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.fill();
+ // Semi-transparent liquid glass changes spectral hue across its curved surface.
+ ctx.globalCompositeOperation="source-over";
+ ctx.fillStyle=gradient;ctx.fill(p);
+ const t0=surface.center(.54),r0=surface.thickness(.54);
+ const cross=ctx.createLinearGradient(
+    t0.x+n.x*r0*1.4,t0.y+n.y*r0*1.4,
+    t0.x-n.x*r0*1.4,t0.y-n.y*r0*1.4);
+ cross.addColorStop(0,"rgba(247,252,255,.73)");
+ cross.addColorStop(.13,"rgba(255,255,255,.21)");
+ cross.addColorStop(.36,"rgba(255,255,255,.012)");
+ cross.addColorStop(.65,"rgba(12,5,53,.21)");
+ cross.addColorStop(.85,"rgba(12,6,62,.30)");
+ cross.addColorStop(1,"rgba(255,255,255,.53)");
+ ctx.fillStyle=cross;ctx.fill(p);
+ // Translucent folds create flowing sheets rather than parallel flat ribbons.
+ ctx.globalCompositeOperation="screen";
+ for(let layer=0;layer<2;layer++){
+  ctx.beginPath();
+  const fraction=layer===0?.47:-.31;
+  for(let i=0;i<=31;i++){
+   const t=i/31,c=surface.center(t),r=surface.thickness(t);
+   const bend=Math.sin(phase*(layer?.83:1.1)+t*13+d.phase)*r*.09;
+   const x=c.x+n.x*(r*fraction+bend);
+   const y=c.y+n.y*(r*fraction+bend);
+   if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.lineWidth=layer===0?Math.max(2,width*.13):Math.max(1,width*.055);
+  ctx.strokeStyle=layer===0?"rgba(235,251,255,.38)":"rgba(255,198,242,.44)";
+  ctx.lineCap="round";ctx.lineJoin="round";ctx.stroke();
+ }
+ ctx.restore();
+ ctx.save();
+ ctx.strokeStyle="rgba(248,248,255,"+(.36*amp)+")";
+ ctx.lineWidth=1.2;
+ ctx.shadowColor=rgb(col(1),.48*amp);ctx.shadowBlur=7;
+ ctx.stroke(p);ctx.restore();
+ // Only splash mode has a few small, soft detachable droplets.
+ if(mode==="b" && index>0 && reach>90){
+  for(let k=0;k<2;k++){
+   const t=.71+k*.16,c=surface.center(t);
+   const off=surface.thickness(t)*(1.45+k*.44);
+   const x=c.x+n.x*off,y=c.y+n.y*off;
+   const r=(3+k*2)*amp;
+   const g=ctx.createRadialGradient(x-r*.24,y-r*.32,0,x,y,r);
+   g.addColorStop(0,"rgba(255,255,255,.82)");
+   g.addColorStop(.4,rgb(col(k),.77*amp));
+   g.addColorStop(1,rgb(col(1),0));
+   ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
   }
  }
- return distance;
+ return reach;
 }
-// No separate luminous cursor or radial color disturbance.
-// The only effect is liquid physically extruded from the video portal.
 function drawVortex(){}
 function animate(t){
  frame=0;
@@ -253,13 +273,13 @@ function animate(t){
  for(const d of drops){
   if(!origin)continue;
   const a=origin;
-  const distance=(mode==="a"?235:mode==="b"?320:315)*d.stretch*intensity;
+  const distance=(mode==="a"?240:mode==="b"?335:350)*d.stretch*intensity;
   const outward=inside?a.side*distance:0;
-  const spread=mode==="a"?22:mode==="b"?63:99;
+  const spread=mode==="a"?25:mode==="b"?66:108;
   const targetX=a.x+outward;
-  const targetY=clamp(a.y+d.offset+(inside?Math.sin(phase*1.62+d.phase)*spread*.65:0),5,H-5);
+  const targetY=clamp(a.y+d.offset+(inside?Math.sin(phase*.92+d.phase)*spread*.64:0),5,H-5);
   const springiness=mode==="a"?.11:mode==="b"?.18:.125;
-  const friction=mode==="a"?.82:mode==="b"?.77:.83;
+  const friction=mode==="a"?.79:mode==="b"?.78:.83;
   d.vx=(d.vx+(targetX-d.x)*springiness*dt)*Math.pow(friction,dt);
   d.vy=(d.vy+(targetY-d.y)*(springiness*.72)*dt)*Math.pow(friction,dt);
   d.x+=d.vx*dt;d.y+=d.vy*dt;
@@ -271,7 +291,7 @@ function animate(t){
  canvas.dataset.sampleSource=videoSample;
  canvas.dataset.sampleRgb=rgba.map(Math.round).join(",");
  canvas.dataset.cursorGlowDisabled="true";
- canvas.dataset.liquidVariant="video-textured-sculpture-v2";
+ canvas.dataset.liquidVariant="iridescent-flowing-membrane-v3";
  canvas.dataset.videoPlaying=String(playing);
  if(inside)status.textContent={a:"A · THICK LIQUID GEL",b:"B · DYNAMIC VIDEO SPLASH",c:"C · STRETCHY LIQUID SILK"}[mode];
  else if(was)status.textContent="LIQUID FLOWING BACK INTO THE ARCH";
