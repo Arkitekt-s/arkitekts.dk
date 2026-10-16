@@ -23,12 +23,6 @@ for(const [company,src] of logos){
  image.addEventListener("error",()=>{symbol.classList.remove("has-logo");image.remove()});
  symbol.appendChild(image);
 }
-const hint=document.createElement("div");
-hint.className="experience-progress";hint.setAttribute("aria-live","polite");
-hint.innerHTML='<span class="experience-progress-label"></span>'+
- '<span class="experience-progress-track" aria-hidden="true"><span></span></span>'+
- '<span class="experience-progress-count">01 / 04</span>';
-section.appendChild(hint);
 const clamp=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{const u=clamp(x);return u*u*(3-2*u)};
 let reveal=0,completedAt=0,wasVisible=false;
@@ -40,7 +34,6 @@ function setReveal(value){
  else if(!completedAt)completedAt=performance.now();
  section.style.setProperty("--experience-reveal",reveal.toFixed(4));
  section.style.setProperty("--puzzle-complete",smooth((reveal-.04)/.92).toFixed(4));
- let shown=0;
  firms.forEach((firm,i)=>{
   // Current employer is visible on entry. Others arrive by scroll.
   const entry=i===0?1:smooth((reveal-(i-1)*.245-.12)/.20);
@@ -53,17 +46,7 @@ function setReveal(value){
   const hidden=entry<.02;
   firm.setAttribute("aria-hidden",String(hidden));
   firm.inert=hidden;
-  if(entry>.78)shown++;
  });
- hint.querySelector(".experience-progress-count").textContent=
-  String(shown).padStart(2,"0")+" / 04";
- refreshProgressLabel();
-}
-function refreshProgressLabel(){
- const da=document.documentElement.lang!=="en";
- hint.querySelector(".experience-progress-label").textContent=
-  reveal>=.999?(canAdvance()?(da?"RUL FOR AT FORTSÆTTE":"SCROLL TO CONTINUE"):(da?"SE ALLE FIRE ORGANISATIONER":"VIEW ALL FOUR ORGANISATIONS")):
-     (da?"RUL NED FOR AT SE ERFARING":"SCROLL TO REVEAL EXPERIENCE");
 }
  const translated=[
    [".experience-topline span:first-child","03 / ERFARING","03 / EXPERIENCE"],
@@ -96,7 +79,6 @@ function refreshLanguage(){
  }
  section.setAttribute("aria-label",danish?"Afsnit tre: Erfaring fra arbejdspladser og projekter":"Section three: Workplaces and professional projects");
  section.querySelector(".experience-organisations")?.setAttribute("aria-label",danish?"Organisationer fra min erfaring":"Organisations from my experience");
- refreshProgressLabel();
 }
 new MutationObserver(refreshLanguage).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
 function inExperience(){
