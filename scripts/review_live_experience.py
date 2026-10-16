@@ -75,6 +75,7 @@ try:
    if page.locator("html").get_attribute("lang")!="da":errors.append(f"{device}: Danish not default")
    if page.locator("#experience-section").count()!=1:errors.append(f"{device}: missing new chapter")
    if page.locator(".experience-select").count():errors.append(f"{device}: preview UI leaked into production")
+   if page.locator(".experience-progress").count():errors.append(f"{device}: unwanted scroll progress bar is still shown")
    if page.locator("link[rel=canonical]").get_attribute("href")!="https://arkitekts.dk/":errors.append(f"{device}: canonical changed")
    if "noindex" in page.locator('meta[name="robots"]').get_attribute("content"):errors.append(f"{device}: live page became noindex")
    if page.locator("#site-language-switch").count()!=1:errors.append(f"{device}: language switch missing")
