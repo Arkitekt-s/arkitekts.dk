@@ -112,9 +112,17 @@
  const clamp=x=>Math.max(0,Math.min(1,x));
  const smooth=x=>{const u=clamp(x);return u*u*(3-2*u)};
  let reveal=0,animation=0,animationStart=0,started=false,manuallyPaused=false;
+ // Give the last organisation time on screen before allowing the next scene.
+ // All wheel/touch/key/navigation paths consult canAdvance().
+ let completedAt=0;
+ const finalReadTime=1000;
+ const canAdvance=()=>reveal>=.999 && completedAt>0 &&
+   performance.now()-completedAt>=finalReadTime;
  function stopAuto(){if(animation)cancelAnimationFrame(animation);animation=0;}
  function setReveal(value){
    reveal=clamp(value);
+   if(reveal<.999)completedAt=0;
+   else if(!completedAt)completedAt=performance.now();
    section.style.setProperty("--experience-reveal",reveal.toFixed(4));
    section.style.setProperty("--puzzle-complete",smooth((reveal-.04)/.92).toFixed(4));
    let fullyVisible=0;
@@ -154,18 +162,27 @@
    animationStart=0;
    animation=requestAnimationFrame(step);
  }
- window.__experiencePreviewMotion={setReveal,replay,stopAuto,get reveal(){return reveal;}};
+ window.__experiencePreviewMotion={setReveal,replay,stopAuto,canAdvance,get reveal(){return reveal;},get waitRemaining(){return completedAt?Math.max(0,finalReadTime-(performance.now()-completedAt)):null;}};
  const currentlyHere=()=>{
    const position=Number(document.body.dataset.experienceTimeline||0);
-   return position>=1.88&&position<=2.13&&
-      document.body.dataset.currentFrame==="3"&&section.classList.contains("is-visible");
+   // The early part of the dissolve lets visitors start revealing the
+   // companies while entering, without the wheel skipping past them.
+   return position>=1.78&&position<=2.19&&
+     document.body.dataset.currentFrame==="3"&&section.classList.contains("is-visible");
  };
  function gesture(delta,event){
    if(!currentlyHere()||!Number.isFinite(delta)||Math.abs(delta)<.2)return false;
    const backwards=delta<0;
-   if((backwards&&reveal<=.001)||(!backwards&&reveal>=.999))return false;
+   if(backwards&&reveal<=.001)return false; // Permit return to Section 02.
+   if(!backwards&&reveal>=.999){
+     // Do not leave the scene on the very gesture that completes the story.
+     // The visitor gets a short, visible "04 / 04" hold before advancing.
+     if(canAdvance())return false;
+     event.preventDefault();event.stopImmediatePropagation();
+     return true;
+   }
    stopAuto();manuallyPaused=true;
-   setReveal(reveal+delta/660);
+   setReveal(reveal+delta/720);
    event.preventDefault();
    event.stopImmediatePropagation();
    return true;
@@ -206,7 +223,15 @@
  },{passive:true});
  const entryObserver=new MutationObserver(()=>{
    const visible=section.classList.contains("is-visible");
-   if(visible&&!started&&!manuallyPaused){started=true;replay();}
+   if(visible&&!started&&!manuallyPaused){
+     started=true;
+     // Opening the preview straight at section 03 plays the short demo.
+     // Scrolling from the homepage instead keeps the full reveal controlled
+     // by the mouse wheel, touch or keyboard.
+     if(new URLSearchParams(location.search).get("start")==="1"){
+       stopAuto();setReveal(0);
+     }else replay();
+   }
    if(!visible){started=false;stopAuto();manuallyPaused=false;}
  });
  entryObserver.observe(section,{attributes:true,attributeFilter:["class"]});
