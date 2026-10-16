@@ -51,7 +51,7 @@ function actualColors(t){
    sampleAt(pos.x-90,pos.y+25),sampleAt(pos.x+95,pos.y+68),
    sampleAt(pos.x+20,pos.y+140)
   ];
-  rgba=sampleAt(pointer.x,pointer.y);
+  rgba=sampleAt(origin?origin.x-origin.side*30:pointer.x,origin?origin.y:pointer.y);
   videoSample=media===video?"playing-video":"poster";
   readable=true;
  }catch(e){
@@ -257,8 +257,14 @@ function animate(t){
  }
  const playing=!video.paused,canAct=Number(document.body.dataset.journeyProgress||0)<.25&&
   !matchMedia("(prefers-reduced-motion:reduce)").matches;
- const inside=canAct&&hit&&archContains(pointer);
- let g=inside?geometry(pointer):null;
+ const onArch=archContains(pointer);
+ const beyond=origin?(pointer.x-origin.x)*origin.side:0;
+ const nearOutside=!!origin&&!onArch&&beyond>=-10&&beyond<470&&
+   Math.abs(pointer.y-origin.y)<235;
+ // Once picked up inside an arch, the sheet follows the mouse beyond
+ // the portal edge. Pulling too far, or moving away, releases the sheet.
+ const inside=canAct&&hit&&(onArch||nearOutside);
+ let g=inside?(onArch?geometry(pointer):origin):null;
  const was=force>.07;
  force+=(Number(inside)-force)*(1-Math.exp(-dt/(inside?8:18)));
  if(inside&&g){
@@ -273,11 +279,14 @@ function animate(t){
  for(const d of drops){
   if(!origin)continue;
   const a=origin;
-  const distance=(mode==="a"?240:mode==="b"?335:350)*d.stretch*intensity;
+  const distance=(nearOutside?
+     clamp(beyond+72,110,435):
+     (mode==="a"?240:mode==="b"?335:350)*d.stretch)*intensity;
   const outward=inside?a.side*distance:0;
   const spread=mode==="a"?25:mode==="b"?66:108;
   const targetX=a.x+outward;
-  const targetY=clamp(a.y+d.offset+(inside?Math.sin(phase*.92+d.phase)*spread*.64:0),5,H-5);
+  const targetY=clamp((nearOutside?pointer.y:a.y)+d.offset+
+   (inside?Math.sin(phase*.92+d.phase)*spread*.64:0),5,H-5);
   const springiness=mode==="a"?.11:mode==="b"?.18:.125;
   const friction=mode==="a"?.79:mode==="b"?.78:.83;
   d.vx=(d.vx+(targetX-d.x)*springiness*dt)*Math.pow(friction,dt);
@@ -287,6 +296,7 @@ function animate(t){
   sum+=drawLiquid(d,drops.indexOf(d),force,src);
  }
  canvas.dataset.liquidActive=String(inside);
+ canvas.dataset.liquidDragged=String(nearOutside&&inside);
  canvas.dataset.liquidExtent=String(Math.round(sum));
  canvas.dataset.sampleSource=videoSample;
  canvas.dataset.sampleRgb=rgba.map(Math.round).join(",");
