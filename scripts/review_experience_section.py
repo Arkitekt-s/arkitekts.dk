@@ -146,14 +146,47 @@ try:
       })""")
       if film2["src"]!=film1["src"] or film2["t"]<=film1["t"] or film2["paused"]:
         failures.append(f"{name}: film restarted/changed between scenes 1,2,3: {film1} => {film2}")
+      page.wait_for_function("typeof window.__experiencePreviewMotion === 'object'")
       if current["step"]!="3" or current["sceneOpacity"]<.95:failures.append(f"{name}: new scene not visible {current}")
       if current["organisations"]!=4 or current["photoCount"]!=7 or not current["originalThird"]:failures.append(f"{name}: content missing")
       if current["liveArches"]!=3 or not current["loadedOriginalFilm"]:failures.append(f"{name}: original videos missing")
       if not current["noindex"]:failures.append(f"{name}: preview accidentally indexed")
       if current["sidebarValue"]!="03":failures.append(f"{name}: not its own section number")
+      # Full-bleed means the original media is not arch-clipped here.
+      film_layout=page.evaluate("""() => {
+        const layer=document.getElementById('arch-morph-media');
+        const film=document.getElementById('arch-morph-video');
+        const stage=document.getElementById('frame');
+        const lr=layer.getBoundingClientRect(),sr=stage.getBoundingClientRect();
+        return {
+          clip:getComputedStyle(layer).clipPath,
+          objectFit:getComputedStyle(film).objectFit,
+          width:lr.width,stageWidth:sr.width,
+          height:lr.height,stageHeight:sr.height,
+          videoVisible:getComputedStyle(film).opacity,
+          sceneBackground:getComputedStyle(document.getElementById('experience-section')).backgroundColor
+        }
+      }""")
+      if film_layout["clip"]!="none" or film_layout["objectFit"]!="cover":
+        failures.append(f"{name}: section movie must be unmasked and cover the full viewport: {film_layout}")
+      if abs(film_layout["width"]-film_layout["stageWidth"])>3 or abs(film_layout["height"]-film_layout["stageHeight"])>3:
+        failures.append(f"{name}: film layer does not fill the original stage: {film_layout}")
+      # Down-scroll inside Chapter 03 reveals logos, without skipping the scene.
+      page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(.05)")
+      page.mouse.move(width/2,height/2)
+      page.mouse.wheel(0,130)
+      page.wait_for_timeout(200)
+      changed=page.evaluate("""() => ({
+        value:window.__experiencePreviewMotion.reveal,
+        chapter:document.body.dataset.currentFrame,
+        count:document.querySelectorAll('.experience-employer').length
+      })""")
+      if changed["value"]<=.05 or changed["chapter"]!="3":
+        failures.append(f"{name}: scroll did not reveal companies within own chapter: {changed}")
       for key in ["a","b","c"]:
         page.locator(f'[data-exp-option="{key}"]').click()
-        page.wait_for_timeout(100)
+        page.evaluate("window.__experiencePreviewMotion.stopAuto();window.__experiencePreviewMotion.setReveal(1)")
+        page.wait_for_timeout(130)
         option=page.locator("#experience-section").get_attribute("data-layout")
         if option!=key:failures.append(f"{name}: option {key} not switching")
         page.screenshot(path=str(out/f"{name}-option-{key}.png"),animations="disabled",timeout=15000)
