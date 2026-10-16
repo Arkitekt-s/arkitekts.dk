@@ -1,0 +1,29 @@
+/* Language control only. Site layout, scenes, cards and interactions unchanged. */
+.site-header{position:relative}
+.site-header .navigation{margin-right:60px}
+.site-header .site-language-switch{
+ position:absolute;right:clamp(16px,3.1vw,52px);top:50%;
+ transform:translateY(-50%);z-index:120;
+ display:flex;align-items:center;justify-content:center;
+ min-width:47px;height:36px;padding:0 11px;
+ border:1px solid rgba(117,68,139,.27);border-radius:9px;
+ background:rgba(255,255,255,.91);color:#442657;
+ font:800 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+ letter-spacing:.055em;cursor:pointer;
+}
+.site-header .site-language-switch:hover{border-color:#9f47b7;background:#fff}
+.site-header .site-language-switch:focus-visible{outline:2px solid #b748df;outline-offset:3px}
+body.frame-one .site-header .site-language-switch{
+ color:#f8eafa;background:rgba(44,22,60,.86);
+ border-color:rgba(236,185,251,.50)
+}
+body.frame-one .site-header .site-language-switch:hover{background:#72378f}
+@media(max-width:1024px){
+ .site-header .navigation{margin-right:0}
+ .site-header .menu-button{margin-right:58px}
+ .site-header .site-language-switch{right:clamp(14px,3vw,35px);min-width:47px;height:39px}
+}
+@media(max-width:760px){
+ .site-header .menu-button{margin-right:58px}
+ .site-header .site-language-switch{right:clamp(12px,4vw,23px)}
+}
