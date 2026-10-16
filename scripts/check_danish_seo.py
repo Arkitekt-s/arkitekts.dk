@@ -16,23 +16,33 @@ class SEOParser(HTMLParser):
         self.meta = {}
         self.canonical = []
         self.danish_sections = 0
+        self.in_danish_summary = False
+        self.summary_words = []
+        self.html_lang = None
         self.in_title = False
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        if tag == "html":
+            self.html_lang = a.get("lang")
         if tag == "title":
             self.in_title = True
         if tag == "meta" and a.get("name"):
             self.meta[a["name"].lower()] = a.get("content", "")
         if tag == "link" and a.get("rel") == "canonical":
             self.canonical.append(a.get("href", ""))
-        if tag == "section" and a.get("class", "").split().count("danish-search-summary") and a.get("lang") == "da":
+        if tag == "section" and "danish-search-summary" in a.get("class", "").split() and a.get("lang") == "da":
             self.danish_sections += 1
+            self.in_danish_summary = True
     def handle_endtag(self, tag):
         if tag == "title":
             self.in_title = False
+        if tag == "section":
+            self.in_danish_summary = False
     def handle_data(self, data):
         if self.in_title:
             self.title.append(data)
+        if self.in_danish_summary:
+            self.summary_words.extend(data.split())
 
 def main():
     xml = ET.parse(ROOT / "sitemap.xml")
@@ -69,8 +79,12 @@ def main():
             errors.append(f"Canonical mismatch: {url}: {p.canonical}")
         if "noindex" in p.meta.get("robots", "").lower():
             errors.append(f"Noindex on public page: {url}")
+        if p.html_lang != "da":
+            errors.append(f"Default source HTML must declare Danish on {url}; got {p.html_lang}")
         if p.danish_sections != 1:
             errors.append(f"Expected one Danish context section on {url}; got {p.danish_sections}")
+        if len(p.summary_words) < 65:
+            errors.append(f"Not enough useful Danish text directly in HTML on {url}: {len(p.summary_words)} words")
     # Keep the previously indexed support URL as a redirect, not a content page.
     retired = (ROOT / "it-drift" / "index.html").read_text(encoding="utf-8")
     destination = "https://arkitekts.dk/software-skills/"
