@@ -697,7 +697,7 @@
     }
     setTarget(destination);
   }
-  window.__experiencePreviewGo=function(section){setTarget(clamp(Number(section)-1,0,5));};
+  window.__experiencePreviewGo=function(section,instant=false){setTarget(clamp(Number(section)-1,0,5));if(instant){position=target;paint();}};
   nextSectionButton?.addEventListener("click",()=>navigateSection(1));
   prevSectionButton?.addEventListener("click",()=>navigateSection(-1));
 
