@@ -117,6 +117,14 @@ function apply(next,remember=true){
  document.documentElement.dataset.previewLanguage=language;
  for(const entry of translations)set(entry.el,entry.type,da?entry.da:entry.en);
  if(sum)set(sum,"html",da?sumDa:sumEn);
+ const sumTitle=document.querySelector(".danish-search-summary h2");
+ if(sumTitle)set(sumTitle,"text",da?"IT-drift og Linux-serverdrift i København":"IT operations and Linux server management in Copenhagen");
+ const summaryLang=document.querySelector(".danish-search-summary");
+ if(summaryLang)summaryLang.lang=language;
+ const schema=document.querySelector('script[type="application/ld+json"]');
+ if(schema){
+  try{const data=JSON.parse(schema.textContent);data.inLanguage=da?"da-DK":"en";schema.textContent=JSON.stringify(data)}catch{}
+ }
  document.title=da?baselineTitle:"IT Operations, Linux and DevOps in Copenhagen | Soheil Fattahieh";
  const description=document.querySelector('meta[name="description"]');
  if(description)description.content=da?baselineDescription:"IT operations and Linux server management in Copenhagen. Soheil works with Ansible automation, infrastructure, Elasticsearch and Kafka.";
@@ -132,11 +140,9 @@ function apply(next,remember=true){
  toggle.setAttribute("aria-label",toggle.title);
  toggle.setAttribute("aria-pressed",String(da));
  updateControls();
- if(remember){
-  const url=new URL(location.href);
-  if(da)url.searchParams.set("lang","da");else url.searchParams.delete("lang");
-  history.replaceState(history.state,"",url.pathname+url.search+url.hash);
- }
+ // Keep the preview URL unchanged while switching. The original animation
+ // uses a document-URL-based SVG clip-path, so replacing the URL mid-session
+ // could invalidate its mask in some browsers.
 }
 toggle.addEventListener("click",()=>apply(language==="en"?"da":"en"));
 let pending=false;
