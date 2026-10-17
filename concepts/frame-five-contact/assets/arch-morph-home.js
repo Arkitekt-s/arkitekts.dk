@@ -10,7 +10,7 @@ const panorama=document.getElementById("panorama");
 const arches=[...document.querySelectorAll("#panorama .arch")];
 if(!stage||!panorama||arches.length!==3)return;
 const reduced=matchMedia("(prefers-reduced-motion: reduce)");
-const clips=[
+const clips=window.__heroClipOptions||[
   {url:"https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4",
    poster:"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},
   {url:"/assets/videos/synthid-ai-25744122.mp4",
@@ -28,25 +28,14 @@ clip.setAttribute("clipPathUnits","userSpaceOnUse");
 const path=svgEl("path");
 path.setAttribute("id","live-arch-morph-path");
 clip.append(path);defs.append(clip);
-const layer=document.createElement("div");
-layer.className="arch-morph-media";
-layer.id="arch-morph-media";
-layer.setAttribute("aria-hidden","true");
-const poster=document.createElement("img");
-poster.id="arch-morph-poster";poster.alt="";poster.decoding="async";
-const film=document.createElement("video");
-film.id="arch-morph-video";
+const layer=document.getElementById("arch-morph-media");
+const poster=document.getElementById("arch-morph-poster");
+const film=document.getElementById("arch-morph-video");
+const lens=document.getElementById("arch-morph-lens");
+if(!layer||!poster||!film||!lens)return;
 film.muted=true;film.loop=true;film.playsInline=true;
-film.setAttribute("playsinline","");
 film.setAttribute("webkit-playsinline","");
-film.setAttribute("disablepictureinpicture","");
-film.preload="metadata";film.setAttribute("aria-hidden","true");
 film.playbackRate=.50;
-const lens=document.createElement("span");
-lens.className="arch-morph-lens";
-lens.id="arch-morph-lens";
-lens.setAttribute("aria-hidden","true");
-layer.append(poster,film,lens);
 const edges=svgEl("svg");edges.classList.add("arch-morph-outline");
 edges.setAttribute("aria-hidden","true");
 edges.setAttribute("preserveAspectRatio","none");
@@ -244,13 +233,15 @@ function choose(id){
  chosen=id;
  const version=++failedVersion;
  const source=clips[id];
- film.classList.remove("is-ready");
- poster.src=source.poster;
- film.pause();lastPlay=false;nextPlaybackAttempt=0;
- film.poster=source.poster;
- film.src=source.url;film.load();
- film.playbackRate=.50;
- document.body.dataset.archMorphScene=String(id);
+  const url=new URL(source.url,location.href).href;
+  const current=new URL(film.currentSrc||film.src,location.href).href;
+  if(url!==current){
+    film.classList.remove("is-ready");
+    poster.src=source.poster;film.pause();lastPlay=false;nextPlaybackAttempt=0;
+    film.poster=source.poster;film.src=source.url;film.load();
+  }else if(film.readyState>=2)film.classList.add("is-ready");
+  film.playbackRate=.50;
+  document.body.dataset.archMorphScene=String(id);
  playback();pauseLegacy();
  // If video delivery is blocked, poster is still clipped and visible.
  film.addEventListener("error",()=>{if(version===failedVersion)film.classList.remove("is-ready")},{once:true});
