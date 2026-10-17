@@ -9,8 +9,11 @@
 document.documentElement.dataset.initialHomepageFilm=String(Math.floor(Math.random()*3));
 window.__heroClipOptions=[{"url":"/assets/videos/optimized/hero-landscape.mp4","mobileUrl":"/assets/videos/optimized/hero-landscape-mobile.mp4","poster":"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},{"url":"/assets/videos/optimized/hero-synthid.mp4","mobileUrl":"/assets/videos/optimized/hero-synthid-mobile.mp4","poster":"/assets/videos/synthid-ai-25744122.jpg"},{"url":"/assets/videos/optimized/hero-square.mp4","mobileUrl":"/assets/videos/optimized/hero-square-mobile.mp4","poster":"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
 const net=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-const preferLite=matchMedia("(max-width: 760px)").matches || !!net?.saveData ||
-  ["slow-2g","2g","3g"].includes(net?.effectiveType);
+// Start a smaller same-scene stream on phones, modest displays and slower
+// connections. Do not swap video quality after playback (that causes a cut).
+const preferLite=matchMedia("(max-width: 1280px)").matches || !!net?.saveData ||
+  ["slow-2g","2g","3g"].includes(net?.effectiveType) ||
+  (typeof net?.downlink==="number" && net.downlink>0 && net.downlink<8);
 if(preferLite){
   window.__heroClipOptions.forEach(item=>{item.url=item.mobileUrl;});
   document.documentElement.dataset.heroMediaQuality="mobile";
@@ -19,6 +22,9 @@ const clip=window.__heroClipOptions[Number(document.documentElement.dataset.init
 const origin=new URL(clip.url,location.href).origin;
 if(origin!==location.origin){const l=document.createElement("link");l.rel="preconnect";l.href=origin;l.crossOrigin="anonymous";document.head.append(l);}
 const p=document.createElement("link");p.rel="preload";p.as="image";p.href=clip.poster;p.fetchPriority="high";document.head.append(p);
+// Browser loading hints for the hero MP4 (without requesting a duplicate
+// movie download). The in-markup <video> still owns its actual request.
+document.documentElement.dataset.heroClipRequested="early";
 </script>
 <meta name="theme-color" content="#160d22">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -92,7 +98,12 @@ const p=document.createElement("link");p.rel="preload";p.as="image";p.href=clip.
   </div>
   <script>(()=>{const c=window.__heroClipOptions[Number(document.documentElement.dataset.initialHomepageFilm)];
   const v=document.getElementById("arch-morph-video");const poster=document.getElementById("arch-morph-poster");
-  poster.src=c.poster;v.poster=c.poster;v.src=c.url;v.play().catch(()=>{});
+  poster.src=c.poster;v.poster=c.poster;
+  v.setAttribute("fetchpriority","high");
+  v.src=c.url;
+  v.load();
+  v.play().catch(()=>{});
+  document.documentElement.dataset.heroVideoRequestStarted="true";
   })();</script>
   <div class="panorama" id="panorama" role="img" aria-label="Three large windows onto a cinematic abstract artificial intelligence animation">
     <div class="arch arch-one"><div class="scenery">
