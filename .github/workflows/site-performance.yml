@@ -1,0 +1,35 @@
+name: Public page and section performance audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/videos/optimized/**'
+      - 'scripts/audit_site_performance.py'
+      - '.github/workflows/site-performance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chrome
+        run: |
+          pip install playwright==1.56.0
+          python -m playwright install --with-deps chrome
+      - name: Profile 24 pages and 6 homepage sections
+        run: python scripts/audit_site_performance.py
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-speed-24-pages
+          path: screenshots/performance/
+          retention-days: 14
+          if-no-files-found: ignore
