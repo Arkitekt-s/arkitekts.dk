@@ -7,7 +7,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>/* Pick before the first paint, without saving the choice between visits. */
 document.documentElement.dataset.initialHomepageFilm=String(Math.floor(Math.random()*3));
-window.__heroClipOptions=[{"url":"/assets/videos/optimized/hero-landscape.mp4","poster":"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},{"url":"/assets/videos/optimized/hero-synthid.mp4","poster":"/assets/videos/synthid-ai-25744122.jpg"},{"url":"/assets/videos/optimized/hero-square.mp4","poster":"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
+window.__heroClipOptions=[{"url":"/assets/videos/optimized/hero-landscape.mp4","mobileUrl":"/assets/videos/optimized/hero-landscape-mobile.mp4","poster":"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},{"url":"/assets/videos/optimized/hero-synthid.mp4","mobileUrl":"/assets/videos/optimized/hero-synthid-mobile.mp4","poster":"/assets/videos/synthid-ai-25744122.jpg"},{"url":"/assets/videos/optimized/hero-square.mp4","mobileUrl":"/assets/videos/optimized/hero-square-mobile.mp4","poster":"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
+const net=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+const preferLite=matchMedia("(max-width: 760px)").matches || !!net?.saveData ||
+  ["slow-2g","2g","3g"].includes(net?.effectiveType);
+if(preferLite){
+  window.__heroClipOptions.forEach(item=>{item.url=item.mobileUrl;});
+  document.documentElement.dataset.heroMediaQuality="mobile";
+}else document.documentElement.dataset.heroMediaQuality="desktop";
 const clip=window.__heroClipOptions[Number(document.documentElement.dataset.initialHomepageFilm)];
 const origin=new URL(clip.url,location.href).origin;
 if(origin!==location.origin){const l=document.createElement("link");l.rel="preconnect";l.href=origin;l.crossOrigin="anonymous";document.head.append(l);}
