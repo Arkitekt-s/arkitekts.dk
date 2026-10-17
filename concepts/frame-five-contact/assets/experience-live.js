@@ -88,9 +88,14 @@ function inExperience(){
 }
 function intercept(delta,event){
  if(!inExperience()||!Number.isFinite(delta)||Math.abs(delta)<.2)return false;
- if(delta<0&&reveal<=.001)return false; // Visitors can always go back.
- if(delta>0&&reveal>=.999&&canAdvance())return false;
- // Complete the story before the original journey receives this event.
+ // Reverse motion must always reach the previous chapter immediately.
+ // The reveal gate applies ONLY when travelling forward. In the old version
+ // upward wheel/swipe/keyboard input was eaten while rewinding each company,
+ // so visitors appeared trapped in this section.
+ if(delta<0)return false;
+ if(reveal>=.999&&canAdvance())return false;
+ // In the forward direction, keep the visitor here until all four
+ // organisations have appeared and the last has been readable.
  if(reveal<.999)setReveal(reveal+delta/720);
  event.preventDefault();
  event.stopImmediatePropagation();
