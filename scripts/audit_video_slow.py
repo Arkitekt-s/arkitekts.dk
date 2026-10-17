@@ -52,10 +52,11 @@ with sync_playwright() as pw:
    })""")
    result={"clip":label,"status":response.status,"elapsed":round(time.time()-started,2),**state}
   except Exception as e:result={"clip":label,"error":str(e)[:300]}
-  if not result.get("video",{}).get("src","").startswith("https://arkitekts.dk/assets/videos/optimized/"):
-   result["warning"]="Not using optimized local hero source"
+  if not result.get("video",{}).get("src","").endswith("-mobile.mp4"):
+   result["warning"]="Not using lightweight mobile-specific hero source"
   if not any(e.get("name")=="playing" for e in result.get("eventLog",[])):
    result["warning"]="No video playback within observation window"
+  result["startupMs"]=next((e["ms"] for e in result.get("eventLog",[]) if e.get("name")=="playing"),None)
   results.append(result)
   print("SLOW_MOBILE_VIDEO",json.dumps(result),flush=True)
   ctx.close()
