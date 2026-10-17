@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>/* Pick before the first paint, without saving the choice between visits. */
 document.documentElement.dataset.initialHomepageFilm=String(Math.floor(Math.random()*3));
-window.__heroClipOptions=[{"url":"https://videos.pexels.com/video-files/18069232/18069232-uhd_2560_1440_24fps.mp4","poster":"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},{"url":"/assets/videos/synthid-ai-25744122.mp4","poster":"/assets/videos/synthid-ai-25744122.jpg"},{"url":"https://videos.pexels.com/video-files/18069165/18069165-uhd_2160_2160_24fps.mp4","poster":"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
+window.__heroClipOptions=[{"url":"/assets/videos/optimized/hero-landscape.mp4","poster":"https://images.pexels.com/videos/18069232/ai-ai-tool-artificial-intelligence-assistive-technology-18069232.jpeg?auto=compress&w=1600"},{"url":"/assets/videos/optimized/hero-synthid.mp4","poster":"/assets/videos/synthid-ai-25744122.jpg"},{"url":"/assets/videos/optimized/hero-square.mp4","poster":"https://images.pexels.com/videos/18069165/ai-ai-art-artificial-intelligence-computer-18069165.jpeg?auto=compress&w=1600"}];
 const clip=window.__heroClipOptions[Number(document.documentElement.dataset.initialHomepageFilm)];
 const origin=new URL(clip.url,location.href).origin;
 if(origin!==location.origin){const l=document.createElement("link");l.rel="preconnect";l.href=origin;l.crossOrigin="anonymous";document.head.append(l);}
