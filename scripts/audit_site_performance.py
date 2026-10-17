@@ -27,7 +27,7 @@ routes=[
 "/technical-guides/kubernetes-enterprise-guide-pods-services-networking-and-production-architecture/",
 "/technical-guides/terraform-enterprise-guide-infrastructure-as-code-modules-and-production-architecture/"
 ]
-init=String.raw if False else r"""(() => {
+init=r"""(() => {
  window.__audit={lcp:0,videoEvents:[],fcp:0};
  try{new PerformanceObserver(list=>{for(const x of list.getEntries())window.__audit.lcp=x.startTime}).observe({type:'largest-contentful-paint',buffered:true})}catch{}
  try{new PerformanceObserver(list=>{for(const x of list.getEntries())if(x.name==='first-contentful-paint')window.__audit.fcp=x.startTime}).observe({type:'paint',buffered:true})}catch{}
@@ -82,7 +82,7 @@ with sync_playwright() as pw:
    except Exception as e:
     item={"page":route,"device":device,"error":str(e)[:330],"wallSec":round(time.time()-started,2),"failures":failed[:6]}
    results.append(item)
-   print("PAGE",device,route,"status",item.get("status"),"TTFB",item.get("ttfb"),"FCP",item.get("fcp"),"LCP",item.get("lcp"),"DCL",item.get("dcl"),"resources",item.get("resourceCount"),"bytes",item.get("transferredBytes"),"video",item.get("videoState",{}).get("ready"),flush=True)
+   print("PAGE",device,route,"status",item.get("status"),"TTFB",item.get("ttfb"),"FCP",item.get("fcp"),"LCP",item.get("lcp"),"DCL",item.get("dcl"),"resources",item.get("resourceCount"),"bytes",item.get("transferredBytes"),"video",(item.get("videoState") or {}).get("ready"),flush=True)
    ctx.close()
  # Check all six scene stops without external navigation.
  ctx=browser.new_context(viewport={"width":1365,"height":900})
