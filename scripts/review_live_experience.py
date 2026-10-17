@@ -135,6 +135,35 @@ try:
      errors.append(f"{device}: 04/04 does not unlock")
    page.evaluate("window.__experienceGo(4)")
    page.wait_for_function("document.body.dataset.currentFrame==='4'",timeout=6000)
+   # Regression: reverse wheel / keyboard must move the physical journey
+   # towards Section 02 right away, even with logos only partly revealed.
+   page.evaluate("window.__experienceGo(3,true);window.__experienceMotion.setReveal(.60)")
+   page.wait_for_timeout(100)
+   reverse_before=float(page.locator("body").get_attribute("data-experience-timeline"))
+   page.mouse.move(w/2,h/2)
+   page.mouse.wheel(0,-155)
+   page.wait_for_timeout(370)
+   reverse_after=float(page.locator("body").get_attribute("data-experience-timeline"))
+   if reverse_after>=reverse_before-.03:
+     errors.append(f"{device}: reverse mouse wheel trapped in Section 03: {reverse_before} => {reverse_after}")
+   for _ in range(9):
+     page.mouse.wheel(0,-155)
+     page.wait_for_timeout(45)
+   page.wait_for_function("document.body.dataset.currentFrame==='2'",timeout=5500)
+   page.evaluate("window.__experienceGo(3,true);window.__experienceMotion.setReveal(.70)")
+   page.wait_for_timeout(100)
+   keyboard_before=float(page.locator("body").get_attribute("data-experience-timeline"))
+   page.keyboard.press("ArrowUp")
+   page.wait_for_timeout(350)
+   keyboard_after=float(page.locator("body").get_attribute("data-experience-timeline"))
+   if keyboard_after>=keyboard_before-.03:
+     errors.append(f"{device}: ArrowUp trapped inside Section 03: {keyboard_before} => {keyboard_after}")
+   # Forward motion must STILL reveal all four workplaces before exit.
+   page.evaluate("window.__experienceGo(3,true);window.__experienceMotion.setReveal(.40)")
+   page.mouse.wheel(0,160)
+   page.wait_for_timeout(200)
+   if page.locator("body").get_attribute("data-current-frame")!="3" or page.evaluate("window.__experienceMotion.reveal")<=.40:
+     errors.append(f"{device}: forward scroll no longer reveals employers first")
    page.evaluate("window.__experienceGo(3,true)")
    page.locator("#site-language-switch").click()
    page.wait_for_function("""() =>
