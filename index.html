@@ -21,6 +21,11 @@ if(preferLite){
 const clip=window.__heroClipOptions[Number(document.documentElement.dataset.initialHomepageFilm)];
 const origin=new URL(clip.url,location.href).origin;
 if(origin!==location.origin){const l=document.createElement("link");l.rel="preconnect";l.href=origin;l.crossOrigin="anonymous";document.head.append(l);}
+const posterOrigin=new URL(clip.poster,location.href).origin;
+if(posterOrigin!==location.origin&&posterOrigin!==origin){
+  const pre=document.createElement("link");pre.rel="preconnect";
+  pre.href=posterOrigin;document.head.append(pre);
+}
 const p=document.createElement("link");p.rel="preload";p.as="image";p.href=clip.poster;p.fetchPriority="high";document.head.append(p);
 // Browser loading hints for the hero MP4 (without requesting a duplicate
 // movie download). The in-markup <video> still owns its actual request.
