@@ -1,0 +1,32 @@
+name: Slow-connection homepage video audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_video_slow.py'
+      - '.github/workflows/slow-video-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-slow-mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chrome
+        run: |
+          pip install playwright==1.56.0
+          python -m playwright install --with-deps chrome
+      - name: Simulate 1.6 Mbps mobile startup for each film
+        run: python scripts/audit_video_slow.py
+      - name: Save video startup metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slow-mobile-video
+          path: screenshots/performance/slow-mobile-video.json
+          retention-days: 14
